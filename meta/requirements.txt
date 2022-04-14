@@ -1,0 +1,38 @@
+GRAPHING SYNTHESIZER ONLINE: PRODUCT REQUIREMENTS
+
+----------------
+
+INFORMATION
+Author: Johannes Arenander
+Date: 2022-04-13
+
+----------------
+
+REQUIREMENTS
+These are the original requirements specified by the product owner.
+Format: As a 'who' I 'what' to 'why'.
+
+	1. As a user I go to the website to play the synth.
+	2. As a user I push keys to play notes.
+	3. As a user I type a mathematical function to create a periodic waveform.
+	4. As a user I type a mathematical function to create an envelope.
+		4.1. As a user I create an envelope to change the amplitude.
+		4.2. As a user I create an envelope to change the pitch.
+		4.3. As a user I create an envelope to change the timbre.
+	5. As a user I save the settings of the synth to use it later.
+
+----------------
+
+DICTIONARY
+
+Amplitude: The volume. [https://en.wikipedia.org/wiki/Amplitude]
+
+Envelope (music): A description of how the sound changes over time. [https://en.wikipedia.org/wiki/Envelope_(music)]
+
+Periodic waveform: A repeating waveform. [https://en.wikipedia.org/wiki/Waveform]
+
+Pitch: The frequency of the sound. [https://en.wikipedia.org/wiki/Frequency]
+
+Timbre: The richness of the sound. [https://en.wikipedia.org/wiki/Timbre] [https://en.wikipedia.org/wiki/Spectral_density]
+
+Waveform: The shape of the audio signals graph. [https://en.wikipedia.org/wiki/Waveform]
