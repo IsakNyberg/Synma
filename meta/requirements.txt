@@ -9,6 +9,7 @@ Date: 2022-04-13
 ----------------
 
 REQUIREMENTS
+These are the original requirements specified by the product owner.
 Format: As a 'who' I 'what' to 'why'.
 
 	1. As a user I go to the website to play the synth.
