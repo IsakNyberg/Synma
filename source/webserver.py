@@ -6,12 +6,17 @@ import sys
 path_lookup = {
     "/": "page/index.html",
     "/favicon.ico": "page/resources/favicon.ico",
+    "/index.css": "page/index.css",
+    "/graph.html": "page/graph.html",
 }
 
 
 type_lookup = {
     "/" : "text/html",
     "/favicon.ico" : "image/x-icon",
+    "/index.css": "text/css",
+    "/graph.html": "text/html",
+    
 }
 
 
@@ -30,6 +35,7 @@ class MyServer(BaseHTTPRequestHandler):
             self.wfile.write(data)
 
         except (KeyError, FileNotFoundError):
+            print(f"failed {e}: {self.path}")
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
