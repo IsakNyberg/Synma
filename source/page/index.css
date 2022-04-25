@@ -1,0 +1,88 @@
+@charset "utf-8";
+
+#piano {
+	border: solid 1px black;
+	background-color: lightgrey;
+	overflow: hidden;
+	width: 1002px;
+	height: 300px;
+	margin: 20px 0;
+}
+.both {
+	width: 18px;
+	height: 300px;
+	background-color: white;
+	float: left;
+}
+.coveredWhite {
+	float: left;
+	width: 12px;
+	height: 300px;
+	background-color: white;
+}
+
+/* WHITE key */
+.white{
+	float: left;
+	width: 20px;
+	height: 300px;
+	background-color: white;
+}
+.leftWhite {
+	width: 8px;
+	height: 140px;
+	background-color: white;
+	border-right: solid 1px darkgray;
+	border-bottom-right-radius: 5px;
+	float: left;
+	clear: both;
+}
+.rightWhite {
+	width: 8px;
+	height: 140px;
+	background-color: white;
+	border-left: solid 1px darkgray;
+	border-bottom-left-radius: 5px;
+	float: left;
+}
+
+/* Border between white keys */
+.borderRight {
+	border-right: solid 1px darkgray;
+	border-bottom-right-radius: 5px;
+}
+.borderLeft {
+	border-left: solid 1px darkgrey;
+	border-bottom-left-radius: 5px;
+}
+
+/* Black key */
+.black {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: black;
+	width: 18px;
+	height: 160px;
+	float: left;
+}
+
+
+
+
+
+.function-btn{
+		background: #008CBA;
+		border: 4px;
+		border-color: white;
+		color: white;
+		border-style: outset;
+		border: none;
+		font: bold15px arial,sans-serif;
+		text-shadow: none;
+		margin-top: 10px;
+    border-radius: 25px;
+		}
+
+.function-btn:hover{
+	cursor: pointer;
+}
