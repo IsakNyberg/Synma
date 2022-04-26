@@ -38,27 +38,36 @@ class MathParser {
     * @param {String} expr - Mathematical expression to be parsed.
     */
     balance(expr){
-        
+        var list = new Array();
         var balanced = true;
         var cnt=0;
         var openCnt=0;
+        var i;
+        var j;
         while(cnt < expr.length){
             switch (expr.charAt(cnt)) {
                 case '(':
+                    i=cnt;
                     openCnt++;
                     break;
                 case ')':
-                    if(openCnt>0)
+                    if(openCnt>0){
+                        j=cnt;
+                        list.push(expr.substring(i+1,j));
                         openCnt--;
-                    else{
+                    }
+                    else
                         balanced=false;
-                        break;}
+                        
                     break;
                 default:
                     break;
             }
-            
+            if(cnt == expr.length-1 && openCnt!=0)
+                balanced=false;
+            cnt++;
         }
+        return list;
     }
 
 
@@ -68,8 +77,7 @@ class MathParser {
     */
     parse(expr) {
         expr = expr.replace(this.#hasWhitespace,'');
-        if(this.#isPar.test(expr))
-		    return this.parse_par(expr);
+        
         if(this.#isTerm.test(expr))
             return this.parse_term(expr);
         if(this.#isNeg.test(expr))
@@ -90,6 +98,8 @@ class MathParser {
             return this.parse_mul(expr);
         if(this.#isDiv.test(expr))
             return this.parse_div(expr);
+        if(this.#isPar.test(expr))
+		    return this.parse_par(expr);
         alert(expr);
         return (dep) => 0;
     }
@@ -204,6 +214,9 @@ class MathParser {
         return (t) => this.parse(match[1])(t);
     }
     
+    combine(fun1, fun2){
+        (dep) => fun1(dep) + fun2(dep);
+    }
     
 
 }
@@ -212,7 +225,11 @@ function bootstrap() {
     var dep = document.getElementById("dep").value;
     var val = document.getElementById("val").value;
     
+    
+
     var parser = new MathParser(dep);
+    var bal = parser.balance(expr);
+    alert(bal);
     func = parser.parse(expr);
     try{
         alert(func(parseInt(val)));
