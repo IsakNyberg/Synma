@@ -22,9 +22,18 @@ var serieCounter = 0;
 function white(){
     document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"white\" id=\"" + whiteLabels[whiteCounter] + serieCounter + "\"></div>");
     var temp = [whiteLabels[whiteCounter], serieCounter];
-    document.getElementById(whiteLabels[whiteCounter] + serieCounter).addEventListener("click", function() {
+    document.getElementById(whiteLabels[whiteCounter] + serieCounter).onmousedown = function() {
         pressedKey(temp)
-      });
+    };
+    document.getElementById(whiteLabels[whiteCounter] + serieCounter).onmouseup = function() {
+      releasedKey(temp)
+    };
+    document.getElementById(whiteLabels[whiteCounter] + serieCounter).onmouseenter = function() {
+      enteredKey(temp)
+    };
+    document.getElementById(whiteLabels[whiteCounter] + serieCounter).onmouseleave = function() {
+      leftKey(temp)
+    };
 }
 
 function both(){
@@ -32,32 +41,86 @@ function both(){
         whiteCounter = 0;
         document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"both\"><div class=\"black\" id=\"" + whiteLabels[6]  + serieCounter + "#" + "\"></div><div class=\"leftWhite\" id=\"" + whiteLabels[6]  + serieCounter + "R" + "\"></div><div class=\"rightWhite\" id=\"" +  whiteLabels[0]  + ++serieCounter + "L" + "\"></div></div>");
         var temp = [whiteLabels[6]  + "#", (serieCounter - 1)]
-        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "#").addEventListener("click", function() {
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "#").onmousedown = function() {
             pressedKey(temp)
-        });
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "#").onmouseup = function() {
+            releasedKey(temp)
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "#").onmouseenter = function() {
+            enteredKey(temp)
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "#").onmouseleave = function() {
+            leftKey(temp)
+        };
         var temp1 = [whiteLabels[6], (serieCounter - 1)];
-        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "R").addEventListener("click", function() {
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "R").onmousedown = function() {
             pressedKey(temp1)
-        });
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "R").onmouseup = function() {
+            releasedKey(temp1)
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "R").onmouseenter = function() {
+            enteredKey(temp1)
+        };
+        document.getElementById(whiteLabels[6] + (serieCounter - 1) + "R").onmouseleave = function() {
+            leftKey(temp1)
+        };
         var temp2 = [whiteLabels[0], serieCounter];
-        document.getElementById(whiteLabels[0] + serieCounter + "L").addEventListener("click", function() {
+        document.getElementById(whiteLabels[0] + serieCounter + "L").onmousedown = function() {
             pressedKey(temp2)
-        });
+        };
+        document.getElementById(whiteLabels[0] + serieCounter + "L").onmouseup = function() {
+            releasedKey(temp2)
+        };
+        document.getElementById(whiteLabels[0] + serieCounter + "L").onmouseenter = function() {
+            enteredKey(temp2)
+        };
+        document.getElementById(whiteLabels[0] + serieCounter + "L").onmouseleave = function() {
+            leftKey(temp2)
+        };
     }
     else {
         document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"both\"><div class=\"black\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "#" + "\"></div><div class=\"leftWhite\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "R" + "\"></div><div class=\"rightWhite\" id=\"" + whiteLabels[++whiteCounter] + serieCounter + "L" + "\"></div></div>");
         var temp = [whiteLabels[whiteCounter - 1] + "#", serieCounter];
-        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter + "#").addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter + "#").onmousedown = function() {
             pressedKey(temp)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter + "#").onmouseup = function() {
+            releasedKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter + "#").onmouseenter = function() {
+            enteredKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter + "#").onmouseleave = function() {
+            leftKey(temp)
+        };
         var temp1 = [whiteLabels[whiteCounter - 1], serieCounter];
-        document.getElementById(whiteLabels[whiteCounter - 1] + serieCounter + "R").addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter - 1] + serieCounter + "R").onmousedown = function() {
             pressedKey(temp1)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1] + serieCounter + "R").onmouseup = function() {
+            releasedKey(temp1)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1] + serieCounter + "R").onmouseenter = function() {
+            enteredKey(temp1)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1] + serieCounter + "R").onmouseleave = function() {
+            leftKey(temp1)
+        };
         var temp2 = [whiteLabels[whiteCounter], serieCounter];
-        document.getElementById(whiteLabels[whiteCounter]  + serieCounter + "L").addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter + "L").onmousedown = function() {
             pressedKey(temp2)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter + "L").onmouseup = function() {
+            releasedKey(temp2)
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter + "L").onmouseenter = function() {
+            enteredKey(temp2)
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter + "L").onmouseleave = function() {
+            leftKey(temp2)
+        };
     } 
 }
 
@@ -65,34 +128,79 @@ function doubleWhite(){
     if(whiteCounter == 6){
         document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"white borderRight\" id=\"" + whiteLabels[whiteCounter++] + serieCounter + "\"></div><div class=\"white borderLeft\" id=\"" + whiteLabels[0] + (++serieCounter) + "\"></div>");
         var temp = [whiteLabels[whiteCounter - 1], (serieCounter - 1)];
-        document.getElementById(whiteLabels[whiteCounter - 1]  + (serieCounter - 1)).addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter - 1]  + (serieCounter - 1)).onmousedown = function() {
             pressedKey(temp)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + (serieCounter - 1)).onmouseup = function() {
+            releasedKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + (serieCounter - 1)).onmouseenter = function() {
+            enteredKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + (serieCounter - 1)).onmouseleave = function() {
+            leftKey(temp)
+        };
         whiteCounter = 0;
         var temp1 = [whiteLabels[0], serieCounter];
-        document.getElementById(whiteLabels[0]  + serieCounter).addEventListener("click", function() {
+        document.getElementById(whiteLabels[0]  + serieCounter).onmousedown = function() {
             pressedKey(temp1)
-        });
+        };
+        document.getElementById(whiteLabels[0]  + serieCounter).onmouseup = function() {
+            releasedKey(temp1)
+        };
+        document.getElementById(whiteLabels[0]  + serieCounter).onmouseenter = function() {
+            enteredKey(temp1)
+        };
+        document.getElementById(whiteLabels[0]  + serieCounter).onmouseleave = function() {
+            leftKey(temp1)
+        };
     }
     else {
         document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"white borderRight\" id=\"" + whiteLabels[whiteCounter++] + serieCounter + "\"></div><div class=\"white borderLeft\" id=\"" + whiteLabels[whiteCounter] + serieCounter + "\"></div>");
         var temp = [whiteLabels[whiteCounter - 1], serieCounter];
-        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter).addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter).onmousedown = function() {
             pressedKey(temp)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter).onmouseup = function() {
+            releasedKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter).onmouseenter = function() {
+            enteredKey(temp)
+        };
+        document.getElementById(whiteLabels[whiteCounter - 1]  + serieCounter).onmouseleave = function() {
+            leftKey(temp)
+        };
         var temp1 = [whiteLabels[whiteCounter], serieCounter];
-        document.getElementById(whiteLabels[whiteCounter]  + serieCounter).addEventListener("click", function() {
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmousedown = function() {
             pressedKey(temp1)
-        });
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseup = function() {
+            releasedKey(temp1)
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseenter = function() {
+            enteredKey(temp1)
+        };
+        document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseleave = function() {
+            leftKey(temp1)
+        };
     }
 }
 
 function coveredWhite (id) {
     document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"coveredWhite\" id=\"" + whiteLabels[whiteCounter] + serieCounter + "\"></div>");  
     var temp = [whiteLabels[whiteCounter], serieCounter];
-    document.getElementById(whiteLabels[whiteCounter]  + serieCounter).addEventListener("click", function() {
+    document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmousedown =  function() {
         pressedKey(temp)
-    });
+    };
+    document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseup =  function() {
+        releasedKey(temp)
+    };
+    document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseenter =  function() {
+        enteredKey(temp)
+    };
+    document.getElementById(whiteLabels[whiteCounter]  + serieCounter).onmouseleave =  function() {
+        leftKey(temp)
+    };
 }
 function createPiano(){
     white();
@@ -113,7 +221,73 @@ function createPiano(){
     coveredWhite();both();doubleWhite();
 }
 
+function enteredKey(key){
+    if(key[0].includes("#")){
+        console.log(key[0].charAt(0) + key[1] + "#")
+        document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "lightgrey";
+    }
+    else{
+        var id = key[0] + key[1];
+        document.getElementById(id).style.backgroundColor = "lightgrey";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "lightgrey";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "lightgrey";
+    }
+}
+
+
+function leftKey(key){
+    if(key[0].includes("#")){
+        console.log(key[0].charAt(0) + key[1] + "#")
+        document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "black";
+    }
+    else{
+        var id = key[0] + key[1];
+        document.getElementById(id).style.backgroundColor = "white";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "white";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "white";
+    }
+}
+
+function releasedKey(key){
+    if(key[0].includes("#")){
+        console.log(key[0].charAt(0) + key[1] + "#")
+        document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "lightgrey";
+    }
+    else{
+        var id = key[0] + key[1];
+        document.getElementById(id).style.backgroundColor = "lightgrey";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "lightgrey";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "lightgrey";
+    }
+}
+
 function pressedKey(key){
+    if(key[0].includes("#")){
+        console.log(key[0].charAt(0) + key[1] + "#")
+        document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "grey";
+    }
+    else{
+        var id = key[0] + key[1];
+        document.getElementById(id).style.backgroundColor = "grey";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "grey";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "grey";
+    }
     console.log(key); //Tryckt tangent på pianot med musen
     
 
