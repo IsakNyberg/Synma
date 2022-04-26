@@ -1,5 +1,6 @@
 @charset "utf-8";
 
+/* Containers for the piano */
 #piano {
 	border: solid 1px black;
 	background-color: lightgrey;
@@ -14,6 +15,8 @@
 	background-color: white;
 	float: left;
 }
+
+/* WHITE key */
 .coveredWhite {
 	float: left;
 	width: 12px;
@@ -21,7 +24,6 @@
 	background-color: white;
 }
 
-/* WHITE key */
 .white{
 	float: left;
 	width: 20px;
