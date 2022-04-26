@@ -29,6 +29,7 @@
 	width: 20px;
 	height: 300px;
 	background-color: white;
+	text-align: bottom;
 }
 .leftWhite {
 	width: 8px;
@@ -68,7 +69,20 @@
 	float: left;
 }
 
-
+/* Text on keys */
+.blackText {
+	position: relative;
+	top: 260px;
+	left: 0px;
+	font-size: 30px;
+}
+.whiteText {
+	position: relative;
+	top: 120px;
+	left: 2px;
+	font-size: 25px;
+	color: white;
+}
 
 
 
