@@ -185,15 +185,3 @@ class MathParser {
         return (dep) => this.#parse_expr(match[1])(dep);
     }
 }
-function bootstrap() {
-    var expr = document.getElementById("expr").value;
-    var dep = document.getElementById("dep").value;
-    var val = document.getElementById("val").value;
-    try{
-        var parser = new MathParser(dep);
-        func = parser.parse(expr);
-        alert(func(parseInt(val)));
-    }catch(err){
-        alert(err.message);
-    }
-}
