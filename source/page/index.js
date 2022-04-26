@@ -16,7 +16,7 @@ var whiteCodes = [81, 87, 69, 82, 84, 89, 85];
 var whiteLabels = ["C", "D", "E", "F", "G", "A", "B"];
 var whiteKeys = ["q", "w", "e", "r", "t", "y", "u"];
 var blackKeys = ["2", "3", "e", "5", "6", "7", "u"];
-var whiteCounter = 0; 
+var whiteCounter = 5; 
 var serieCounter = 0;
 
 function white(){
@@ -97,6 +97,8 @@ function coveredWhite (id) {
 function createPiano(){
     white();
     both();
+    doubleWhite();
+    both();
     coveredWhite();
     both();
     doubleWhite();
@@ -108,29 +110,53 @@ function createPiano(){
     coveredWhite(); both(); doubleWhite(); both(); coveredWhite(); both(); doubleWhite(); both(); coveredWhite(); both();
     coveredWhite(); both(); doubleWhite(); both(); coveredWhite(); both(); doubleWhite(); both(); coveredWhite(); both();
 
-    coveredWhite();both();white();
+    coveredWhite();both();doubleWhite();
 }
 
 function pressedKey(key){
     console.log(key); //Tryckt tangent på pianot med musen
     
+
+
+
     //Do not touch below
 
 }
 
 /* KEY handler */ 
 document.addEventListener('keydown', lastPressedButton);
+document.addEventListener('keyup', releasedButton);
+function releasedButton(pressedButton){
+    var note = keyCodeToTone(pressedButton.keyCode);
+    if (note == undefined)
+        return;
+
+    if(note[0].includes("#")){
+        console.log(note[0].charAt(0) + note[1] + "#")
+        document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = "black";
+    }
+    else{
+        var id = note[0] + note[1];
+        document.getElementById(id).style.backgroundColor = "white";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "white";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "white";
+    }
+}
 function lastPressedButton(pressedButton){
     switch(pressedButton.keyCode) {
         case 90: //z
-            if(position > 0){
+            if(position > 1){
                 removeMarkers(position);
                 placeMarkers(--position);
                 
             }
             break;
         case 88: //x
-            if(position < 3){
+            if(position < 4){
                 removeMarkers(position);
                 placeMarkers(++position);
             }
@@ -142,6 +168,21 @@ function lastPressedButton(pressedButton){
     var note = keyCodeToTone(pressedButton.keyCode);
     if (note == undefined)
         return;
+
+    if(note[0].includes("#")){
+        console.log(note[0].charAt(0) + note[1] + "#")
+        document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = "grey";
+    }
+    else{
+        var id = note[0] + note[1];
+        document.getElementById(id).style.backgroundColor = "grey";
+        var potentialLeft = document.getElementById(id+"L");
+        var potentialRight = document.getElementById(id+"R");
+        if(potentialLeft != null) 
+            document.getElementById(id+"L").style.backgroundColor = "grey";
+        if(potentialRight != null) 
+            document.getElementById(id+"R").style.backgroundColor = "grey";
+    }
     console.log(note);//Tryckt tangent på pianot med tangentbordet
 }
 function keyCodeToTone(keyCode){
@@ -154,7 +195,7 @@ function keyCodeToTone(keyCode){
 }
 
 /* TEXT on keys */
-var position = 0;
+var position = 1;
 function placeMarkers(x){
     for(var i=0; i<whiteLabels.length; i++){
         document.getElementById(whiteLabels[i] + x).innerHTML = "<div class=\"blackText\">" + whiteKeys[i] + "</div>";
