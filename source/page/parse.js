@@ -1,26 +1,21 @@
 class MathParser {
-    // Regex matchningar klibba in i https://regexr.com/ för föklaringar
-    #isTerm; // Term bestående av ett tal och/eller e och/eller pi
-    #empty = /^$/;
-    #hasPi = /π|pi/;
-    #hasE = /e/;
-    #hasWhitespace = /\s/g;
-    
-    #hasDep;
-    #dep;
-    #pi = /^[0-9π]*$/; // Tal med pi-koefficient
-    #num = /^[0-9]*$/; // Tal
-    
-    #isAdd = /^(.*?)\+(.*)$/; // Additionsuttryck
-    #isSub = /^(.+?)\-(.*)$/; // Subtraktionsuttryck
-    #isNeg = /^-(.+?)$/;
-    #isMul = /^(.+)\*([^+-]+$)/; // Multiplikationsuttryck
-    #isDiv = /^(.+)\/([^+-]+$)/; // Divisionsuttryck
-    #isSin = /^sin\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Sin-uttryck
-    #isCos = /^cos\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Cos-uttryck
-    #isLn = /^ln\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // ln-uttryck
-    #isExp = /^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})\^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})$/; // Exponent-uttryck
-    #isPar = /^\((.*)\)$/; // Uttryck helt inom paranteser.
+    // Regex matches, see as ex: https://regexr.com/ 
+    #isTerm; // Term consisting of "e", "pi", 0-9 and/or dependent variable.
+    #empty = /^$/; // Empty term/expression
+    #hasPi = /π|pi/; // Expression containing "pi"
+    #hasE = /e/; // Expression containing "e"
+    #hasWhitespace = /\s/g; // Expression with whitespaces
+    #hasDep; // Expression containing dependent variable
+    #isAdd = /^(.*?)\+(.*)$/; // Addition-expression
+    #isSub = /^(.+?)\-(.*)$/; // Subtraction-expression
+    #isNeg = /^-(.+?)$/; 
+    #isMul = /^(.+)\*([^+-]+$)/; // Multiplication-expression
+    #isDiv = /^(.+)\/([^+-]+$)/; // Division-expression
+    #isSin = /^sin\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Sin-expr
+    #isCos = /^cos\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Cos-expr
+    #isLn = /^ln\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // ln-expr
+    #isExp = /^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})\^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})$/; // Exponent-expr
+    #isPar = /^\((.*)\)$/; // Expression wholly in parntheses.
     
     /**
     * Creates a parser capable of parsing mathematical expressions with specified dependent variable.
@@ -29,55 +24,15 @@ class MathParser {
     constructor(variable) {
         this.#isTerm = new RegExp("^[" + variable + "epi0-9]*$");
         this.#hasDep = new RegExp(variable);
-        this.#dep = new RegExp("^" + variable + "$");
         this.#isExp = new RegExp("^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|([0-9eπpi"+variable+"]*)([0-9eπpi"+variable+"]{1}))\\^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|[0-9eπpi"+variable+"]*[0-9eπpi"+variable+"]{1})$");
     }
-
     /**
-    *  
-    * @param {String} expr - Mathematical expression to be parsed.
-    */
-    balance(expr){
-        var list = new Array();
-        var balanced = true;
-        var cnt=0;
-        var openCnt=0;
-        var i;
-        var j;
-        while(cnt < expr.length){
-            switch (expr.charAt(cnt)) {
-                case '(':
-                    i=cnt;
-                    openCnt++;
-                    break;
-                case ')':
-                    if(openCnt>0){
-                        j=cnt;
-                        list.push(expr.substring(i+1,j));
-                        openCnt--;
-                    }
-                    else
-                        balanced=false;
-                        
-                    break;
-                default:
-                    break;
-            }
-            if(cnt == expr.length-1 && openCnt!=0)
-                balanced=false;
-            cnt++;
-        }
-        return list;
-    }
-
-
-    /**
-    *  
-    * @param {String} expr - Mathematical expression to be parsed.
+    * Parses mathematical expression, and returns corresponding js-function.
+    * @param {String} expr - Mathematical expression with only one dependent variable to be parsed.
+    * @returns {Function} - Corresponding function
     */
     parse(expr) {
         expr = expr.replace(this.#hasWhitespace,'');
-        
         if(this.#isTerm.test(expr))
             return this.parse_term(expr);
         if(this.#isNeg.test(expr))
@@ -213,23 +168,12 @@ class MathParser {
         var match = expr.match(this.#isPar);
         return (t) => this.parse(match[1])(t);
     }
-    
-    combine(fun1, fun2){
-        (dep) => fun1(dep) + fun2(dep);
-    }
-    
-
 }
 function bootstrap() {
     var expr = document.getElementById("expr").value;
     var dep = document.getElementById("dep").value;
     var val = document.getElementById("val").value;
-    
-    
-
     var parser = new MathParser(dep);
-    var bal = parser.balance(expr);
-    alert(bal);
     func = parser.parse(expr);
     try{
         alert(func(parseInt(val)));
