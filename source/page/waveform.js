@@ -6,17 +6,119 @@ class WaveForm {
 			this.audioContext.sampleRate, 
 			this.audioContext.sampleRate
 		)
+		this.masterSource = null;
+		this.masterSourceStartTime = 0;
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
 		this.analyser = this.audioContext.createAnalyser();
 		this.analyser.fftSize = 2048;
 		this.noteFreq=this.initFreqs();
 	}
+	
+	setGain(volume) {
+		this.primaryGainControl.gain.setValueAtTime(volume, 0);
+	}
+
+	getBuffer() {
+		return this.channelData;
+	}
+	
+	fillBuffer(periodBuffer) {
+		for (let i = 0; i < this.samplingBuffer.length; i++) {
+			this.channelData[i] = periodBuffer[i % periodBuffer.length];
+		}
+	}
+	
+	genBufferFromNote(fn, key){
+		this.generateBuffer(fn,this.noteFreq[key[1]][key[0]],2*Math.PI)
+	}	
+	
+	generateBuffer(fn, freq, period) {
+		var bufferLength = this.audioContext.sampleRate / freq;
+		var step = period / bufferLength;
+		var buffer = new Float32Array(bufferLength);
+		var x = 0;
+		for (let t = 0; t < bufferLength; t++) {
+			buffer[t] = fn(x);
+			x += step;
+		}
+		this.fillBuffer(buffer);
+	}
+	
+	normalizeBuffer() {
+		var max = 0;
+		for (let i = 0; i < this.samplingBuffer.length; i++) {
+			max = Math.max(max, Math.abs(this.channelData[i]));
+		}
+		for (let i = 0; i < this.samplingBuffer.length; i++) {
+			this.channelData[i] /= max;
+		}
+	}
+
+	/* Fades out the last samples */
+	fadeOutEnd(numSamples) {
+		var start = this.samplingBuffer.length - numSamples;
+		var ratio = 1;
+		var step = 1/numSamples;
+		for (let i = start; i < this.samplingBuffer.length; i++) {
+			this.channelData[i] *= ratio;
+			ratio -= step; 
+		}
+	}
+
+	/*
+	fadeOutFrom(index, numSamples) {
+		var ratio = 1;
+		var step = 1/numSamples;
+		for (let i = index; i < index + numSamples; i++) {
+			this.channelData[i] *= ratio;
+			ratio -= step;
+		}
+		for (let i = index + numSamples; i < this.audioContext.sampleRate; i++) {
+			this.channelData[i] = 0;
+		}
+	}*/
+	
+	playBuffer() {
+		var bufferGain = this.audioContext.createGain();
+		bufferGain.gain.setValueAtTime(1.0, 0);
+		//bufferGain.gain.exponentialRampToValueAtTime(0., this.audioContext.currentTime + 1)
+		bufferGain.connect(bufferGain)
+		
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.buffer = this.samplingBuffer;
+		this.masterSource.connect(this.analyser);
+		this.analyser.connect(this.primaryGainControl);
+		this.masterSource.start();
+		this.masterSourceStartTime = this.audioContext.currentTime;
+		this.primaryGainControl.connect(this.audioContext.destination);
+	}
+	
+	stopBuffer() {
+		var masterSourceRef = this.masterSource;
+		var duration = this.audioContext.currentTime - this.masterSourceStartTime;
+		var currentIndex = duration * this.audioContext.sampleRate;
+		var fadeDuration = 100;
+		var index = (fadeDuration/1000) * this.audioContext.sampleRate;
+		this.fadeOutFrom(currentIndex, index);
+		console.log(index, (currentIndex), duration);
+		var stop_fn = (source) => {
+			console.log(source);
+			if (source != null) {
+				source.stop();
+				console.log("stoped audio1");
+			}
+			console.log("stoped audio2");
+		};
+		//console.log(this.getBuffer());
+		console.log("stoped audio0");
+		setTimeout(function() {stop_fn(masterSourceRef)}, fadeDuration);
+	}
 
 	initFreqs(){
 		let noteFreq = [];
 		for (let i=0; i< 9; i++) {
-		  noteFreq[i] = [];
+			noteFreq[i] = [];
 		}
 		noteFreq[0]["A"] = 27.500000000000000;
 		noteFreq[0]["A#"] = 29.135235094880619;
@@ -107,54 +209,5 @@ class WaveForm {
 		noteFreq[7]["B"] = 3951.066410048992894;
 		noteFreq[8]["C"] = 4186.009044809578154;
 		return noteFreq;
-	}
-
-	setGain(volume) {
-		this.primaryGainControl.gain.setValueAtTime(volume, 0);
-	}
-
-	getBuffer() {
-		return this.channelData;
-	}
-
-	fillBuffer(periodBuffer) {
-		for (let i = 0; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] = periodBuffer[i % periodBuffer.length];
-		}
-	}
-	
-	genBufferFromNote(fn, key){
-		this.generateBuffer(fn,this.noteFreq[key[1]][key[0]],2*Math.PI)
-	}	
-	generateBuffer(fn, freq, period) {
-		var bufferLength = this.audioContext.sampleRate / freq;
-		var buffer = new Float32Array(bufferLength);
-		var step = period/bufferLength;
-		var t = 0;
-		for (let i = 0; i < bufferLength; i++) {
-			buffer[i] = fn(t);
-			t += step;
-		}
-		this.fillBuffer(buffer);
-	}
-
-	normalizeBuffer() {
-		var max = 0;
-		for (let i = 0; i < this.samplingBuffer.length; i++) {
-			max = Math.max(max, Math.abs(this.channelData[i]));
-		}
-		for (let i = 0; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] /= max;
-		}
-	}
-
-	playBuffer() {
-		const bufferSource = this.audioContext.createBufferSource();
-		bufferSource.buffer = this.samplingBuffer;
-		bufferSource.connect(this.analyser);
-		this.analyser.connect(this.primaryGainControl);
-		bufferSource.start();
-		
-		this.primaryGainControl.connect(this.audioContext.destination);
 	}
 }
