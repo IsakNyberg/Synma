@@ -5,23 +5,27 @@
  * addition, subtraction, multiplication, division, sin, cos, natural log, power of.
 */
 class MathParser {
+    // pi unicode.
+    #pi = '\u03C0';
     // ******************************************************Regex matches********************************************************************** 
-    #isTerm; // Term consisting of "e", "pi", 0-9 and/or dependent variable.
+    #hasSubexpr;
+    #hasTerm; // Term consisting of "e", \u03C0, 0-9 and/or dependent variable.
+    #isTerm; // Term consisting of "e", \u03C0, 0-9 and/or dependent variable.
     #empty = /^$/; // Empty term/expression
-    #hasPi = /π|pi/; // Expression containing "pi"
+    #hasPi = new RegExp(this.#pi); // Expression containing \u03C0
     #hasE = /e/; // Expression containing "e"
     #hasWhitespace = /\s/g; // Expression with whitespaces
     #hasDep; // Expression containing dependent variable
     #isAdd = /^(.*?)\+(.*)$/; // Addition-expression
     #isSub = /^(.+?)\-(.*)$/; // Subtraction-expression
-    #isNeg = /^-(.+?)$/; 
+    #isNeg = /^-(.+?)$/; // Negated expression.
     #isMul = /^(.+)\*([^+-]+$)/; // Multiplication-expression
     #isDiv = /^(.+)\/([^+-]+$)/; // Division-expression
     #isSin = /^sin\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Sin-expr
     #isCos = /^cos\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Cos-expr
     #isLn = /^ln\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // ln-expr
-    #isExp = /^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})\^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})$/; // Exponent-expr
-    #isPar = /^\((.*)\)$/; // Expression wholly in parentheses.
+    #isExp; // Power of-expression.
+    #isPar = /^\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)$/; // Expression wholly in parentheses.
     
     /**
     * Creates a parser capable of parsing mathematical expressions with (only one) specified dependent variable.
@@ -30,26 +34,57 @@ class MathParser {
     constructor(variable) {
         if(!new RegExp("^[a-zA-Z]+$").test(variable))
             throw new Error("The dependant variable may only consist of alphabetical characters.");
-        this.#isTerm = new RegExp("^[" + variable + "epi0-9]*$");
+        var hasTermString = "[" + variable + this.#pi + "e0-9]";
+        var notNumberString = "["+this.#pi+"e"+variable+"]";
+        this.#hasTerm = new RegExp(hasTermString+"+");
+        this.#isTerm = new RegExp("^" + hasTermString + "+$");
         this.#hasDep = new RegExp(variable);
-        this.#isExp = new RegExp("^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|([0-9eπpi"+variable+"]*)([0-9eπpi"+variable+"]{1}))\\^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|[0-9eπpi"+variable+"]*[0-9eπpi"+variable+"]{1})$");
+        //this.#hasSubexpr = new RegExp("("+hasTermString+"+|\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\))");
+        
+        this.#isExp = new RegExp("^(?:(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\))|("+hasTermString+"*)("+notNumberString+"{1})|("+notNumberString+"*)([0-9]+))\\^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|"+hasTermString+"+)$");
+        alert(this.#isExp.toString());
+        
     }
     
     // ******************************************************Class methods********************************************************************** 
     
+    balanced(str) {
+        let isBalanced = true;
+        openCnt=0;
+        for (let i = 0; i < str.length; i++) {
+            if (str[i] === "(") {
+                openCnt++;
+            } else if (str[i] === ")") {
+                if (openCnt < 1){
+                    isBalanced=false;
+                    break;
+                }else {
+                    openCnt--;
+                }
+            }
+        }
+        isBalanced = openCnt==0 ? true : false;
+        return isBalanced;
+     }
+
     /**
     * Parses mathematical expression, and returns corresponding js-function.
     * @param {String} expr - Mathematical expression with only one dependent variable to be parsed.
     * @returns {Function} - Corresponding function
     */
     parse(expr) {
-        expr = expr.replace(this.#hasWhitespace,'');
+        expr = expr.replace(this.#hasWhitespace,''); // Remove all whitespaces for easier regex matching.
+        expr = expr.replace(/pi/g,this.#pi); // Replace all "pi" with \u03C0 for easier regex matching.
+        alert("Input string: " + expr);
         return this.#parse_expr(expr);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_expr(expr){
+        console.log(expr);
+        if(this.#isPar.test(expr))
+		    return this.#parse_par(expr);
         if(this.#isTerm.test(expr))
             return this.#parse_term(expr);
         if(this.#isNeg.test(expr))
@@ -70,8 +105,7 @@ class MathParser {
             return this.#parse_mul(expr);
         if(this.#isDiv.test(expr))
             return this.#parse_div(expr);
-        if(this.#isPar.test(expr))
-		    return this.#parse_par(expr);
+        
         return (dep) => {throw new Error("\"" + expr + "\" Not recognized.");}
     }
     /**
@@ -173,9 +207,22 @@ class MathParser {
     */
     #parse_exp(expr){
         var match = expr.match(this.#isExp);
-        if(match[2] == undefined)
-            return (dep) => Math.pow(this.#parse_expr(match[1])(dep),this.#parse_expr(match[4])(dep));
-        return (dep) => this.#parse_expr(match[2])(dep) * Math.pow(this.#parse_expr(match[3])(dep),this.#parse_expr(match[4])(dep));
+        console.log(match);
+        if(match[1] == undefined){
+            if(match[2] == undefined){
+                if(match[4] === "")
+                    return (dep) => Math.pow(this.#parse_expr(match[5])(dep),this.#parse_expr(match[6])(dep));
+                else
+                    return (dep) => this.#parse_expr(match[4])(dep) * Math.pow(this.#parse_expr(match[5])(dep),this.#parse_expr(match[6])(dep));
+            }
+            if(match[5] == undefined){
+                if(match[2] === "")
+                    return (dep) => Math.pow(this.#parse_expr(match[3])(dep),this.#parse_expr(match[6])(dep));
+                else
+                    return (dep) => this.#parse_expr(match[2])(dep) * Math.pow(this.#parse_expr(match[3])(dep),this.#parse_expr(match[6])(dep));
+            }
+        }
+        return (dep) => Math.pow(this.#parse_expr(match[1])(dep),this.#parse_expr(match[6])(dep));
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
