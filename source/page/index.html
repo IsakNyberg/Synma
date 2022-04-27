@@ -7,6 +7,26 @@
 </head>
 <body>
 
+  <div>
+     <button class="corner-btn" >
+       Explore our devices
+     </button>
+  </div>
+
+  <div class="">
+    <p class="page-title">
+      Online synths
+    </p>
+
+    <p>
+      A synthesizer is an electronic musical instrument, 
+      and our version creates sound using mathematical functions. 
+      It is also available online, as a web-based application! 
+      The user provides a mathematical function, and an interval, which creates a periodic waveform.
+       The user can then play the waveform on the keyboard.
+    </p>
+  </div>
+
   <div class="submit">
     <form action="form.php">
       <input type="text" name="function" id="functionInput"/>
@@ -19,8 +39,24 @@
     <iframe src="graph.html" width:1002px; height: 300px; title="Draw graph"> </iframe>
   </div>
 
-  <div id="piano"><div>
+  <div class="piano-container">
+
+  <div id="piano"></div>
+  </div>
+
+   
+  <div>
+    <p> Move keys </p>
+    <span class="arrow-btn"> Z </span>
+    <span class="move-p" > &#8592; To the left  To the right &#8594; </span>
+    <span class="arrow-btn"> X </span>
+    
+  </div> 
+
+
   
+	<script src="design.js">
+	</script>
 	<script src="index.js">
 	</script>
 </body>

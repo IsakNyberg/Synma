@@ -7,7 +7,8 @@
 	overflow: hidden;
 	width: 920px;
 	height: 300px;
-	margin: 20px 0;
+	margin: 49px auto ;
+  	vertical-align: middle;
 }
 .both {
 	width: 18px;
@@ -101,4 +102,56 @@
 
 .function-btn:hover{
 	cursor: pointer;
+}
+
+
+.page-title{
+	text-align: center;
+	font-weight: bold;
+}
+
+.corner-btn{
+	position: relative;
+	top: 0;
+	right: 0;
+ }
+
+.arrow-btn{
+	  background-color: white;
+    border-color: rgb(41, 118, 211);
+    border-style: solid;                   /* The color of the border is same*/
+    border-width: 1px;                     /* */
+    color: rgb(41, 118, 211);
+		padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    vertical-align: top;
+	 	display:inline-block;
+		
+    
+} 
+
+
+.move-p{
+	display :inline-block;
+	vertical-align: top;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+ 
+}
+
+.piano-container{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+    margin-bottom: 0px;
+    background-color:purple;
+    overflow: hidden;
+    width: 1000px;
+  	height: 400px;
 }
