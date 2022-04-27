@@ -36,13 +36,24 @@ class MathParser {
             throw new Error("The dependant variable may only consist of alphabetical characters.");
         var hasTermString = "[" + variable + this.#pi + "e0-9]";
         var notNumberString = "["+this.#pi+"e"+variable+"]";
+        var hasSinString = "sin\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        var hasCosString = "cos\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        var hasLnString = "ln\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        var hasParString = "\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        var hasExpString = "(?:(?:\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\))|(?:"+hasTermString+"*)(?:"+notNumberString+"{1})|(?:"+notNumberString+"*)(?:[0-9]+))\\^(?:\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|"+hasTermString+"+)";
+        var hasParTermString = "("+hasSinString+"|"+hasCosString+"|"+hasLnString+"|"+hasParString+"|"+hasTermString+"|"+hasExpString+")";
+        this.#isAdd = new RegExp("^"+hasParTermString+"\\+(.*)$");
+        this.#isSub = new RegExp("^"+hasParTermString+"\\-(.*)$");
+        this.#isMul = new RegExp("^"+hasParTermString+"\\*(.*)$");
+        this.#isDiv = new RegExp("^"+hasParTermString+"\\/(.*)$");
+        alert(this.#isAdd);
         this.#hasTerm = new RegExp(hasTermString+"+");
         this.#isTerm = new RegExp("^" + hasTermString + "+$");
         this.#hasDep = new RegExp(variable);
         //this.#hasSubexpr = new RegExp("("+hasTermString+"+|\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\))");
         
         this.#isExp = new RegExp("^(?:(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\))|("+hasTermString+"*)("+notNumberString+"{1})|("+notNumberString+"*)([0-9]+))\\^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|"+hasTermString+"+)$");
-        alert(this.#isExp.toString());
+        
         
     }
     
@@ -230,5 +241,18 @@ class MathParser {
     #parse_par(expr){
         var match = expr.match(this.#isPar);
         return (dep) => this.#parse_expr(match[1])(dep);
+    }
+}
+
+function bootstrap() {
+    var expr = document.getElementById("expr").value;
+    var dep = document.getElementById("dep").value;
+    var val = document.getElementById("val").value;
+    try{
+        var parser = new MathParser(dep);
+        func = parser.parse(expr);
+        alert(func(parseInt(val)));
+    }catch(err){
+        alert(err.message);
     }
 }
