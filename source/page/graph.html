@@ -1,0 +1,18 @@
+<html>
+  <head> 
+      <title>graph</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1"> 
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
+      <script src="graph.js"></script>
+  </head> 
+   
+  <body>
+    <div id="all"></div>
+    <canvas id="myChart"></canvas>
+    <script type="text/javascript">
+      var ctx = document.getElementById('myChart');
+      console.log(ctx);
+      display(ctx, (x)=>x*Math.sin(x), 100, 6.28, true);
+    </script>
+  </body>
+</html>
