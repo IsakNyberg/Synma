@@ -15,7 +15,7 @@ function getLength() {
     return document.getElementById("lengthInput").value;
 }
 
-/* Manage start and stop of sound */
+/*
 function startNote(note){
     //Insert management for starting a note
     console.log(note + " startades");
@@ -23,8 +23,9 @@ function startNote(note){
 function stopNote(note){
     //Insert management for stopping a note
     console.log(note + " stoppades");
-}
+}*/
 
+/* Manage start and stop of sound */
 function startNote(note){
 	console.log(note + " startades");
 	var str_fn = getFunction();

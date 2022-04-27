@@ -1,3 +1,7 @@
+
+/**
+ * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
+*/
 class WaveForm {
 	constructor() {
 		this.audioContext = new AudioContext({sampleRate: 44100});
@@ -14,25 +18,51 @@ class WaveForm {
 		this.analyser.fftSize = 2048;
 		this.noteFreq=this.initFreqs();
 	}
-	
+	/**
+	 * this function will set the volume for primary gain controll
+	 * @param {number} volume - take the volume to be set 
+	 */
 	setGain(volume) {
 		this.primaryGainControl.gain.setValueAtTime(volume, 0);
 	}
 
+	/**
+	 * Getter for buffer
+	 * @returns {Float32Array} - the buffer with sample points
+	 */
 	getBuffer() {
 		return this.channelData;
 	}
 	
+	/**
+	 * will fill the buffer completely with periodBuffer
+	 * @param {Float32Array} periodBuffer - this buffer contain the sampling points but 
+	 * it's only one period long, the period depends on what we have specified
+	 */
 	fillBuffer(periodBuffer) {
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] = periodBuffer[i % periodBuffer.length];
 		}
 	}
 	
+	/**
+	 * will create the complete buffer using the function and key to decide what frequency 
+	 * the function will be created at
+	 * ! NOTE: the period used currently is predefined to 2π
+	 * @param {Function} fn - the funciton to be sampled
+	 * @param {String} key - the piano key 
+	 */
 	genBufferFromNote(fn, key){
 		this.generateBuffer(fn,this.noteFreq[key[1]][key[0]],2*Math.PI)
 	}	
 	
+	/**
+	 * thus function will create the periodBuffer depending on the params below and will then
+	 * fill out the whole buffer
+	 * @param {Function} fn 
+	 * @param {Number} freq 
+	 * @param {Number} period 
+	 */
 	generateBuffer(fn, freq, period) {
 		var bufferLength = this.audioContext.sampleRate / freq;
 		var step = period / bufferLength;
@@ -45,6 +75,10 @@ class WaveForm {
 		this.fillBuffer(buffer);
 	}
 	
+	/**
+	 * we will find the max valye in our buffer and then divide all the values by it to normalize 
+	 * the values of the sampling in buffer
+	 */
 	normalizeBuffer() {
 		var max = 0;
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
@@ -55,7 +89,10 @@ class WaveForm {
 		}
 	}
 
-	/* Fades out the last samples */
+	/**
+	 * Fades out the last part of the buffer 
+	 * @param {Number} numSamples 
+	 */
 	fadeOutEnd(numSamples) {
 		var start = this.samplingBuffer.length - numSamples;
 		var ratio = 1;
@@ -79,6 +116,9 @@ class WaveForm {
 		}
 	}*/
 	
+	/**
+	 * this function will play the buffer we have created
+	 */
 	playBuffer() {
 		var bufferGain = this.audioContext.createGain();
 		bufferGain.gain.setValueAtTime(1.0, 0);
@@ -93,7 +133,7 @@ class WaveForm {
 		this.masterSourceStartTime = this.audioContext.currentTime;
 		this.primaryGainControl.connect(this.audioContext.destination);
 	}
-	
+	/*
 	stopBuffer() {
 		var masterSourceRef = this.masterSource;
 		var duration = this.audioContext.currentTime - this.masterSourceStartTime;
@@ -113,8 +153,13 @@ class WaveForm {
 		//console.log(this.getBuffer());
 		console.log("stoped audio0");
 		setTimeout(function() {stop_fn(masterSourceRef)}, fadeDuration);
-	}
+	}*/
 
+	/**
+	 * this function will create the the structure that holds all of the octaves and the piano
+	 * keys and their corresponding frequency 
+	 * @returns {Structure}
+	 */
 	initFreqs(){
 		let noteFreq = [];
 		for (let i=0; i< 9; i++) {
