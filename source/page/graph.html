@@ -1,0 +1,22 @@
+<html>
+  <head> 
+    <title>Graph</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
+    <script src="graph.js"></script>
+  </head> 
+   
+  <body>
+    <div id="all" style="width: 99%; height: 99%;">
+      <canvas id="myChart"></canvas>
+    </div>
+    <script type="text/javascript">
+      function main() {
+        var ctx = document.getElementById('myChart');
+        console.log(ctx);
+        var g = drawGraph(ctx, (x)=>x*Math.sin(x), 100, 6.28, true);
+      }
+      window.onload = main();
+    </script>
+  </body>
+</html>
