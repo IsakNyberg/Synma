@@ -3,25 +3,61 @@ var whiteCodes = [81, 87, 69, 82, 84, 89, 85];
 var whiteLabels = ["C", "D", "E", "F", "G", "A", "B"];
 var whiteKeys = ["q", "w", "e", "r", "t", "y", "u"];
 var blackKeys = ["2", "3", "e", "5", "6", "7", "u"];
-var whiteCounter = 5; 
+var keyIndex = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+var whiteCounter = 5;
 var serieCounter = 0;
 
 var playing = new Array(128);       //Booleans to manage sound playing
 for(var i=0; i<playing.length; i++)
-	playing[i] = false;
+playing[i] = false;
 
 var pianoSpawned = false;
+
+// [c#, 4]
+function setKeyColor(note, color) {
+	if(note[0].includes("#")){
+		document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = color;
+	} else {
+		var id = note[0] + note[1];
+		document.getElementById(id).style.backgroundColor = color;
+		var potentialLeft = document.getElementById(id+"L");
+		var potentialRight = document.getElementById(id+"R");
+		if(potentialLeft != null) 
+			potentialLeft.style.backgroundColor = color;
+		if(potentialRight != null) 
+			potentialRight.style.backgroundColor = color;
+	}
+}
+
+function resetKeyColor(note) {
+	if(note[0].includes("#")){
+		document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = "black";
+	} else {
+		var id = note[0] + note[1];
+		document.getElementById(id).style.backgroundColor = "white";
+		var potentialLeft = document.getElementById(id+"L");
+		var potentialRight = document.getElementById(id+"R");
+		if(potentialLeft != null) 
+			potentialLeft.style.backgroundColor = "white";
+		if(potentialRight != null) 
+			potentialRight.style.backgroundColor = "white";
+	}
+}
+
+var functionGraph = null;
 document.getElementById("functionButton").onclick = function() {
 	if(!pianoSpawned){
 		createPiano();
 		pianoSpawned = !pianoSpawned;
 	}
 	var ctx = document.getElementById('waveformGraph');
-	var str_fn = getFunction();
-	var fn = parser.parse(str_fn);
+	var fn = getParsedFunction();
 	var numPoints = 100;
 	var maxX = 6.2831853072;
-	var g = drawGraph(ctx, fn, numPoints, maxX, true);
+	if (functionGraph) {
+		functionGraph.destroy();
+	}
+	functionGraph = drawGraph(ctx, fn, numPoints, maxX, true);
 };
 
 /* Creating keys and their event listeners */
@@ -33,13 +69,13 @@ function addEventListeners(key, extra){
 		mouseDown(key)
 	};
 	document.getElementById(id).onmouseup = function() {
-	  mouseUp(key)
+		mouseUp(key)
 	};
 	document.getElementById(id).onmouseenter = function() {
 	  mouseEnter(key)
 	};
 	document.getElementById(id).onmouseleave = function() {
-	  mouseLeave(key)
+		mouseLeave(key)
 	};
 }
 
@@ -99,30 +135,48 @@ function coveredWhite (id) {
 /* Functions to create piano with correct layout and it's eventlistners */   
 var timer;
 function createPiano(){
-	console.log("kors")
-	var commands = createWithNbrOfOctaves(6); 
-	timer = setInterval(startAnimation, 20);
+	createWithNbrOfOctaves(6); 
+	startAnimation(0);
 }
 
-function startAnimation(){
-	console.log("tick " + i);
-	result[i++]();
-	if(i == result.length){
-		clearInterval(timer);
-		placeMarkers(position);
-	}
-}
-
-var result = [];
-var i = 0;
+var buildAnimation = [];
 function createWithNbrOfOctaves(nbr){
-	result.push(white);    result.push(both);    result.push(doubleWhite);    result.push(both);    result.push(coveredWhite);    result.push(both);    result.push(doubleWhite);    result.push(both);    result.push(coveredWhite);    result.push(both);
+	buildAnimation.push(white);
+	buildAnimation.push(both);
+	buildAnimation.push(doubleWhite);
+	buildAnimation.push(both);
+	buildAnimation.push(coveredWhite);
+	buildAnimation.push(both);
+	buildAnimation.push(doubleWhite);
+	buildAnimation.push(both);
+	buildAnimation.push(coveredWhite);
+	buildAnimation.push(both);
 	for(var i=0; i<nbr; i++){
-		result.push(coveredWhite); result.push(both); result.push(doubleWhite); result.push(both); result.push(coveredWhite); result.push(both); result.push(doubleWhite); result.push(both); result.push(coveredWhite); result.push(both);
+		buildAnimation.push(coveredWhite);
+		buildAnimation.push(both);
+		buildAnimation.push(doubleWhite);
+		buildAnimation.push(both);
+		buildAnimation.push(coveredWhite);
+		buildAnimation.push(both);
+		buildAnimation.push(doubleWhite);
+		buildAnimation.push(both);
+		buildAnimation.push(coveredWhite);
+		buildAnimation.push(both);
 	}
-	result.push(coveredWhite);   result.push(both);     result.push(doubleWhite);
+	buildAnimation.push(coveredWhite);
+	buildAnimation.push(both);
+	buildAnimation.push(doubleWhite);
 }
 
+function startAnimation(i){
+	if(i >= buildAnimation.length){
+		placeMarkers(position);
+		return;
+	}
+	buildAnimation[i]();
+	i += 1;
+	setTimeout(()=>{startAnimation(i)}, 20);
+}
 
 /* Handles mouse clicks and hover */
 function mouseEnter(key){
@@ -160,8 +214,7 @@ function mouseLeave(key){
 function mouseUp(key){
 	if(key[0].includes("#")){
 		document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "lightgrey";
-	}
-	else{
+	} else {
 		var id = key[0] + key[1];
 		document.getElementById(id).style.backgroundColor = "lightgrey";
 		var potentialLeft = document.getElementById(id+"L");
@@ -174,59 +227,39 @@ function mouseUp(key){
 	stopNote(key);
 }
 
-function mouseDown(key){
-	if(key[0].includes("#")){
-		document.getElementById(key[0].charAt(0) + key[1] + "#").style.backgroundColor = "grey";
+function mouseDown(note){
+	console.log(playing);
+	if (!playing[noteToKeyIndex(note)]) {
+		setKeyColor(note, "darkgrey");
+		startNote(note);
 	}
-	else{
-		var id = key[0] + key[1];
-		document.getElementById(id).style.backgroundColor = "grey";
-		var potentialLeft = document.getElementById(id+"L");
-		var potentialRight = document.getElementById(id+"R");
-		if(potentialLeft != null) 
-			document.getElementById(id+"L").style.backgroundColor = "grey";
-		if(potentialRight != null) 
-			document.getElementById(id+"R").style.backgroundColor = "grey";
-	}
-
-	startNote(key);
-
-
-
-	//Do not touch below
-
 }
 
 /* Key handler */ 
 document.addEventListener('keydown', pressedKey);
 document.addEventListener('keyup', releasedKey);
 function releasedKey(pressedKey){
-	var note = keyCodeToTone(pressedKey.keyCode);
+	console.log(123);
+	var note = keyCodeToNote(pressedKey.keyCode);
 	if (note == undefined)
 		return;
+		console.log(321);
 	
-	if(playing[pressedKey.keyCode]){
-		playing[pressedKey.keyCode] = false;
-		if(note[0].includes("#")){
-			document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = "black";
-		}
-		else{
-			var id = note[0] + note[1];
-			document.getElementById(id).style.backgroundColor = "white";
-			var potentialLeft = document.getElementById(id+"L");
-			var potentialRight = document.getElementById(id+"R");
-			if(potentialLeft != null) 
-				document.getElementById(id+"L").style.backgroundColor = "white";
-			if(potentialRight != null) 
-				document.getElementById(id+"R").style.backgroundColor = "white";
-		}
+	if(playing[noteToKeyIndex(note)]){
+		console.log(333);
+	
+		playing[noteToKeyIndex(note)] = false;
 
+		resetKeyColor(note);
 		stopNote(note);
 	}
 }
+
+
 function pressedKey(pressedKey){
 	switch(pressedKey.keyCode) {
 		case 90: //z
+			testIt()
 			if(position > 1 && pianoSpawned){
 				removeMarkers(position);
 				placeMarkers(--position);
@@ -238,33 +271,22 @@ function pressedKey(pressedKey){
 				removeMarkers(position);
 				placeMarkers(++position);
 			}
-			break;        
+			break;  
 		default:
 	}
-	var note = keyCodeToTone(pressedKey.keyCode);
-	if (note == undefined)
+	var note = keyCodeToNote(pressedKey.keyCode);
+	if (note == undefined || getFunctionDiv() == document.activeElement)
 		return;
 
-	if(!playing[pressedKey.keyCode]){
-		playing[pressedKey.keyCode] = true;
-		if(note[0].includes("#")){
-			document.getElementById(note[0].charAt(0) + note[1] + "#").style.backgroundColor = "grey";
-		}
-		else{
-			var id = note[0] + note[1];
-			document.getElementById(id).style.backgroundColor = "grey";
-			var potentialLeft = document.getElementById(id+"L");
-			var potentialRight = document.getElementById(id+"R");
-			if(potentialLeft != null) 
-				document.getElementById(id+"L").style.backgroundColor = "grey";
-			if(potentialRight != null) 
-				document.getElementById(id+"R").style.backgroundColor = "grey";
-		}
+	if(!playing[noteToKeyIndex(note)]){
+		playing[noteToKeyIndex(note)] = true;
+		setKeyColor(note, "darkgray");
 
 		startNote(note);
 	}
 }
-function keyCodeToTone(keyCode){
+
+function keyCodeToNote(keyCode){
 	if(whiteCodes.indexOf(keyCode) != -1){
 		return [whiteLabels[whiteCodes.indexOf(keyCode)], position]; //Tryckt (vit)tangent på pianot med tangentbordet
 	}
@@ -272,12 +294,22 @@ function keyCodeToTone(keyCode){
 		return [whiteLabels[blackCodes.indexOf(keyCode)] + "#", position]; //Tryckt (svart)tangent på pianot med tangentbordet
 	}
 }
-
+function noteToKeyCode(note){
+	if (note[0].includes("#")) { // black or white
+		return blackCodes[whiteLabels.indexOf(note[0].charAt(0))];
+	} else {
+		return whiteCodes[whiteLabels.indexOf(note[0])];
+	}
+}
+function noteToKeyIndex(note) {
+	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
+}
 
 /* Letters on keys */
 var position = 1;
 function placeMarkers(x){
 	for(var i=0; i<whiteLabels.length; i++){
+		var div = document.createElement("div");
 		document.getElementById(whiteLabels[i] + x).innerHTML = "<div class=\"blackText\">" + whiteKeys[i] + "</div>";
 		if(i != 2 && i != 6)
 			document.getElementById(whiteLabels[i] + x + "#").innerHTML = "<div class=\"whiteText\">" + blackKeys[i] + "</div>";
