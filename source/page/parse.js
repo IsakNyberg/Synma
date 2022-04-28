@@ -32,6 +32,8 @@ class MathParser {
         this.#termsR["sin"] = new RegExp("^sin\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
         this.#terms["cos"] = "cos\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
         this.#termsR["cos"] = new RegExp("^cos\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["tan"] = "tan\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["tan"] = new RegExp("^tan\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
         this.#terms["ln"] = "ln\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
         this.#termsR["ln"] = new RegExp("^ln\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
         this.#terms["sgn"] = "sgn\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
@@ -92,6 +94,8 @@ class MathParser {
             return this.#parse_sin(expr);
         if(this.#termsR["cos"].test(expr))
             return this.#parse_cos(expr);
+        if(this.#termsR["tan"].test(expr))
+            return this.#parse_tan(expr);
         if(this.#termsR["ln"].test(expr))
             return this.#parse_ln(expr);
         if(this.#termsR["sgn"].test(expr))
@@ -164,6 +168,13 @@ class MathParser {
     #parse_cos(expr){
         var match = expr.match(this.#termsR["cos"]);
         return (dep) => Math.cos(this.#parse_expr(match[1])(dep));
+    }
+    /**
+    * @param {String} expr - Mathematical term to be parsed.
+    */
+     #parse_tan(expr){
+        var match = expr.match(this.#termsR["tan"]);
+        return (dep) => Math.tan(this.#parse_expr(match[1])(dep));
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
