@@ -21,28 +21,40 @@ function getLength() {
 	return document.getElementById("lengthInput").value;
 }
 
-/*
-function startNote(note){
-    //Insert management for starting a note
-    console.log(note + " startades");
+function keyCodeToNote(keyCode){
+	if(whiteCodes.indexOf(keyCode) != -1){
+		return [whiteLabels[whiteCodes.indexOf(keyCode)], position];
+	}
+	else if(blackCodes.indexOf(keyCode) != -1){
+		return [whiteLabels[blackCodes.indexOf(keyCode)] + "#", position];
+	}
 }
-function stopNote(note){
-    //Insert management for stopping a note
-    console.log(note + " stoppades");
-}*/
-
-function testIt(){
-	document.getElementById("functionInput").focus = true;
+function noteToKeyCode(note){
+	if (note[0].includes("#")) { // black or white
+		return blackCodes[whiteLabels.indexOf(note[0].charAt(0))];
+	} else {
+		return whiteCodes[whiteLabels.indexOf(note[0])];
+	}
+}
+function noteToKeyIndex(note) {
+	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
 }
 
-function testNot(){
-	document.getElementById("functionInput").focus = false;
-}
-
-document.getElementById("functionInput").addEventListener("input", testInput);
-var currentlyEditing = false;
-function testInput(){
-	currentlyEditing = true;
+var functionGraph = null;
+document.getElementById("functionButton").onclick = submitFunction;
+function submitFunction() {
+	if(!pianoSpawned){
+		createPiano();
+		pianoSpawned = !pianoSpawned;
+	}
+	var ctx = document.getElementById('waveformGraph');
+	var fn = getParsedFunction();
+	var numPoints = 100;
+	var maxX = 6.2831853072;
+	if (functionGraph) {
+		functionGraph.destroy();
+	}
+	functionGraph = drawGraph(ctx, fn, numPoints, maxX, true);
 }
 
 /* Manage start and stop of sound */
@@ -51,7 +63,6 @@ function startNote(note){
 	if(input != document.activeElement){
 		console.log(note + " startades");
 		var fn = getParsedFunction();
-		//console.log(note, fn);
 		wf.genBufferFromNote(fn, note);
 		wf.normalizeBuffer();
 		wf.fadeOutEnd(2000);
@@ -60,11 +71,64 @@ function startNote(note){
 }
 
 function stopNote(note){
-	//console.log(note + " stoppades");
+	console.log(note + " stoppades");
 	//wf.stopBuffer();
-	//console.log("end1", wf.masterSource.getChannelDate);
-	//console.log("end2", wf.audioContext.getOutputTimestamp());
 }
 
-//createPiano();
-//placeMarkers(position);
+/* Handles mouse clicks */
+function mouseUp(note){
+	setKeyColor(note, "lightgrey")
+	stopNote(note);
+}
+
+function mouseDown(note){
+	if (!playing[noteToKeyIndex(note)]) {
+		setKeyColor(note, "darkgrey");
+		startNote(note);
+	}
+}
+
+/* Key handler */ 
+document.addEventListener('keydown', pressedKey);
+document.addEventListener('keyup', releasedKey);
+function releasedKey(pressedKey){
+	var note = keyCodeToNote(pressedKey.keyCode);
+	if (note == undefined) {
+		return;
+	}
+	if(playing[noteToKeyIndex(note)]){
+		playing[noteToKeyIndex(note)] = false;
+
+		resetKeyColor(note);
+		stopNote(note);
+	}
+}
+
+
+function pressedKey(pressedKey){
+	switch(pressedKey.keyCode) {
+		case 90: //z
+			if(position > 1 && pianoSpawned){
+				removeMarkers(position);
+				placeMarkers(--position);
+			}
+			break;
+		case 88: //x
+			if(position < 7 && pianoSpawned){
+				removeMarkers(position);
+				placeMarkers(++position);
+			}
+			break;  
+		default:
+	}
+	var note = keyCodeToNote(pressedKey.keyCode);
+	if (note == undefined || getFunctionDiv() == document.activeElement)
+		return;
+	if(!playing[noteToKeyIndex(note)]){
+		playing[noteToKeyIndex(note)] = true;
+		setKeyColor(note, "darkgray");
+
+		startNote(note);
+	}
+}
+
