@@ -18,25 +18,32 @@ function makeDomain(numPoints, maxX) {
  Takes each entry in the domain and applies the function on it and returns and 
  array of theses values.
 */
-function makeRange(fn, domain){
-	var range = Array(domain.length);
+
+function makeRange(fn, domain) {
+  var range = Array(domain.length);
 	for (var i = 0; i < domain.length; i++) {
-		range[i] = fn(domain[i]);
+		range[i] = Math.min(1, Math.max(-1, fn(domain[i])));
 	}
 	return range;
 }
-
 /* 
  Takes each entry in the domain and applies the function on it and returns and 
  array of theses values. These values are capped at -1 and +1 so that values 
  above and below are not graphed.
 */
 function makeNormalizedRange(fn, domain){
-	var range = Array(domain.length);
+  var range = Array(domain.length);
 	for (var i = 0; i < domain.length; i++) {
-		range[i] = Math.min(1, Math.max(-1, fn(domain[i])));
+		range[i] = fn(domain[i]);
 	}
-	return range;
+  var max = 0;
+  for (let i = 0; i < range.length; i++) {
+    max = Math.max(max, Math.abs(range[i]));
+  }
+  for (let i = 0; i < range.length; i++) {
+    range[i] /= max;
+  }
+  return range;
 }
 /**
  * Receives domain and range from separate functions.
@@ -94,7 +101,7 @@ function drawDomainRange(ctx, domain, range){
       },
     }
   };
-  new Chart(ctx, config);
+  return new Chart(ctx, config);
 }
 
 /** 
@@ -106,5 +113,14 @@ function drawDomainRange(ctx, domain, range){
 */
 function drawGraph(ctx, fn, numPoints, maxX, normalize){
   var [domain, range] = makeDatapoints(fn, numPoints, maxX, normalize);
-  drawDomainRange(ctx, domain, range);
+  return drawDomainRange(ctx, domain, range);
 }
+
+/** 
+  Updates data in given graph 
+  @param fn is the function to graph
+  @param numPoints is the number of datapoints to be plotted
+  @param maxX is the largest value that x will take
+  @param normalize boolean that determines if the values are capped at ±1
+*/
+
