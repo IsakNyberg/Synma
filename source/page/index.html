@@ -31,31 +31,55 @@
     </p>
   </div>
 
-  <div class="submit">
-    <form action="form.php">
-      <input type="text" name="function" id="functionInput"/>
-      <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
-    </form>
-  </div> 
+  <div class="flex-container">
+    <div class="flex-container-row">
+      <div class="flex-container-column1">
+        <div class="headLine">Graph</div>
+      <div class="submit">
+        <form action="form.php">
+          <input type="text" name="function" id="functionInput"  class="inputDesign"/>
+          <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
+        </form>
+      </div> 
+      <div class="graph-iframe">
+        <iframe src="graph.html" height: 300px; title="Draw graph" id="mainGraph"> </iframe>
+      </div>
+    </div>
+    <div class="flex-container-column2">
+      <div class="headLine">Envelope</div>
+      <div class="env-inputs">
+        <form action="form.php">
+          <input type="text" name="env-function" class="inputDesign" id="env-functionInput"/>
+          <input class="text-btn" type="button" name="Go"value="Go" id="env-functionButton"/>
+          <input class="function-btn" type="button" name="1" value="1" id="env1-functionButton"/>
+          <input class="function-btn" type="button" name="2" value="2" id="env2-functionButton"/>
+          <input class="function-btn" type="button" name="3" value="3" id="env3-functionButton"/>
+        </form>
+      </div>
+      
+      <div id="envelope">
+        <iframe src="envelope.js" id="envelopeGraph" width:1002px; height: 300px; title="Draw envelope"> </iframe>
+        
+        
+      </div>
+      
+      <div>
+        <bu class="function-btn" type="button" name="down" value="Go" id="env4-functionButton"/>
+      </div>
 
-  <div class="graph-iframe">
-    <h1>Graph</h1>
-    <iframe src="graph.html" width:1002px; height: 300px; title="Draw graph"> </iframe>
+
+    </div>
   </div>
-
+  </div>
   <div class="piano-container">
-
   <div id="piano"></div>
-  </div>
-
-   
-  <div>
-    <p> Move keys </p>
-    <span class="arrow-btn"> Z </span>
+  <div class="header">
+    <div>Move keys</div>
+    <div><span class="arrow-btn"> Z </span>
     <span class="move-p" > &#8592; To the left  To the right &#8594; </span>
-    <span class="arrow-btn"> X </span>
-    
+    <span class="arrow-btn"> X </span></div>
   </div> 
+  </div>
 
 
   

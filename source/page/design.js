@@ -94,7 +94,7 @@ function coveredWhite (id) {
 var timer;
 function createPiano(){
     console.log("körs")
-    var commands = createWithNbrOfOctaves(3); 
+    var commands = createWithNbrOfOctaves(6); 
 	timer = setInterval(startAnimation, 20);
 }
 
@@ -228,7 +228,7 @@ function pressedKey(pressedKey){
             }
             break;
         case 88: //x
-            if(position < 4 && pianoSpawned){
+            if(position < 7 && pianoSpawned){
                 removeMarkers(position);
                 placeMarkers(++position);
             }
@@ -284,4 +284,24 @@ function removeMarkers(x){
         if(i != 2 && i != 6)
             document.getElementById(whiteLabels[i] + x + "#").innerHTML = "";
     }
+}
+
+/* Submit buttons */
+var activeEnvelope = 1;
+var lastActiveEnvelope = activeEnvelope;
+document.getElementById("env1-functionButton").onclick = function() {
+	changeActiveEnvelope(1)
+};
+document.getElementById("env2-functionButton").onclick = function() {
+	changeActiveEnvelope(2)
+};
+document.getElementById("env3-functionButton").onclick = function() {
+	changeActiveEnvelope(3)
+};
+function changeActiveEnvelope(active){
+	activeEnvelope = active;
+	console.log("sett"+ "env" + lastActiveEnvelope + "-functionButton")
+	document.getElementById("env" + lastActiveEnvelope + "-functionButton").style.backgroundColor = "#008CBA";
+	document.getElementById("env" + activeEnvelope + "-functionButton").style.backgroundColor = "red";
+	lastActiveEnvelope = activeEnvelope
 }

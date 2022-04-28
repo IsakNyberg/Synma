@@ -1,40 +1,85 @@
 @charset "utf-8";
+body {
+    height: 100vh;
+}
+.flex-container {
+    display: flex;
+    height: 50%;
+}
+
+.flex-container-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.flex-container-column1 {
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+
+}
+.flex-container-column2 {
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+
+}
+
 
 /* Containers for the piano */
+.piano-container{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+    margin-bottom: 0px;
+    background-color:purple;
+    overflow: hidden;
+    width: 100%;
+  	height: 300px;
+}
+
 #piano {
 	border: solid 1px black;
 	background-color: lightgrey;
 	overflow: hidden;
-	width: 920px;
-	height: 300px;
-	margin: 49px auto ;
+    display: flex;
+    justify-content: flex-end;
+    white-space: nowrap;
+	width: 100%;
+	height: 200px;
+	margin: 29px auto 0;
   	vertical-align: middle;
 }
 .both {
-	width: 18px;
+	width: 20px;
 	height: 300px;
 	background-color: white;
 	float: left;
+}
+.header {
+    text-align: center;
 }
 
 /* WHITE key */
 .coveredWhite {
 	float: left;
-	width: 12px;
-	height: 300px;
+	width: 16px;
+	height: 200px;
 	background-color: white;
 }
 
 .white{
 	float: left;
-	width: 20px;
-	height: 300px;
+	width: 25px;
+	height: 200px;
 	background-color: white;
 	text-align: bottom;
 }
 .leftWhite {
-	width: 8px;
-	height: 140px;
+	width: 9px;
+	height: 90px;
 	background-color: white;
 	border-right: solid 1px darkgray;
 	border-bottom-right-radius: 5px;
@@ -42,8 +87,8 @@
 	clear: both;
 }
 .rightWhite {
-	width: 8px;
-	height: 140px;
+	width: 9px;
+	height: 90px;
 	background-color: white;
 	border-left: solid 1px darkgray;
 	border-bottom-left-radius: 5px;
@@ -63,25 +108,25 @@
 /* Black key */
 .black {
 	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 10px;
 	background-color: black;
-	width: 18px;
-	height: 160px;
+	width: 26px;
+	height: 110px;
 	float: left;
+    justify-content: center;
 }
 
 /* Text on keys */
 .blackText {
 	position: relative;
-	top: 260px;
-	left: 0px;
-	font-size: 30px;
+	top: 150px;
+	font-size: 10px;
 }
 .whiteText {
 	position: relative;
-	top: 120px;
+	top: 50px;
 	left: 2px;
-	font-size: 25px;
+	font-size: 20px;
 	color: white;
 }
 
@@ -98,10 +143,35 @@
 		text-shadow: none;
 		margin-top: 10px;
     border-radius: 25px;
+	
 		}
+
+.text-btn{
+	background: #008CBA;
+	border: 4px;
+	border-color: white;
+	color: white;
+	border-style: outset;
+	border: none;
+	font: bold15px arial,sans-serif;
+	text-shadow: none;
+	margin-top: 10px;
+	border-radius: 25px;
+
+}
+
+
+
+.text-btn:hover{
+		cursor: pointer;
+		color: #008CBA;
+		background-color: white;
+}
 
 .function-btn:hover{
 	cursor: pointer;
+	color: #008CBA;
+	background-color: white;
 }
 
 
@@ -145,13 +215,39 @@
  
 }
 
-.piano-container{
-	position: absolute;
-	bottom: 0;
-	left: 0;
-    margin-bottom: 0px;
-    background-color:purple;
-    overflow: hidden;
-    width: 1000px;
-  	height: 400px;
+.graph-iframe {
+    height: 70%;
+}
+
+#mainGraph{
+    width: 90%;
+    height: 100%;
+}
+
+#envelopeGraph {
+    width: 90%;
+    height: 100%;
+}
+
+#envelope{
+    height: 250px;
+}
+
+.headLine {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.flex-envolope-container{
+    display: flex;
+}
+
+.inputDesign{
+    height: 30px;
+    width: 40%;
+    border: 2px black solid;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 20px;
+    margin: 0 0 10px;
 }
