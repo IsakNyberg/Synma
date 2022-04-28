@@ -1,4 +1,7 @@
 @charset "utf-8";
+body {
+    height: 100vh;
+}
 .flex-container {
     display: flex;
     height: 50%;
@@ -8,7 +11,7 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 500px;
+    height: 100%;
 }
 
 .flex-container-column1 {
@@ -33,7 +36,7 @@
     margin-bottom: 0px;
     background-color:purple;
     overflow: hidden;
-    width: 1920px;
+    width: 100%;
   	height: 300px;
 }
 
@@ -41,7 +44,10 @@
 	border: solid 1px black;
 	background-color: lightgrey;
 	overflow: hidden;
-	width: 1862px;
+    display: flex;
+    justify-content: flex-end;
+    white-space: nowrap;
+	width: 100%;
 	height: 200px;
 	margin: 29px auto 0;
   	vertical-align: middle;
@@ -102,25 +108,25 @@
 /* Black key */
 .black {
 	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 10px;
 	background-color: black;
 	width: 26px;
 	height: 110px;
 	float: left;
+    justify-content: center;
 }
 
 /* Text on keys */
 .blackText {
 	position: relative;
 	top: 150px;
-	left: 0px;
-	font-size: 30px;
+	font-size: 10px;
 }
 .whiteText {
 	position: relative;
 	top: 50px;
 	left: 2px;
-	font-size: 25px;
+	font-size: 20px;
 	color: white;
 }
 
