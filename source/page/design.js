@@ -44,6 +44,7 @@ function resetKeyColor(note) {
 	}
 }
 
+
 /* Creating keys and their event listeners */
 function addEventListeners(key, extra){
 	var id = key[0] + key[1] + extra;

@@ -53,8 +53,10 @@ function submitFunction() {
 	var maxX = 6.2831853072;
 	if (functionGraph) {
 		functionGraph.destroy();
-	}
-	functionGraph = drawGraph(ctx, fn, numPoints, maxX, true);
+	}	
+	var normalize = document.getElementById("normalizeCheckbox").checked;
+	console.info(normalize);
+	functionGraph = drawGraph(ctx, fn, numPoints, maxX, normalize);
 }
 
 /* Manage start and stop of sound */
@@ -64,7 +66,10 @@ function startNote(note){
 		console.log(note + " startades");
 		var fn = getParsedFunction();
 		wf.genBufferFromNote(fn, note);
-		wf.normalizeBuffer();
+		if (document.getElementById("normalizeCheckbox").checked) {
+			wf.normalizeBuffer();
+			console.info("normalizing buffer");
+		}
 		wf.fadeOutEnd(2000);
 		wf.playBuffer();
 	}
