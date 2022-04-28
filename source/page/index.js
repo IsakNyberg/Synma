@@ -32,7 +32,7 @@ function startNote(note){
 	var fn = parser.parse(str_fn);
 	//console.log(note, fn);
 	wf.genBufferFromNote(fn, note);
-	//wf.normalizeBuffer();
+	wf.normalizeBuffer();
 	wf.fadeOutEnd(2000);
 	wf.playBuffer();
 }

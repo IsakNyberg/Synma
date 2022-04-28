@@ -10,7 +10,7 @@
   <script src="graph.js"></script>
 </head>
 <body>
- 
+ <!---
   <div>
      <button class="corner-btn" >
        Explore our devices
@@ -29,7 +29,7 @@
       The user provides a mathematical function, and an interval, which creates a periodic waveform.
        The user can then play the waveform on the keyboard.
     </p>
-  </div>
+  </div>-->
 
   <div class="flex-container">
     <div class="flex-container-row">
@@ -41,8 +41,8 @@
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
         </form>
       </div> 
-      <div class="graph-iframe">
-        <iframe src="graph.html" height: 300px; title="Draw graph" id="mainGraph"> </iframe>
+      <div class="waveformGraphDiv">
+        <canvas id="waveformGraph" height="100%"></canvas>
       </div>
     </div>
     <div class="flex-container-column2">
