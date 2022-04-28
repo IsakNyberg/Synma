@@ -94,7 +94,7 @@ function drawDomainRange(ctx, domain, range){
       },
     }
   };
-  new Chart(ctx, config);
+  return new Chart(ctx, config);
 }
 
 /** 
@@ -106,5 +106,14 @@ function drawDomainRange(ctx, domain, range){
 */
 function drawGraph(ctx, fn, numPoints, maxX, normalize){
   var [domain, range] = makeDatapoints(fn, numPoints, maxX, normalize);
-  drawDomainRange(ctx, domain, range);
+  return drawDomainRange(ctx, domain, range);
 }
+
+/** 
+  Updates data in given graph 
+  @param fn is the function to graph
+  @param numPoints is the number of datapoints to be plotted
+  @param maxX is the largest value that x will take
+  @param normalize boolean that determines if the values are capped at ±1
+*/
+
