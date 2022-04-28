@@ -1,129 +1,152 @@
-
 /**
  * @class MathParser - used to create MathParser object. Capable of parsing strings in to mathematical functions represented
  * as lambda or arrow functions. Can only handle one dependent variable and the following mathematical expressions:
  * addition, subtraction, multiplication, division, sin, cos, natural log, power of.
 */
 class MathParser {
+    // pi unicode.
+    #pi = '\u03C0';
     // ******************************************************Regex matches********************************************************************** 
-    #isTerm; // Term consisting of "e", "pi", 0-9 and/or dependent variable.
-    #empty = /^$/; // Empty term/expression
-    #hasPi = /π|pi/; // Expression containing "pi"
-    #hasE = /e/; // Expression containing "e"
     #hasWhitespace = /\s/g; // Expression with whitespaces
-    #hasDep; // Expression containing dependent variable
-    #isAdd = /^(.*?)\+(.*)$/; // Addition-expression
-    #isSub = /^(.+?)\-(.*)$/; // Subtraction-expression
-    #isNeg = /^-(.+?)$/; 
-    #isMul = /^(.+)\*([^+-]+$)/; // Multiplication-expression
-    #isDiv = /^(.+)\/([^+-]+$)/; // Division-expression
-    #isSin = /^sin\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Sin-expr
-    #isCos = /^cos\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // Cos-expr
-    #isLn = /^ln\(([^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)$/; // ln-expr
-    #isExp = /^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})\^(\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)|[0-9etπpi]*[0-9etπpi]{1})$/; // Exponent-expr
-    #isPar = /^\((.*)\)$/; // Expression wholly in parentheses.
-    
+    #terms = [];
+    #termsR=[];
     /**
     * Creates a parser capable of parsing mathematical expressions with (only one) specified dependent variable.
     * @param {String} variable - The dependent variable, for example "x", only alphabetical characters.
     */
     constructor(variable) {
-        if(!new RegExp("^[a-zA-Z]+$").test(variable))
+        if(!new RegExp("^[a-zA-Z]+$").test(variable)) // Should guard against malicious injections aswell.
             throw new Error("The dependant variable may only consist of alphabetical characters.");
-        this.#isTerm = new RegExp("^[" + variable + "epi0-9]*$");
-        this.#hasDep = new RegExp(variable);
-        this.#isExp = new RegExp("^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|([0-9eπpi"+variable+"]*)([0-9eπpi"+variable+"]{1}))\\^(\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)|[0-9eπpi"+variable+"]*[0-9eπpi"+variable+"]{1})$");
+        /* The following builds the regular expressions to determine legal terms.
+        /* terms[x] matches the particular pattern within another pattern, and is used to build other expressions.
+        /* termsR[x] matches lone patterns with the start (^) and end ($) being set. Used for testing expressions. */
+        this.#terms["num"] = "[0-9]+";
+        this.#termsR["num"] = new RegExp("^[0-9]+$");
+        this.#terms["e"] = "e";
+        this.#termsR["e"] = new RegExp("^e$");
+        this.#terms["pi"] = "\u03C0";
+        this.#termsR["pi"] = new RegExp("^\u03c0$");
+        this.#terms["dep"] = variable;
+        this.#termsR["dep"] = new RegExp("^"+variable+"$");
+        this.#terms["sin"] = "sin\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["sin"] = new RegExp("^sin\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["cos"] = "cos\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["cos"] = new RegExp("^cos\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["tan"] = "tan\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["tan"] = new RegExp("^tan\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["ln"] = "ln\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["ln"] = new RegExp("^ln\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["sgn"] = "sgn\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["sgn"] = new RegExp("^sgn\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["abs"] = "abs\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["abs"] = new RegExp("^abs\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        this.#terms["par"] = "\\((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*\\)";
+        this.#termsR["par"] = new RegExp("^\\(((?:[^)(]+|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)$");
+        var term = "";
+        for (var i in this.#terms)
+            term += this.#terms[i] + "|";
+        term=term.substring(0,term.length-1);
+        this.#terms["neg"] = "-"+term;
+        this.#termsR["neg"] = new RegExp("^-("+term+")$");
+        this.#terms["exp"] = "(?:"+term+")\\^(?:"+term+")";
+        this.#termsR["exp"] = new RegExp("^("+term+")\\^("+term+")$");
+        term = term+"|"+this.#terms["exp"];
+        this.#terms["div"] = "(?:"+term+")/(?:"+term+")";
+        this.#termsR["div"] = new RegExp("^("+term+")/("+term+")$");
+        term = term+"|"+this.#terms["div"]+"|"+"(?:"+term+")(?:\\*|)(?:"+term+")";
+        this.#terms["mul"] = "(?:"+term+")(?:\\*|)(?:"+term+")";
+        this.#termsR["mul"] = new RegExp("^("+term+")(?:\\*|)("+term+")$");
+        term = term+"|"+this.#terms["mul"];
+        this.#terms["sub"] = term+"-(.+)$";
+        this.#termsR["sub"] = new RegExp("^("+term+")(?:-)(.+)$");
+        this.#terms["add"] = term+"\\+(.+)$";
+        this.#termsR["add"] = new RegExp("^("+term+")(?:\\+)(.+)$");
     }
     
     // ******************************************************Class methods********************************************************************** 
-    
     /**
     * Parses mathematical expression, and returns corresponding js-function.
     * @param {String} expr - Mathematical expression with only one dependent variable to be parsed.
     * @returns {Function} - Corresponding function
     */
     parse(expr) {
-        expr = expr.replace(this.#hasWhitespace,'');
+        expr = expr.replace(this.#hasWhitespace,''); // Remove all whitespaces for easier regex matching.
+        expr = expr.replace(/pi/g,this.#pi); // Replace all "pi" with \u03C0 for easier regex matching.
         return this.#parse_expr(expr);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_expr(expr){
-        if(this.#isTerm.test(expr))
-            return this.#parse_term(expr);
-        if(this.#isNeg.test(expr))
+        if(this.#termsR["e"].test(expr))
+            return (dep) => Math.E; 
+        if(this.#termsR["pi"].test(expr))
+            return (dep) => Math.PI; 
+        if(this.#termsR["dep"].test(expr))
+            return (dep) => parseInt(dep); 
+        if(this.#termsR["num"].test(expr))
+            return (dep) => parseInt(expr);
+        if(this.#termsR["neg"].test(expr))  
             return this.#parse_neg(expr);
-        if(this.#isSin.test(expr))
-            return this.#parse_sin(expr);
-        if(this.#isCos.test(expr))
-            return this.#parse_cos(expr);
-        if(this.#isLn.test(expr))
-            return this.#parse_ln(expr);
-        if(this.#isExp.test(expr))
-            return this.#parse_exp(expr);
-        if(this.#isAdd.test(expr))  
-            return this.#parse_add(expr);
-        if(this.#isSub.test(expr))
-            return this.#parse_sub(expr);
-        if(this.#isMul.test(expr))
-            return this.#parse_mul(expr);
-        if(this.#isDiv.test(expr))
-            return this.#parse_div(expr);
-        if(this.#isPar.test(expr))
+        if(this.#termsR["par"].test(expr))
 		    return this.#parse_par(expr);
+        if(this.#termsR["sin"].test(expr))
+            return this.#parse_sin(expr);
+        if(this.#termsR["cos"].test(expr))
+            return this.#parse_cos(expr);
+        if(this.#termsR["tan"].test(expr))
+            return this.#parse_tan(expr);
+        if(this.#termsR["ln"].test(expr))
+            return this.#parse_ln(expr);
+        if(this.#termsR["sgn"].test(expr))
+            return this.#parse_sgn(expr);
+        if(this.#termsR["abs"].test(expr))
+            return this.#parse_abs(expr);
+        if(this.#termsR["exp"].test(expr))
+            return this.#parse_exp(expr);
+        if(this.#termsR["mul"].test(expr))
+            return this.#parse_mul(expr);
+        if(this.#termsR["div"].test(expr))
+            return this.#parse_div(expr);
+        if(this.#termsR["sub"].test(expr))  
+            return this.#parse_sub(expr);
+        if(this.#termsR["add"].test(expr))  
+            return this.#parse_add(expr);
         return (dep) => {throw new Error("\"" + expr + "\" Not recognized.");}
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
-    #parse_term(expr){
-        if(this.#empty.test(expr))
-            return (dep) => 1;
-        var depOccurances = expr.match(this.#hasDep);
-        if(depOccurances != null)
-            return (dep) => depOccurances.length * dep * this.#parse_term(expr.replace(this.#hasDep,''))(dep);
-        var piOccurances = expr.match(this.#hasPi);
-        if(piOccurances != null)
-            return (dep) => piOccurances.length * Math.PI * this.#parse_term(expr.replace(this.#hasPi,''))(dep);
-        var eOccurances = expr.match(this.#hasE);
-        if(eOccurances != null)
-            return (dep) => eOccurances.length * Math.E * this.#parse_term(expr.replace(this.#hasE,''))(dep);
-        return (dep) => parseInt(expr);
-    }
-    /**
-    * @param {String} expr - Mathematical term to be parsed.
-    */
     #parse_add(expr){
-        var match = expr.match(this.#isAdd);
+        var match = expr.match(this.#termsR["add"]);
         return (dep) => this.#parse_expr(match[1])(dep) + this.#parse_expr(match[2])(dep);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_sub(expr){
-        var match = expr.match(this.#isSub);
+        var match = expr.match(this.#termsR["sub"]);
         return (dep) => this.#parse_expr(match[1])(dep) - this.#parse_expr(match[2])(dep);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_neg(expr){
-        var match = expr.match(this.#isNeg);
+        var match = expr.match(this.#termsR["neg"]);
         return (dep) => -1 * this.#parse_expr(match[1])(dep);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_mul(expr){
-        var match = expr.match(this.#isMul);
+        var match = expr.match(this.#termsR["mul"]);
         return (dep) => this.#parse_expr(match[1])(dep) * this.#parse_expr(match[2])(dep);
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_div(expr){
-        var match = expr.match(this.#isDiv);
+        var match = expr.match(this.#termsR["div"]);
         return (dep) => {
             var reciprocal = this.#parse_expr(match[2])(dep);
             if(reciprocal == 0)
@@ -136,32 +159,30 @@ class MathParser {
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_sin(expr){
-        var match = expr.substring(4,expr.length-1);
-        if(match === "")
-            return (dep) => {throw new Error("Nothing inside sin");}
-        //var match = expr.match(this.#isSin);
-        return (dep) => Math.sin(this.#parse_expr(match)(dep));
+        var match = expr.match(this.#termsR["sin"]);
+        return (dep) => Math.sin(this.#parse_expr(match[1])(dep));
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_cos(expr){
-        var match = expr.substring(4,expr.length-1);
-        if(match === "")
-            return (dep) => {throw new Error("Nothin inside cos");}
-        //var match = expr.match(this.#isSin);
-        return (dep) => Math.cos(this.#parse_expr(match)(dep));
+        var match = expr.match(this.#termsR["cos"]);
+        return (dep) => Math.cos(this.#parse_expr(match[1])(dep));
+    }
+    /**
+    * @param {String} expr - Mathematical term to be parsed.
+    */
+     #parse_tan(expr){
+        var match = expr.match(this.#termsR["tan"]);
+        return (dep) => Math.tan(this.#parse_expr(match[1])(dep));
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_ln(expr){
-        var match = expr.substring(3,expr.length-1);
-        if(match === "")
-            return (dep) => {throw new Error("Nothin inside ln");}
+        var match = expr.match(this.#termsR["ln"]);
         return (dep) => {
-            var log = Math.log(this.#parse_expr(match)(dep));
-            alert(log);
+            var log = Math.log(this.#parse_expr(match[1])(dep));
             if(isNaN(log))
                 throw new Error("Undefined operation.");
             else
@@ -171,17 +192,29 @@ class MathParser {
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
+    #parse_sgn(expr){
+        var match = expr.match(this.#termsR["sgn"]);
+        return (dep) => Math.sign(this.#parse_expr(match[1])(dep));
+    }
+    /**
+    * @param {String} expr - Mathematical term to be parsed.
+    */
+    #parse_abs(expr){
+        var match = expr.match(this.#termsR["abs"]);
+        return (dep) => Math.abs(this.#parse_expr(match[1])(dep));
+    }
+    /**
+    * @param {String} expr - Mathematical term to be parsed.
+    */
     #parse_exp(expr){
-        var match = expr.match(this.#isExp);
-        if(match[2] == undefined)
-            return (dep) => Math.pow(this.#parse_expr(match[1])(dep),this.#parse_expr(match[4])(dep));
-        return (dep) => this.#parse_expr(match[2])(dep) * Math.pow(this.#parse_expr(match[3])(dep),this.#parse_expr(match[4])(dep));
+        var match = expr.match(this.#termsR["exp"]);
+        return (dep) => Math.pow(this.#parse_expr(match[1])(dep),this.#parse_expr(match[2])(dep));
     }
     /**
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_par(expr){
-        var match = expr.match(this.#isPar);
+        var match = expr.match(this.#termsR["par"]);
         return (dep) => this.#parse_expr(match[1])(dep);
     }
 }
