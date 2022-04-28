@@ -7,7 +7,11 @@ path_lookup = {
     "/": "page/index.html",
     "/favicon.ico": "page/resources/favicon.ico",
     "/index.css": "page/index.css",
-    "/graph.html": "page/graph.html",
+    "/index.js": "page/index.js",
+    "/graph.html": "page/graph.js",
+    "/waveform.js": "page/waveform.js",
+    "/parse.js": "page/parse.js",
+    "/design.js": "page/design.js",
 }
 
 
@@ -16,7 +20,10 @@ type_lookup = {
     "/favicon.ico" : "image/x-icon",
     "/index.css": "text/css",
     "/graph.html": "text/html",
-    
+    "/index.js": "text/jscript",
+    "/waveform.js": "text/jscript",
+    "/parse.js": "text/jscript",
+    "/design.js": "text/jscript",
 }
 
 
@@ -53,11 +60,15 @@ if __name__ == "__main__":
         hostName = "localhost"
         serverPort = 80
 
-    webServer = HTTPServer((hostName, serverPort), MyServer)
-    print(f'Server started http://{hostName}:{serverPort}')
-
     try:
+        webServer = HTTPServer((hostName, serverPort), MyServer)
+        print(f'Server started http://{hostName}:{serverPort}')
         webServer.serve_forever()
+    except PermissionError:
+        print(f"PermissionError: Not allowed to host server on: {hostName}:{serverPort}")
+        print(f"Consider changing to a different hostname or port with:")
+        print(f"\tpython webserver.py *Hostname* *port*")
+        quit()
     except KeyboardInterrupt:
         print("Keyboard stop")
         pass
