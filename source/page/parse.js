@@ -78,12 +78,16 @@ class MathParser {
     * @param {String} expr - Mathematical term to be parsed.
     */
     #parse_expr(expr){
+        if(this.#termsR["sub"].test(expr))  
+            return this.#parse_sub(expr);
+        if(this.#termsR["add"].test(expr))  
+            return this.#parse_add(expr);   
         if(this.#termsR["e"].test(expr))
             return (dep) => Math.E; 
         if(this.#termsR["pi"].test(expr))
             return (dep) => Math.PI; 
         if(this.#termsR["dep"].test(expr))
-            return (dep) => parseInt(dep); 
+            return (dep) => parseFloat(dep); 
         if(this.#termsR["num"].test(expr))
             return (dep) => parseInt(expr);
         if(this.#termsR["neg"].test(expr))  
@@ -104,14 +108,10 @@ class MathParser {
             return this.#parse_abs(expr);
         if(this.#termsR["exp"].test(expr))
             return this.#parse_exp(expr);
-        if(this.#termsR["mul"].test(expr))
-            return this.#parse_mul(expr);
         if(this.#termsR["div"].test(expr))
             return this.#parse_div(expr);
-        if(this.#termsR["sub"].test(expr))  
-            return this.#parse_sub(expr);
-        if(this.#termsR["add"].test(expr))  
-            return this.#parse_add(expr);
+        if(this.#termsR["mul"].test(expr))
+            return this.#parse_mul(expr);
         return (dep) => {throw new Error("\"" + expr + "\" Not recognized.");}
     }
     /**
