@@ -183,22 +183,42 @@ function removeMarkers(x){
 	}
 }
 
-/* Submit buttons */
-var activeEnvelope = 1;
-var lastActiveEnvelope = activeEnvelope;
-document.getElementById("env1-functionButton").onclick = function() {
-	changeActiveEnvelope(1)
-};
-document.getElementById("env2-functionButton").onclick = function() {
-	changeActiveEnvelope(2)
-};
-document.getElementById("env3-functionButton").onclick = function() {
-	changeActiveEnvelope(3)
-};
-function changeActiveEnvelope(active){
-	activeEnvelope = active;
-	console.log("sett"+ "env" + lastActiveEnvelope + "-functionButton")
-	document.getElementById("env" + lastActiveEnvelope + "-functionButton").style.backgroundColor = "#008CBA";
-	document.getElementById("env" + activeEnvelope + "-functionButton").style.backgroundColor = "red";
-	lastActiveEnvelope = activeEnvelope
+
+function chosenTimezone(chosen){
+    var text;
+    switch(chosen){
+        case 1:
+            text = "Attack"
+            break;
+        case 2:
+            text = "Decay"
+            break;
+        case 3:
+            text = "Release";
+            break;
+        default:
+    }
+    document.getElementById("chosenTimezone").innerHTML = text;
 }
+
+function chosenEnvelope(chosen){
+    var text;
+    switch(chosen){
+        case 1:
+            text = "Timbre"
+            break;
+        case 2:
+            text = "Pitch"
+            break;
+        case 3:
+            text = "Amplitude";
+            break;
+        default:
+    }
+    document.getElementById("chosenEnvelope").innerHTML = text;
+	//Here call for update to choose correct graph
+}
+
+//Set default
+chosenTimezone(1);
+chosenEnvelope(1);

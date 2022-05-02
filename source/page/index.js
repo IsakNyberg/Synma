@@ -7,6 +7,12 @@ var isNormalized;
 function getFunctionDiv() {
 	return document.getElementById("functionInput");
 }
+function getFunction2Div() {
+	return document.getElementById("env-functionInput");
+}
+function getLengthDiv() {
+	return document.getElementById("env-timenput");
+}
 function getFunction() {
 	return document.getElementById("functionInput").value;
 }
@@ -131,8 +137,16 @@ function pressedKey(pressedKey){
 
 	}
 	var note = keyCodeToNote(pressedKey.keyCode);
-	if (note == undefined || getFunctionDiv() == document.activeElement)
+	if (note == undefined || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement || !pianoSpawned)
 		return;
 	startNote(note);
 }
 
+
+document.getElementById("env-functionButton").addEventListener("click", submitEnvelope);
+function submitEnvelope(){
+    var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
+    var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
+    var currentLength = document.getElementById("env-timeInput").value;
+    console.log(currentLength + currentEnvelope + currentTimezone); // These values to be used to update correct part of the graph when submitted
+}

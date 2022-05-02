@@ -40,7 +40,7 @@
         <div class="headLine">Graph</div>
       <div class="submit">
         <form action="javascript:submitFunction()">
-          <input type="text" name="function" id="functionInput"  class="inputDesign"/>
+          <input type="text" name="function" id="functionInput" placeholder="f(t)" class="inputDesign"/>
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
           <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
           <label>Normalize</label>
@@ -55,18 +55,32 @@
       <div class="headLine">Envelope</div>
       <div class="env-inputs">
         <form action="javascript:submitEnvelope()">
-          <input type="text" name="env-function" class="inputDesign" id="env-functionInput"/>
-          <input class="text-btn" type="button" name="Go"value="Go" id="env-functionButton"/>
-          <input class="function-btn" type="button" name="1" value="1" id="env1-functionButton"/>
-          <input class="function-btn" type="button" name="2" value="2" id="env2-functionButton"/>
-          <input class="function-btn" type="button" name="3" value="3" id="env3-functionButton"/>
-        </form>
+          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
+          <input type="text" name="env-time" placeholder="ms" class="inputDesign" id="env-timeInput"/>
+          <div class="dropdown">
+            <button id="chosenEnvelope" class="dropbtn"></button>
+            <div class="dropdown-content">
+              <a onclick="chosenEnvelope(1)">Timbre</a>
+              <a onclick="chosenEnvelope(2)">Pitch</a>
+              <a onclick="chosenEnvelope(3)">Amplitude</a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <button id="chosenTimezone" class="dropbtn"></button>
+            <div class="dropdown-content">
+              <a onclick="chosenTimezone(1)">Attack</a>
+              <a onclick="chosenTimezone(2)">Decay</a>
+              <a onclick="chosenTimezone(3)">Release</a>
+            </div>
+          </div>
+          <input class="text-btn" type="button" name="Go" value="Go" id="env-functionButton"/>
+          </form>
       </div>
       
       <div id="envelopeGraphDiv">
         <canvas id="envelopeGraph" height="100%"></canvas>
       </div>
-      
+      <div id="slider-range"></div>
       <div>
         <bu class="function-btn" type="button" name="down" value="Go" id="env4-functionButton"/>
       </div>
@@ -84,9 +98,6 @@
     <span class="arrow-btn"> X </span></div>
   </div> 
   </div>
-
-
-  
 	<script src="design.js">
 	</script>
 	<script src="index.js">
