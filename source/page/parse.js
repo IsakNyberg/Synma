@@ -75,6 +75,7 @@ class MathParser {
 		expr = expr.replace(/pi/g,this.#pi); // Replace all "pi" with \u03C0 for easier regex matching.
 		return this.#parse_expr(expr);
 	}
+
 	/**
 	* @param {String} expr - Mathematical term to be parsed.
 	*/
@@ -198,7 +199,6 @@ class MathParser {
 	* @param {String} expr - Mathematical term to be parsed.
 	*/
 	#parse_par(expr){
-		console.log(12341234, expr);
 		var match = expr.match(this.#termsR["par"]);
 		return (dep) => this.#parse_expr(match[1])(dep);
 	}
