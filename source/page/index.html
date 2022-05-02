@@ -4,10 +4,13 @@
   <meta charset="utf-8" />
   <title>Mjukvarusynt</title>
   <link href="index.css" rel="stylesheet"> 
+  <script src="frequencies.js"></script>
   <script src="waveform.js"></script>
   <script src="parse.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
   <script src="graph.js"></script>
+
+  
 </head>
 <body>
  <!---
@@ -36,7 +39,7 @@
       <div class="flex-container-column1">
         <div class="headLine">Graph</div>
       <div class="submit">
-        <form action="form.php">
+        <form action="javascript:submitFunction()">
           <input type="text" name="function" id="functionInput"  class="inputDesign"/>
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
           <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
@@ -51,7 +54,7 @@
     <div class="flex-container-column2">
       <div class="headLine">Envelope</div>
       <div class="env-inputs">
-        <form action="form.php">
+        <form action="javascript:submitEnvelope()">
           <input type="text" name="env-function" class="inputDesign" id="env-functionInput"/>
           <input class="text-btn" type="button" name="Go"value="Go" id="env-functionButton"/>
           <input class="function-btn" type="button" name="1" value="1" id="env1-functionButton"/>
@@ -60,10 +63,8 @@
         </form>
       </div>
       
-      <div id="envelope">
-        <iframe src="envelope.js" id="envelopeGraph" width:1002px; height: 300px; title="Draw envelope"> </iframe>
-        
-        
+      <div id="envelopeGraphDiv">
+        <canvas id="envelopeGraph" height="100%"></canvas>
       </div>
       
       <div>

@@ -1,6 +1,7 @@
 
-var wf = new WaveForm();
-var parser = new MathParser("t");
+const wf = new WaveForm();
+const parser = new MathParser("t");
+var isNormalized;
 
 /* GET input value, attach id to input field. If input field = input do ".value"; else if div do ".innerHTML"*/ 
 function getFunctionDiv() {
@@ -54,28 +55,33 @@ function submitFunction() {
 	if (functionGraph) {
 		functionGraph.destroy();
 	}	
-	var normalize = document.getElementById("normalizeCheckbox").checked;
-	console.info(normalize);
-	functionGraph = drawGraph(ctx, fn, numPoints, maxX, normalize);
+	isNormalized = document.getElementById("normalizeCheckbox").checked;
+	console.info(isNormalized);
+	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized);
 }
 
 /* Manage start and stop of sound */
 function startNote(note){
-	var input = document.getElementById("functionInput");
-	if(input != document.activeElement){
-		console.log(note + " startades");
-		var fn = getParsedFunction();
-		wf.genBufferFromNote(fn, note);
-		if (document.getElementById("normalizeCheckbox").checked) {
-			wf.normalizeBuffer();
-			console.info("normalizing buffer");
+	if (!playing[noteToKeyIndex(note)]) {
+		playing[noteToKeyIndex(note)]=true;
+		setKeyColor(note, "darkgrey");
+		var input = document.getElementById("functionInput");
+		if(input != document.activeElement){
+			console.log(note + " startades");
+			var fn = getParsedFunction();
+			wf.genBufferFromNote(fn, note);
+			if (isNormalized) {
+				wf.normalizeBuffer();
+				console.info("normalizing buffer");
+			}
+			wf.fadeOutEnd(2000);
+			wf.playBuffer();
 		}
-		wf.fadeOutEnd(2000);
-		wf.playBuffer();
 	}
 }
 
 function stopNote(note){
+	playing[noteToKeyIndex(note)] = false;
 	console.log(note + " stoppades");
 	//wf.stopBuffer();
 }
@@ -87,10 +93,7 @@ function mouseUp(note){
 }
 
 function mouseDown(note){
-	if (!playing[noteToKeyIndex(note)]) {
-		setKeyColor(note, "darkgrey");
-		startNote(note);
-	}
+	startNote(note)
 }
 
 /* Key handler */ 
@@ -125,15 +128,11 @@ function pressedKey(pressedKey){
 			}
 			break;  
 		default:
+
 	}
 	var note = keyCodeToNote(pressedKey.keyCode);
 	if (note == undefined || getFunctionDiv() == document.activeElement)
 		return;
-	if(!playing[noteToKeyIndex(note)]){
-		playing[noteToKeyIndex(note)] = true;
-		setKeyColor(note, "darkgray");
-
-		startNote(note);
-	}
+	startNote(note);
 }
 
