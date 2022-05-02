@@ -1,5 +1,6 @@
-
-const wf = new WaveForm();
+var audioContext = null;
+var wfArray = [];
+//const wf = new WaveForm();
 const parser = new MathParser("t");
 var isNormalized;
 
@@ -62,8 +63,13 @@ function submitFunction() {
 
 /* Manage start and stop of sound */
 function startNote(note){
+	if (audioContext == null) {
+		audioContext = new AudioContext({sampleRate: 44100});
+	}
+	const wf = new WaveForm(audioContext);
+	wfArray[note] = wf;
 	if (!playing[noteToKeyIndex(note)]) {
-		playing[noteToKeyIndex(note)]=true;
+		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
 		if(input != document.activeElement){
@@ -83,7 +89,7 @@ function startNote(note){
 function stopNote(note){
 	playing[noteToKeyIndex(note)] = false;
 	console.log(note + " stoppades");
-	//wf.stopBuffer();
+	wfArray[note].stopBuffer();
 }
 
 /* Handles mouse clicks */
