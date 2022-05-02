@@ -57,7 +57,7 @@ function submitFunction() {
 	}	
 	isNormalized = document.getElementById("normalizeCheckbox").checked;
 	console.info(isNormalized);
-	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized);
+	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized, 'rgb(0, 0, 0, 1)');
 }
 
 /* Manage start and stop of sound */
