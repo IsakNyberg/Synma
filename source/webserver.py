@@ -12,6 +12,7 @@ path_lookup = {
     "/waveform.js": "page/waveform.js",
     "/parse.js": "page/parse.js",
     "/design.js": "page/design.js",
+    "/graph.js": "page/graph.js",
 }
 
 
@@ -24,6 +25,7 @@ type_lookup = {
     "/waveform.js": "text/jscript",
     "/parse.js": "text/jscript",
     "/design.js": "text/jscript",
+    "/graph.js": "text/jscript",
 }
 
 
