@@ -208,10 +208,10 @@ body {
 .move-p{
 	display :inline-block;
 	vertical-align: top;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  padding-left: 6px;
-  padding-right: 6px;
+  	padding-top: 6px;
+  	padding-bottom: 6px;
+  	padding-left: 6px;
+  	padding-right: 6px;
  
 }
 
@@ -223,10 +223,8 @@ body {
 	padding: 10px;
 }
 
-#mainGraph{
-	width: 90%;
-	height: 100%;
-
+#envelopeGraphDiv{
+    height: 250px;
 }
 
 #envelopeGraph {
@@ -236,9 +234,6 @@ body {
     border-radius: 10px;
 }
 
-#envelope{
-    height: 250px;
-}
 
 .headLine {
     font-size: 30px;
