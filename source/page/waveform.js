@@ -1,23 +1,21 @@
-
-
 /**
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor() {
-		this.audioContext = new AudioContext({sampleRate: 44100});
+	constructor(audioContext) {
+		this.audioContext = audioContext;
 		this.samplingBuffer = this.audioContext.createBuffer(
 			1, 
-			this.audioContext.sampleRate, 
-			this.audioContext.sampleRate
-		)
+			this.audioContext.sampleRate * 1, 
+			this.audioContext.sampleRate,
+		);
 		this.masterSource = null;
-		this.masterSourceStartTime = 0;
+		this.bufferGain = null;
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
-		this.analyser = this.audioContext.createAnalyser();
-		this.analyser.fftSize = 2048;
-		this.noteFreq= initFreqs();
+		//this.analyser = this.audioContext.createAnalyser();
+		//this.analyser.fftSize = 2048;
+		this.noteFreq = initFreqs();
 	}
 	/**
 	 * this function will set the volume for primary gain controll
@@ -41,6 +39,7 @@ class WaveForm{
 	 * it's only one period long, the period depends on what we have specified
 	 */
 	fillBuffer(periodBuffer) {
+		this.channelData = this.samplingBuffer.getChannelData(0);
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] = periodBuffer[i % periodBuffer.length];
 		}
@@ -103,59 +102,31 @@ class WaveForm{
 			ratio -= step; 
 		}
 	}
-
-	/*
-	fadeOutFrom(index, numSamples) {
-		let ratio = 1;
-		let step = 1/numSamples;
-		for (let i = index; i < index + numSamples; i++) {
-			this.channelData[i] *= ratio;
-			ratio -= step;
-		}
-		for (let i = index + numSamples; i < this.audioContext.sampleRate; i++) {
-			this.channelData[i] = 0;
-		}
-	}*/
 	
 	/**
 	 * this function will play the buffer we have created
 	 */
 	playBuffer() {
-		let bufferGain = this.audioContext.createGain();
-		bufferGain.gain.setValueAtTime(1.0, 0);
-		//bufferGain.gain.exponentialRampToValueAtTime(0., this.audioContext.currentTime + 1)
-		
-		
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.analyser);
-		this.masterSource.connect(bufferGain)
-		this.analyser.connect(this.primaryGainControl);
-		this.masterSource.start();
-		this.masterSourceStartTime = this.audioContext.currentTime;
-		this.primaryGainControl.connect(this.audioContext.destination);
+		this.bufferGain = this.audioContext.createGain();
+		this.bufferGain.gain.setValueAtTime(1.0, 0);
 
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.loop = true;
+		this.masterSource.buffer = this.samplingBuffer;
+		this.masterSource.connect(this.bufferGain);
+		this.bufferGain.connect(this.primaryGainControl);
+		//this.masterSource.connect(this.analyser);
+		//this.analyser.connect(this.primaryGainControl);
 		
+		this.primaryGainControl.connect(this.audioContext.destination);
+		this.masterSource.start();
 	}
-	/*
+
+	
 	stopBuffer() {
-		let masterSourceRef = this.masterSource;
-		let duration = this.audioContext.currentTime - this.masterSourceStartTime;
-		let currentIndex = duration * this.audioContext.sampleRate;
-		let fadeDuration = 100;
-		let index = (fadeDuration/1000) * this.audioContext.sampleRate;
-		this.fadeOutFrom(currentIndex, index);
-		console.log(index, (currentIndex), duration);
-		let stop_fn = (source) => {
-			console.log(source);
-			if (source != null) {
-				source.stop();
-				console.log("stoped audio1");
-			}
-			console.log("stoped audio2");
-		};
-		//console.log(this.getBuffer());
-		console.log("stoped audio0");
-		setTimeout(function() {stop_fn(masterSourceRef)}, fadeDuration);
-	}*/
+		//this.masterSource.stop();
+		this.masterSource.loop = false;
+		this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+		return;
+	}
 }
