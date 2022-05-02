@@ -50,7 +50,7 @@ class MathParser {
         this.#termsR["neg"] = new RegExp("^-("+term+")$");
         this.#terms["exp"] = "(?:"+term+")\\^(?:"+term+")";
         this.#termsR["exp"] = new RegExp("^("+term+")\\^("+term+")$");
-        term = term+"|"+this.#terms["exp"];
+        term = term+"|"+this.#terms["exp"]+"|(?:"+term+")(?:)(?:"+term+")";
         this.#terms["div"] = "(?:"+term+")/(?:"+term+")";
         this.#termsR["div"] = new RegExp("^("+term+")/("+term+")$");
         term = term+"|"+this.#terms["div"]+"|"+"(?:"+term+")(?:\\*|)(?:"+term+")";
