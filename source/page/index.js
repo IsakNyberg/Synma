@@ -1,5 +1,6 @@
 var audioContext = null;
 var wfArray = [];
+var precomputedNotes = [];
 var mouseClickKey = -1;
 var playing = new Array(128);       //Booleans to manage sound playing
 for(var i=0; i<playing.length; i++) {
@@ -66,18 +67,24 @@ function submitFunction() {
 	var maxX = 6.2831853072;
 	if (functionGraph) {
 		functionGraph.destroy();
-	}	
+	}
 	isNormalized = document.getElementById("normalizeCheckbox").checked;
 	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized, 'rgb(0, 0, 0, 1)');
+	// precompute the soud buffers
+	if (audioContext == null) {
+		audioContext = new AudioContext({sampleRate: 44100});
+	}
+	alert("Precomputing notes");
+	precomputedNotes = precomputeAllNotes(audioContext, fn, maxX);
+	alert("Done");
 }
 
 /* Manage start and stop of sound */
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
-		if (audioContext == null) {
-			audioContext = new AudioContext({sampleRate: 44100});
-		}
-		const wf = new WaveForm(audioContext);
+		let samplingBuffer = getPrecompute(precomputedNotes, note);
+		console.log(samplingBuffer);
+		const wf = new WaveForm(audioContext, samplingBuffer);
 		wfArray[note] = wf;		
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
@@ -85,7 +92,6 @@ function startNote(note){
 		if(input != document.activeElement){
 			console.log(note + " startades");
 			var fn = getParsedFunction();
-			wf.genBufferFromNote(fn, note);
 			if (isNormalized) {
 				wf.normalizeBuffer();
 			}

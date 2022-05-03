@@ -1,9 +1,9 @@
 /**
-	 * this function will create the the structure that holds all of the octaves and the piano
-	 * keys and their corresponding frequency 
-	 * @returns {Structure}
-	 */
-  function initFreqs() {
+ * this function will create the the structure that holds all of the octaves and the piano
+ * keys and their corresponding frequency 
+ * @returns {Structure}
+ */
+function initFreqs() {
   let noteFreq = [];
   for (let i=0; i< 9; i++) {
     noteFreq[i] = [];
