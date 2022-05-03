@@ -37,6 +37,7 @@ class WaveForm{
 	 * it's only one period long, the period depends on what we have specified
 	 */
 	fillBuffer(periodBuffer) {
+		this.channelData = this.samplingBuffer.getChannelData(0)
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] = periodBuffer[i % periodBuffer.length];
 		}
@@ -128,6 +129,7 @@ class WaveForm{
 		this.bufferGain.gain.setValueAtTime(0.1, 0);
 
 		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);
@@ -141,25 +143,9 @@ class WaveForm{
 
 		
 	}
-	/*
+	
 	stopBuffer() {
-		let masterSourceRef = this.masterSource;
-		let duration = this.audioContext.currentTime - this.masterSourceStartTime;
-		let currentIndex = duration * this.audioContext.sampleRate;
-		let fadeDuration = 100;
-		let index = (fadeDuration/1000) * this.audioContext.sampleRate;
-		this.fadeOutFrom(currentIndex, index);
-		console.log(index, (currentIndex), duration);
-		let stop_fn = (source) => {
-			console.log(source);
-			if (source != null) {
-				source.stop();
-				console.log("stoped audio1");
-			}
-			console.log("stoped audio2");
-		};
-		//console.log(this.getBuffer());
-		console.log("stoped audio0");
-		setTimeout(function() {stop_fn(masterSourceRef)}, fadeDuration);
-	}*/
+		this.masterSource.loop = false;		
+		this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+	}
 }
