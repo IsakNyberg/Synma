@@ -4,16 +4,12 @@
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor() {
-		this.audioContext = new AudioContext({sampleRate: 44100});
-		this.samplingBuffer = this.audioContext.createBuffer(
-			1, 
-			this.audioContext.sampleRate, 
-			this.audioContext.sampleRate
-		)
+	constructor(audioContext) {
+		this.audioContext = audioContext;
+		this.samplingBuffer = null;
 		this.masterSource = null;
-		this.masterSourceStartTime = 0;
-		this.channelData = this.samplingBuffer.getChannelData(0);
+		this.bufferGain = null;
+		this.channelData = null;
 		this.primaryGainControl = this.audioContext.createGain();
 		this.analyser = this.audioContext.createAnalyser();
 		this.analyser.fftSize = 2048;
@@ -66,8 +62,14 @@ class WaveForm{
 	 */
 	generateBuffer(fn, freq, period) {
 		let bufferLength = this.audioContext.sampleRate / freq;
-		let step = period / bufferLength;
 		let buffer = new Float32Array(bufferLength);
+		this.samplingBuffer = this.audioContext.createBuffer(
+			1, 
+			buffer.length * 25,
+			this.audioContext.sampleRate,
+		);
+			
+		let step = period / bufferLength;
 		let x = 0;
 		for (let t = 0; t < bufferLength; t++) {
 			buffer[t] = fn(x);
@@ -100,7 +102,7 @@ class WaveForm{
 		let step = 1/numSamples;
 		for (let i = start; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] *= ratio;
-			ratio -= step; 
+			ratio -= step;
 		}
 	}
 
@@ -117,20 +119,22 @@ class WaveForm{
 		}
 	}*/
 	
+	
 	/**
 	 * this function will play the buffer we have created
 	 */
 	playBuffer() {
-		let bufferGain = this.audioContext.createGain();
-		bufferGain.gain.setValueAtTime(1.0, 0);
-		//bufferGain.gain.exponentialRampToValueAtTime(0., this.audioContext.currentTime + 1)
-		
-		
+		this.bufferGain = this.audioContext.createGain();
+		this.bufferGain.gain.setValueAtTime(0.1, 0);
+
 		this.masterSource = this.audioContext.createBufferSource();
 		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.analyser);
-		this.masterSource.connect(bufferGain)
-		this.analyser.connect(this.primaryGainControl);
+		this.masterSource.connect(this.bufferGain);
+		this.bufferGain.connect(this.primaryGainControl);
+		//this.masterSource.connect(this.analyser);  if an analyser is needed
+		//this.analyser.connect(this.primaryGainControl);
+		
+		this.primaryGainControl.connect(this.audioContext.destination);
 		this.masterSource.start();
 		this.masterSourceStartTime = this.audioContext.currentTime;
 		this.primaryGainControl.connect(this.audioContext.destination);

@@ -7,9 +7,6 @@ var keyIndex = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 var whiteCounter = 5;
 var serieCounter = 0;
 
-var playing = new Array(128);       //Booleans to manage sound playing
-for(var i=0; i<playing.length; i++)
-playing[i] = false;
 
 var pianoSpawned = false;
 

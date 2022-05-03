@@ -1,5 +1,11 @@
-
-const wf = new WaveForm();
+var audioContext = null;
+var wfArray = [];
+var mouseClickKey = -1;
+var playing = new Array(128);       //Booleans to manage sound playing
+for(var i=0; i<playing.length; i++) {
+	playing[i] = false;
+}
+//const wf = new WaveForm();
 const parser = new MathParser("t");
 var isNormalized;
 
@@ -62,14 +68,18 @@ function submitFunction() {
 		functionGraph.destroy();
 	}	
 	isNormalized = document.getElementById("normalizeCheckbox").checked;
-	console.info(isNormalized);
 	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized, 'rgb(0, 0, 0, 1)');
 }
 
 /* Manage start and stop of sound */
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
-		playing[noteToKeyIndex(note)]=true;
+		if (audioContext == null) {
+			audioContext = new AudioContext({sampleRate: 44100});
+		}
+		const wf = new WaveForm(audioContext);
+		wfArray[note] = wf;		
+		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
 		if(input != document.activeElement){
@@ -78,29 +88,31 @@ function startNote(note){
 			wf.genBufferFromNote(fn, note);
 			if (isNormalized) {
 				wf.normalizeBuffer();
-				console.info("normalizing buffer");
 			}
-			wf.fadeOutEnd(2000);
 			wf.playBuffer();
 		}
 	}
 }
 
 function stopNote(note){
-	playing[noteToKeyIndex(note)] = false;
-	console.log(note + " stoppades");
-	//wf.stopBuffer();
+	// everything must be in the if statement
+	if (playing[noteToKeyIndex(note)]) {
+		playing[noteToKeyIndex(note)] = false;
+		console.log(note + " stoppades");
+		wfArray[note].stopBuffer();
+	}
 }
 
 /* Handles mouse clicks */
-function mouseUp(note){
-	setKeyColor(note, "lightgrey")
-	stopNote(note);
-}
-
 function mouseDown(note){
+	mouseClickKey = note;
 	startNote(note)
 }
+function mouseUp(note){
+	setKeyColor(note, "lightgrey")
+	stopNote(mouseClickKey);
+}
+
 
 /* Key handler */ 
 document.addEventListener('keydown', pressedKey);
@@ -111,8 +123,6 @@ function releasedKey(pressedKey){
 		return;
 	}
 	if(playing[noteToKeyIndex(note)]){
-		playing[noteToKeyIndex(note)] = false;
-
 		resetKeyColor(note);
 		stopNote(note);
 	}
