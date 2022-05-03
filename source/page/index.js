@@ -22,9 +22,16 @@ function getLengthDiv() {
 function getFunction() {
 	return document.getElementById("functionInput").value;
 }
+function getEnvelope() {
+	return document.getElementById("env-functionInput").value;
+}
 function getParsedFunction() {
 	return parser.parse(getFunction());
 }
+function getParsedEnvelope() {
+	return parser.parse(getEnvelope());
+}
+
 
 function getMaxX() {
 	return document.getElementById("maxXInput").value;
@@ -157,6 +164,73 @@ document.getElementById("env-functionButton").addEventListener("click", submitEn
 function submitEnvelope(){
     var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
     var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
-    var currentLength = document.getElementById("env-timeInput").value;
-    console.log(currentLength + currentEnvelope + currentTimezone); // These values to be used to update correct part of the graph when submitted
+	var interval, chosenFunction;
+	var chosen;
+	switch(currentEnvelope){
+		case "Amplitude":
+			chosen = amplitude;
+			break;
+		case "Pitch":
+			chosen = pitch;
+			break;
+		case "Timbre":
+			chosen = timbre;
+			break;
+		default:
+			return;
+	}
+	switch(currentTimezone){
+		case "Attack":
+			interval = 3;
+			chosenFunction = 0;
+			break;
+		case "Decay":
+			interval = 4;
+			chosenFunction = 1;
+			break;
+		case "Release":
+			interval = 5;
+			chosenFunction = 2;
+			break;
+		default:
+			return;
+	}
+    var currentLength = parseInt(document.getElementById("env-timeInput").value);
+	console.log(currentLength + "  " + getEnvelope())
+	chosen[interval] = currentLength;
+	chosen[chosenFunction] = parser.parse(getEnvelope());
+	var isNormalized = document.getElementById("normalizeEnvelope").checked;
+	var isContinuous = document.getElementById("continuousCheckbox").checked;
+	chosen[6] = isNormalized;
+	chosen[7] = isContinuous;
+	graphEnvelope(currentEnvelope);
+}
+
+var amplitude = [parser.parse("t"), parser.parse("1"), parser.parse("1-t"), 10, 10, 10, true, true];
+var pitch = [parser.parse("1-t"), parser.parse("0"), parser.parse("t"), 10, 10, 30, true, true];
+var timbre = [parser.parse("1/2"), parser.parse("1/2"), parser.parse("1/2"), 10, 20, 30, true, true];
+var envelopeGraph = null;
+
+function graphEnvelope(chosenEnvelope){
+	var chosen;
+	switch(chosenEnvelope){
+		case "Amplitude":
+			chosen = amplitude;
+			break;
+		case "Pitch":
+			chosen = pitch;
+			break;
+		case "Timbre":
+			chosen = timbre;
+			break;
+		default:
+			return;
+	}
+	var ctx = document.getElementById('envelopeGraph');
+	if (envelopeGraph) {
+		envelopeGraph.destroy();
+	}	
+	var functions = [chosen[0], chosen[1], chosen[2]];
+	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
+	envelopeGraph = drawEnvelope(ctx, functions, 1000, limits,  chosen[6], chosen[7], 'rgb(0, 0, 0, 1)');
 }

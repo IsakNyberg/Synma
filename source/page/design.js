@@ -213,9 +213,8 @@ function chosenEnvelope(chosen){
         default:
     }
     document.getElementById("chosenEnvelope").innerHTML = text;
-	//Here call for update to choose correct graph
+	graphEnvelope(text);
 }
 
 //Set default
 chosenTimezone(1);
-chosenEnvelope(1);
