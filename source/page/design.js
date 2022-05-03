@@ -183,35 +183,74 @@ function removeMarkers(x){
 
 function chosenTimezone(chosen){
     var text;
+    var values;
+    var time;
     switch(chosen){
         case 1:
             text = "Attack"
+            time = 0;
             break;
         case 2:
             text = "Decay"
+            time = 1;
             break;
         case 3:
             text = "Release";
+            time = 2;
             break;
         default:
     }
     document.getElementById("chosenTimezone").innerHTML = text;
+    
+    
+    switch(document.getElementById("chosenEnvelope").innerHTML){
+        case "Timbre":
+			values = timbre;
+            break;
+        case "Pitch":
+			values = pitch;
+            break;
+        case "Amplitude":
+			values = amplitude;
+            break;
+        default:
+            return
+    }
+    document.getElementById("env-functionInput").value = values[time];
 }
 
 function chosenEnvelope(chosen){
     var text;
+    var values;
+    var time;
     switch(chosen){
         case 1:
             text = "Timbre"
+			values = timbre;
             break;
         case 2:
             text = "Pitch"
+			values = pitch;
             break;
         case 3:
             text = "Amplitude";
+			values = amplitude;
             break;
         default:
     }
+    switch(document.getElementById("chosenTimezone").innerHTML){
+        case "Attack":
+            time = 0;
+            break;
+        case "Decay":
+            time = 1;
+            break;
+        case "Release":
+            time = 2;
+            break;
+        default:
+    }
+    document.getElementById("env-functionInput").value = values[time];
     document.getElementById("chosenEnvelope").innerHTML = text;
 	graphEnvelope(text);
 }

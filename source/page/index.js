@@ -196,9 +196,8 @@ function submitEnvelope(){
 			return;
 	}
     var currentLength = parseInt(document.getElementById("env-timeInput").value);
-	console.log(currentLength + "  " + getEnvelope())
 	chosen[interval] = currentLength;
-	chosen[chosenFunction] = parser.parse(getEnvelope());
+	chosen[chosenFunction] = getEnvelope();
 	var isNormalized = document.getElementById("normalizeEnvelope").checked;
 	var isContinuous = document.getElementById("continuousCheckbox").checked;
 	chosen[6] = isNormalized;
@@ -206,9 +205,9 @@ function submitEnvelope(){
 	graphEnvelope(currentEnvelope);
 }
 
-var amplitude = [parser.parse("t"), parser.parse("1"), parser.parse("1-t"), 10, 10, 10, true, true];
-var pitch = [parser.parse("1-t"), parser.parse("0"), parser.parse("t"), 10, 10, 30, true, true];
-var timbre = [parser.parse("1/2"), parser.parse("1/2"), parser.parse("1/2"), 10, 20, 30, true, true];
+var amplitude = ["t", "1", "1-t", 10, 10, 10, true, true];
+var pitch = ["1-t", "0", "t", 10, 10, 30, true, true];
+var timbre = ["1/2", "1/2", "1/2", 10, 20, 30, true, true];
 var envelopeGraph = null;
 
 function graphEnvelope(chosenEnvelope){
@@ -230,7 +229,7 @@ function graphEnvelope(chosenEnvelope){
 	if (envelopeGraph) {
 		envelopeGraph.destroy();
 	}	
-	var functions = [chosen[0], chosen[1], chosen[2]];
+	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
 	envelopeGraph = drawEnvelope(ctx, functions, 1000, limits,  chosen[6], chosen[7], 'rgb(0, 0, 0, 1)');
 }

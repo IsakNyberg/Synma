@@ -235,6 +235,10 @@ body {
     border-radius: 10px;
 }
 
+#maxXInput {
+    width: 7%;
+}
+
 #slider-range {
 	width: 90%;
 }
