@@ -22,9 +22,40 @@
  * @param domain The set of values on the horizontal axis.
  * @returns The set of values which are the result of applying the function fn to the domain.
  */
-function makeRange(fn, domain) {
+function makeRangeContinous(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain) {
 	var range = Array(domain.length);
-	for (var i = 0; i < domain.length; i++) range[i] = Math.min(1, Math.max(-1, fn(domain[i])));
+   
+	for(let i = 0; i < domain.length; i++) {
+
+        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
+        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
+        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
+    }
+	return range;
+}
+
+function makeRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
+	var range = Array(domain.length);
+
+	let offset1 = 0;
+	let offset2 = 0;
+   
+	if(continous) {
+   
+		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
+		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
+
+		offset2 = Math.abs(fn2(maxX2 - maxX1) + offset1 - fn3(domain[0]));
+		if((fn2(maxX2) + offset1) < fn3(maxX2)) offset2 = -1 * offset2;
+	}
+
+	for(let i = 0; i < domain.length; i++) {
+
+        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
+        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i] - maxX1) + offset1));
+        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i] - maxX2) + offset2));
+    }
+
 	return range;
 }
 /**
@@ -35,14 +66,38 @@ function makeRange(fn, domain) {
  * @param domain The set of values on the horizontal axis.
  * @returns The normalized set of values which are the result of applying the function fn to the domain.
  */
-function makeNormalizedRange(fn, domain) {
+
+function makeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
+
 	var range = Array(domain.length);
+	let offset1 = 0;
+	let offset2 = 0;
+
+	if(continous) {
+   
+		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
+		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
+
+		offset2 = Math.abs(fn2(maxX2 - maxX1) + offset1 - fn3(domain[0]));
+		if((fn2(maxX2) + offset1) < fn3(maxX2)) offset2 = -1 * offset2;
+	}
+
+
+	for(let i = 0; i < domain.length; i++) {
+
+        if(domain[i] < maxX1) 							range[i] = fn1(domain[i]);
+        if(domain[i] > maxX1 && domain[i] <= maxX2) 	range[i] = fn2(domain[i]-maxX1) + offset1;
+        if(domain[i] > maxX2 && domain[i] <= maxX3) 	range[i] = fn3(domain[i]-maxX2) + offset2;
+    }
+
 	var max = 0;
-	for (var i = 0; i < domain.length; i++) range[i] = fn(domain[i]);
-	for (let i = 0; i < range.length; i++) max = Math.max(max, Math.abs(range[i]));
+	for (let i = 0; i < range.length; i++) {
+		max = Math.max(max, Math.abs(range[i]));
+	}
 	for (let i = 0; i < range.length; i++) range[i] /= max;
 	return range;
 }
+
 /**
  * Receives domain and range from separate functions.
  * Depending on if the client wishes the graph to be normalized, i.e within 
@@ -56,11 +111,11 @@ function makeNormalizedRange(fn, domain) {
  * @param normalize The boolean flag indicating whether to normalize or not.
  * @returns The domain and range of the function.
  */
-function makeDatapoints(fn, numPoints, maxX, normalize) {
-	var domain = makeDomain(numPoints, maxX);
+function makeDatapoints(functions, numPoints, maxValues, normalize, continous) {
+	var domain = makeDomain(numPoints, maxValues[2]);
 	var range;
-	if (normalize) range = makeNormalizedRange(fn, domain);
-	else range = makeRange(fn, domain);
+	if (normalize) range = makeNormalizedRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
+	else range = makeRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
 	return [domain, range];
 }
 /**
@@ -84,7 +139,7 @@ function drawDomainRange(ctx, domain, range, color) {
 		}]
 	};
 	// Configuration of chart
-  const config = {
+	const config = {
 		type: 'line',
 		data: data,
 		options: {
@@ -112,9 +167,9 @@ function drawDomainRange(ctx, domain, range, color) {
  * @param maxX is the largest value that x will take
  * @param normalize boolean that determines if the values are capped at ±1
  * @param color The color of the curve of the graph.
- * @returns The graph.
+ * @returns The graph.  
  */
-function drawGraph(ctx, fn, numPoints, maxX, normalize, color) {
-	var [domain, range] = makeDatapoints(fn, numPoints, maxX, normalize);
+function drawGraph(ctx, functions, numPoints, maxValues, normalize, continous, color) {
+	var [domain, range] = makeDatapoints(functions, numPoints, maxValues, normalize, continous);
 	return drawDomainRange(ctx, domain, range, color);
 }

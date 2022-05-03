@@ -1,0 +1,22 @@
+<html>
+  <head> 
+    <title>Graph</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
+    <script src="envelopeGraph.js"></script>
+  </head> 
+   
+  <body>
+    <div id="all" style="width: 99%; height: 99%;">
+      <canvas id="myChart"></canvas>s
+    </div>
+    <script type="text/javascript">
+      function main() {
+        var ctx = document.getElementById('myChart');
+       
+        var g = drawGraph(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 1000, [10, 20, 30], true, true, 'rgb(0, 0, 0, 1)');
+      }
+      window.onload = main();
+    </script>
+  </body>
+</html>
