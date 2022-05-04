@@ -93,12 +93,12 @@ function submitFunction() {
 	var ctx = document.getElementById('waveformGraph');
 	var fn = getParsedFunction();
 	var numPoints = 100;
-	var maxX = 6.2831853072;
-	if (functionGraph) {
-		functionGraph.destroy();
-	}
+	var maxX = getMaxX();
+	if (maxX == 0) { maxX = 6.2831853072; }
+	if (functionGraph) { functionGraph.destroy(); }
 	isNormalized = document.getElementById("normalizeCheckbox").checked;
 	functionGraph = drawGraph(ctx, fn, numPoints, maxX, isNormalized, 'rgb(0, 0, 0, 1)');
+	
 	// precompute the soud buffers
 	if (audioContext == null) {
 		audioContext = new AudioContext({sampleRate: 44100});

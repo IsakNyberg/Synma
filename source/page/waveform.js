@@ -9,50 +9,50 @@ class WaveForm{
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
-		//this.analyser = this.audioContext.createAnalyser();
-		//this.analyser.fftSize = 2048;
 	}
+
 	/**
-	 * this function will set the volume for primary gain controll
+	 * This function will set the volume for primary gain control.
 	 * @param {number} volume - take the volume to be set 
 	 */
 	setGain(volume) {
 		this.primaryGainControl.gain.setValueAtTime(volume, 0);
 	}
-
+	
 	/**
-	 * Getter for buffer
+	 * Getter for buffer.
 	 * @returns {Float32Array} - the buffer with sample points
 	 */
 	getBuffer() {
 		return this.channelData;
 	}
-
+	
+	/**
+	 * @param {AudioContext} audioContext The main audio context.
+	 * @param {function} fn The waveform function.
+	 * @param {Number} maxX the maxX for the function .
+	 * @param {Number} resolution the number of samples of the base waveform .
+	 * @returns {AudioBuffer} The buffer of the base waveform.
+	 */
 	static computeBase(audioContext, fn, maxX, resolution) {
-		// let baseFrequencyLength = this.audioContext.sampleRate / mult;
 		let baseFrequencyLength = resolution;
 		let samplingBuffer = audioContext.createBuffer(
-			1, 
+			1,
 			baseFrequencyLength,
-			audioContext.sampleRate,
+			audioContext.sampleRate
 		);
 		let channelData = samplingBuffer.getChannelData(0);
-		//console.time("precompute");
 		let step = maxX / baseFrequencyLength;
 		let x = 0;
 		for (let t = 0; t < baseFrequencyLength; t++) {
 			channelData[t] = fn(x);
 			x += step;
 		}
-		//console.timeEnd("precompute");
-
 		return samplingBuffer;
 	}
 	
-	
 	/**
-	 * we will find the max valye in our buffer and then divide all the values by it to normalize 
-	 * the values of the sampling in buffer
+	 * Normalize according to the peak amplitude of the buffer.
 	 */
 	normalizeBuffer() {
 		let max = 0;
@@ -63,59 +63,28 @@ class WaveForm{
 			this.channelData[i] /= max;
 		}
 	}	
-	
-	/**
-	 * Fades out the last part of the buffer 
-	 * @param {Number} numSamples 
-	 */
-	fadeOutEnd(numSamples) {
-		let start = this.samplingBuffer.length - numSamples;
-		let ratio = 1;
-		let step = 1/numSamples;
-		for (let i = start; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] *= ratio;
-			ratio -= step;
-		}
-	}
 
-	/*
-	fadeOutFrom(index, numSamples) {
-		let ratio = 1;
-		let step = 1/numSamples;
-		for (let i = index; i < index + numSamples; i++) {
-			this.channelData[i] *= ratio;
-			ratio -= step;
-		}
-		for (let i = index + numSamples; i < this.audioContext.sampleRate; i++) {
-			this.channelData[i] = 0;
-		}
-	}*/
-  
 	/**
-	 * this function will play the buffer we have created
+	 * Play the waveform at the given frequency.
+	 * @param {Number} freq The frequency to play.
 	 */
 	playBuffer(freq) {
-		
-		//this.bufferGain.gain.setValueAtTime(0.1, 0);
 		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);
-		//this.masterSource.connect(this.analyser);  if an analyser is needed
-		//this.analyser.connect(this.primaryGainControl);
-		
 		this.primaryGainControl.connect(this.audioContext.destination);
 		this.masterSource.start();
-		this.masterSourceStartTime = this.audioContext.currentTime;
-		this.primaryGainControl.connect(this.audioContext.destination);
-
 	}
 	
+	/**
+	 * Stop the waveform.
+	 *  @param {Number} releaseLen The length of the release in units of time.
+	 */
 	stopBuffer(releaseLen) {
-		//this.masterSource.loop = false;		
 		this.masterSource.stop(this.audioContext.currentTime + releaseLen);
-		//this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
 	}
 }
