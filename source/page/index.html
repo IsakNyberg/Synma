@@ -10,6 +10,7 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
   <script src="graph.js"></script>
   <script src="envelopeGraph.js"></script>
+  <script src="envelope.js"></script>
 
   
 </head>
@@ -57,8 +58,6 @@
       <div class="headLine">Envelope <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope"> <label>Normalize</label><input class="normalize-chkbox" type="checkbox" id="continuousCheckbox"><label>Continuous</label></div>
       <div class="env-inputs">
         <form action="javascript:submitEnvelope()">
-          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
-          <input type="text" name="env-time" placeholder="ms" class="inputDesign" id="env-timeInput"/>
           <div class="dropdown">
             <button id="chosenEnvelope" class="dropbtn">None</button>
             <div class="dropdown-content">
@@ -75,6 +74,8 @@
               <a onclick="chosenTimezone(3)">Release</a>
             </div>
           </div>
+          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
+          <input type="text" name="env-time" placeholder="ms" class="inputDesign" id="env-timeInput"/>
           <input class="text-btn" type="button" name="Go" value="Go" id="env-functionButton"/>
           </form>
       </div>

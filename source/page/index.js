@@ -1,4 +1,15 @@
-var audioContext = null;
+var ampEnvelope = new AmpEnvelope(
+	//standardvärden
+);
+var pitchEnvelope = new PitchEnvelope(
+	//standardvärden
+);
+var timbreEnvelope = new TimbreEnvelope(
+	//standardvärden
+);
+var releaseLen=0;
+
+var audioContext = new AudioContext({sampleRate: 44100});
 var wfArray = [];
 var mouseClickKey = -1;
 var playing = new Array(128);       //Booleans to manage sound playing
@@ -81,11 +92,10 @@ function submitFunction() {
 /* Manage start and stop of sound */
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
-		if (audioContext == null) {
-			audioContext = new AudioContext({sampleRate: 44100});
-		}
 		const wf = new WaveForm(audioContext);
 		wfArray[note] = wf;		
+		ampEnvelope.apply_attack(wf.bufferGain);
+		ampEnvelope.apply_decay(wf.bufferGain);
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
@@ -106,7 +116,9 @@ function stopNote(note){
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
 		console.log(note + " stoppades");
-		wfArray[note].stopBuffer();
+		ampEnvelope.apply_release(wfArray[note].bufferGain);
+		console.log(releaseLen);
+		wfArray[note].stopBuffer(releaseLen);
 	}
 }
 
@@ -203,6 +215,7 @@ function submitEnvelope(){
 	chosen[6] = isNormalized;
 	chosen[7] = isContinuous;
 	graphEnvelope(currentEnvelope);
+	
 }
 
 var amplitude = ["t", "1", "1-t", 10, 10, 10, true, true];
@@ -232,4 +245,23 @@ function graphEnvelope(chosenEnvelope){
 	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
 	envelopeGraph = drawEnvelope(ctx, functions, 1000, limits,  chosen[6], chosen[7], 'rgb(0, 0, 0, 1)');
+	createEnvelope(functions,chosen,chosenEnvelope);
+}
+function createEnvelope(functions,chosen,chosenEnvelope) {
+	console.log(chosen);
+	switch(chosenEnvelope){
+		case "Amplitude":
+			releaseLen=chosen[5];
+			ampEnvelope = new AmpEnvelope(functions[0],functions[1],functions[2],100,chosen[3],chosen[4],chosen[5],audioContext);
+			console.log("created ampEnv!");
+			break;
+		case "Pitch":
+			pitchEnvelope = new PitchEnvelope(functions[0],functions[1],functions[2],100,chosen[3],chosen[4],chosen[5],audioContext);
+			break;
+		case "Timbre":
+			timbreEnvelope = new TimbreEnvelope(functions[0],functions[1],functions[2],100,chosen[3],chosen[4],chosen[5],audioContext);
+			break;
+		default:
+			return;
+	}
 }

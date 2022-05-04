@@ -1,3 +1,4 @@
+
 /**
  * Takes a number of samples from a number interval using a function.
  * @param {Number} n - Number interval.
@@ -16,6 +17,7 @@
 }
 class Envelope {
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
+        console.log(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx)
         this.attackLen=attackLen;
         this.decayLen=decayLen;
         this.releaseLen=releaseLen;
