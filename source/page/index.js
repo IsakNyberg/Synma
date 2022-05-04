@@ -30,7 +30,10 @@ function getFunction2Div() {
 	return document.getElementById("env-functionInput");
 }
 function getLengthDiv() {
-	return document.getElementById("env-timenput");
+	return document.getElementById("env-timeInput");
+}
+function getMaxXDiv() {
+	return document.getElementById("maxXInput");
 }
 function getFunction() {
 	return document.getElementById("functionInput").value;
@@ -71,6 +74,18 @@ function noteToKeyCode(note){
 }
 function noteToKeyIndex(note) {
 	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
+}
+function keyIndexToNote(index) {
+    var key, octave;
+    if(index < 3){
+        key = index + 9;
+        octave = 0;
+    }
+    else {
+        key = (index - 3) % 12;
+        octave = Math.floor((index) / 12) + 1;
+    }
+    return[keyIndex[key], octave];
 }
 
 var amplitude = ["t", "1", "1-t", 1, 1, 1, true, true];
@@ -167,6 +182,14 @@ function releasedKey(pressedKey){
 	}
 }
 
+function turnOffAndReset(){
+    for(var i=0; i<playing.length; i++) {
+        if (playing[i]){
+            resetKeyColor(keyIndexToNote(i));
+            stopNote(keyIndexToNote(i));
+        }
+    }
+}
 
 function pressedKey(pressedKey){
 	switch(pressedKey.keyCode) {
@@ -174,19 +197,21 @@ function pressedKey(pressedKey){
 			if(position > 1 && pianoSpawned){
 				removeMarkers(position);
 				placeMarkers(--position);
+                turnOffAndReset();
 			}
 			break;
 		case 88: //x
 			if(position < 7 && pianoSpawned){
 				removeMarkers(position);
 				placeMarkers(++position);
+                turnOffAndReset();
 			}
 			break;  
 		default:
 
 	}
 	var note = keyCodeToNote(pressedKey.keyCode);
-	if (note == undefined || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement || !pianoSpawned)
+	if (note == undefined || getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement || !pianoSpawned)
 		return;
 	startNote(note);
 }
@@ -264,8 +289,8 @@ function graphEnvelope(chosenEnvelope){
 	}	
 	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
-	// drawEnvelope(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 100, [10, 20, 30], true, true, ['#0f0','#ff3','#f00'])
-	envelopeGraph = drawEnvelope(ctx, functions, 100, limits,  chosen[6], chosen[7], ['#0a0','#aa0','#a00']);
+	// drawEnvelope(ctx, [fn1, fn2, fn3], samples, [max1, max2, max3], cont, normal, ['#0f0','#ff3','#f00'])
+	envelopeGraph = drawEnvelope(ctx, functions, 100, limits,  chosen[6], chosen[7], ['#830','#d93','#387']);
 	createEnvelope(functions,chosen[3],chosen[4],chosen[5],chosenEnvelope);
 }
 function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {

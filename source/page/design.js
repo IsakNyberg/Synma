@@ -184,19 +184,22 @@ function removeMarkers(x){
 function chosenTimezone(chosen){
     var text;
     var values;
-    var time;
+    var time, length;
     switch(chosen){
         case 1:
             text = "Attack"
             time = 0;
+            length = 3;
             break;
         case 2:
             text = "Decay"
             time = 1;
+            length = 4;
             break;
         case 3:
             text = "Release";
             time = 2;
+            length = 5;
             break;
         default:
     }
@@ -217,12 +220,13 @@ function chosenTimezone(chosen){
             return
     }
     document.getElementById("env-functionInput").value = values[time];
+    document.getElementById("env-timeInput").value = values[length];
 }
 
 function chosenEnvelope(chosen){
     var text;
     var values;
-    var time;
+    var time, length;
     switch(chosen){
         case 1:
             text = "Timbre"
@@ -241,17 +245,21 @@ function chosenEnvelope(chosen){
     switch(document.getElementById("chosenTimezone").innerHTML){
         case "Attack":
             time = 0;
+            length = 3;
             break;
         case "Decay":
             time = 1;
+            length = 4;
             break;
         case "Release":
             time = 2;
+            length = 5;
             break;
         default:
     }
     document.getElementById("env-functionInput").value = values[time];
     document.getElementById("chosenEnvelope").innerHTML = text;
+    document.getElementById("env-timeInput").value = values[length];
 	graphEnvelope(text);
 }
 
