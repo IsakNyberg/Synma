@@ -1,34 +1,26 @@
-
-
 /**
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor() {
-		this.audioContext = new AudioContext({sampleRate: 44100});
-		this.samplingBuffer = this.audioContext.createBuffer(
-			1, 
-			this.audioContext.sampleRate, 
-			this.audioContext.sampleRate
-		)
+	constructor(audioContext, samplingBuffer) {
+		this.audioContext = audioContext;
+		this.samplingBuffer = samplingBuffer;
 		this.masterSource = null;
-		this.masterSourceStartTime = 0;
+		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
-		this.analyser = this.audioContext.createAnalyser();
-		this.analyser.fftSize = 2048;
-		this.noteFreq= initFreqs();
 	}
+
 	/**
-	 * this function will set the volume for primary gain controll
+	 * This function will set the volume for primary gain control.
 	 * @param {number} volume - take the volume to be set 
 	 */
 	setGain(volume) {
 		this.primaryGainControl.gain.setValueAtTime(volume, 0);
 	}
-
+	
 	/**
-	 * Getter for buffer
+	 * Getter for buffer.
 	 * @returns {Float32Array} - the buffer with sample points
 	 */
 	getBuffer() {
@@ -36,49 +28,31 @@ class WaveForm{
 	}
 	
 	/**
-	 * will fill the buffer completely with periodBuffer
-	 * @param {Float32Array} periodBuffer - this buffer contain the sampling points but 
-	 * it's only one period long, the period depends on what we have specified
+	 * @param {AudioContext} audioContext The main audio context.
+	 * @param {function} fn The waveform function.
+	 * @param {Number} maxX the maxX for the function .
+	 * @param {Number} resolution the number of samples of the base waveform .
+	 * @returns {AudioBuffer} The buffer of the base waveform.
 	 */
-	fillBuffer(periodBuffer) {
-		for (let i = 0; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] = periodBuffer[i % periodBuffer.length];
-		}
-	}
-	
-	/**
-	 * will create the complete buffer using the function and key to decide what frequency 
-	 * the function will be created at
-	 * ! NOTE: the period used currently is predefined to 2π
-	 * @param {Function} fn - the funciton to be sampled
-	 * @param {String} key - the piano key 
-	 */
-	genBufferFromNote(fn, key){
-		this.generateBuffer(fn,this.noteFreq[key[1]][key[0]],2*Math.PI)
-	}	
-	
-	/**
-	 * thus function will create the periodBuffer depending on the params below and will then
-	 * fill out the whole buffer
-	 * @param {Function} fn 
-	 * @param {Number} freq 
-	 * @param {Number} period 
-	 */
-	generateBuffer(fn, freq, period) {
-		let bufferLength = this.audioContext.sampleRate / freq;
-		let step = period / bufferLength;
-		let buffer = new Float32Array(bufferLength);
+	static computeBase(audioContext, fn, maxX, resolution) {
+		let baseFrequencyLength = resolution;
+		let samplingBuffer = audioContext.createBuffer(
+			1,
+			baseFrequencyLength,
+			audioContext.sampleRate
+		);
+		let channelData = samplingBuffer.getChannelData(0);
+		let step = maxX / baseFrequencyLength;
 		let x = 0;
-		for (let t = 0; t < bufferLength; t++) {
-			buffer[t] = fn(x);
+		for (let t = 0; t < baseFrequencyLength; t++) {
+			channelData[t] = fn(x);
 			x += step;
 		}
-		this.fillBuffer(buffer);
+		return samplingBuffer;
 	}
 	
 	/**
-	 * we will find the max valye in our buffer and then divide all the values by it to normalize 
-	 * the values of the sampling in buffer
+	 * Normalize according to the peak amplitude of the buffer.
 	 */
 	normalizeBuffer() {
 		let max = 0;
@@ -88,74 +62,29 @@ class WaveForm{
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] /= max;
 		}
-	}
+	}	
 
 	/**
-	 * Fades out the last part of the buffer 
-	 * @param {Number} numSamples 
+	 * Play the waveform at the given frequency.
+	 * @param {Number} freq The frequency to play.
 	 */
-	fadeOutEnd(numSamples) {
-		let start = this.samplingBuffer.length - numSamples;
-		let ratio = 1;
-		let step = 1/numSamples;
-		for (let i = start; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] *= ratio;
-			ratio -= step; 
-		}
+	playBuffer(freq) {
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		this.masterSource.loop = true;
+		this.masterSource.buffer = this.samplingBuffer;
+		this.masterSource.connect(this.bufferGain);
+		this.bufferGain.connect(this.primaryGainControl);
+		this.primaryGainControl.connect(this.audioContext.destination);
+		this.masterSource.start();
 	}
-
-	/*
-	fadeOutFrom(index, numSamples) {
-		let ratio = 1;
-		let step = 1/numSamples;
-		for (let i = index; i < index + numSamples; i++) {
-			this.channelData[i] *= ratio;
-			ratio -= step;
-		}
-		for (let i = index + numSamples; i < this.audioContext.sampleRate; i++) {
-			this.channelData[i] = 0;
-		}
-	}*/
 	
 	/**
-	 * this function will play the buffer we have created
+	 * Stop the waveform.
+	 *  @param {Number} releaseLen The length of the release in units of time.
 	 */
-	playBuffer() {
-		let bufferGain = this.audioContext.createGain();
-		bufferGain.gain.setValueAtTime(1.0, 0);
-		//bufferGain.gain.exponentialRampToValueAtTime(0., this.audioContext.currentTime + 1)
-		
-		
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.analyser);
-		this.masterSource.connect(bufferGain)
-		this.analyser.connect(this.primaryGainControl);
-		this.masterSource.start();
-		this.masterSourceStartTime = this.audioContext.currentTime;
-		this.primaryGainControl.connect(this.audioContext.destination);
-
-		
+	stopBuffer(releaseLen) {
+		this.masterSource.stop(this.audioContext.currentTime + releaseLen);
 	}
-	/*
-	stopBuffer() {
-		let masterSourceRef = this.masterSource;
-		let duration = this.audioContext.currentTime - this.masterSourceStartTime;
-		let currentIndex = duration * this.audioContext.sampleRate;
-		let fadeDuration = 100;
-		let index = (fadeDuration/1000) * this.audioContext.sampleRate;
-		this.fadeOutFrom(currentIndex, index);
-		console.log(index, (currentIndex), duration);
-		let stop_fn = (source) => {
-			console.log(source);
-			if (source != null) {
-				source.stop();
-				console.log("stoped audio1");
-			}
-			console.log("stoped audio2");
-		};
-		//console.log(this.getBuffer());
-		console.log("stoped audio0");
-		setTimeout(function() {stop_fn(masterSourceRef)}, fadeDuration);
-	}*/
 }

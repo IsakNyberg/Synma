@@ -7,9 +7,6 @@ var keyIndex = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 var whiteCounter = 5;
 var serieCounter = 0;
 
-var playing = new Array(128);       //Booleans to manage sound playing
-for(var i=0; i<playing.length; i++)
-playing[i] = false;
 
 var pianoSpawned = false;
 
@@ -57,7 +54,7 @@ function addEventListeners(key, extra){
 		mouseUp(key);
 	};
 	document.getElementById(id).onmouseenter = function() {
-	  setKeyColor(key, "lightgrey");
+		setKeyColor(key, "lightgrey");
 	};
 	document.getElementById(id).onmouseleave = function() {
 		resetKeyColor(key);
@@ -83,13 +80,11 @@ function both(){
 		var temp = [whiteLabels[6]  + "#", (serieCounter - 1)]
 		var temp2 = [whiteLabels[0], serieCounter];
 		addTripleEventListeners(temp, temp2);
-	}
-	else {
+	} else {
 		document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"both\"><div class=\"black\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "#" + "\"></div><div class=\"leftWhite\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "R" + "\"></div><div class=\"rightWhite\" id=\"" + whiteLabels[++whiteCounter] + serieCounter + "L" + "\"></div></div>");
 		var temp = [whiteLabels[whiteCounter - 1] + "#", serieCounter];
 		var temp2 = [whiteLabels[whiteCounter], serieCounter];
 		addTripleEventListeners(temp, temp2);
-		
 	} 
 }
 
@@ -160,7 +155,7 @@ function startAnimation(i){
 	}
 	buildAnimation[i]();
 	i += 1;
-	setTimeout(()=>{startAnimation(i)}, 20);
+	setTimeout(()=>{startAnimation(i)}, 8);
 }
 
 
@@ -183,22 +178,92 @@ function removeMarkers(x){
 	}
 }
 
-/* Submit buttons */
-var activeEnvelope = 1;
-var lastActiveEnvelope = activeEnvelope;
-document.getElementById("env1-functionButton").onclick = function() {
-	changeActiveEnvelope(1)
-};
-document.getElementById("env2-functionButton").onclick = function() {
-	changeActiveEnvelope(2)
-};
-document.getElementById("env3-functionButton").onclick = function() {
-	changeActiveEnvelope(3)
-};
-function changeActiveEnvelope(active){
-	activeEnvelope = active;
-	console.log("sett"+ "env" + lastActiveEnvelope + "-functionButton")
-	document.getElementById("env" + lastActiveEnvelope + "-functionButton").style.backgroundColor = "#008CBA";
-	document.getElementById("env" + activeEnvelope + "-functionButton").style.backgroundColor = "red";
-	lastActiveEnvelope = activeEnvelope
+
+function chosenTimezone(chosen){
+	var text;
+	var values;
+	var time, length;
+	switch(chosen){
+		case 1:
+			text = "Attack"
+			time = 0;
+			length = 3;
+			break;
+		case 2:
+			text = "Decay"
+			time = 1;
+			length = 4;
+			break;
+		case 3:
+			text = "Release";
+			time = 2;
+			length = 5;
+			break;
+		default:
+	}
+	document.getElementById("chosenTimezone").innerHTML = text;
+	
+	switch(document.getElementById("chosenEnvelope").innerHTML){
+		case "Timbre":
+			values = timbre;
+			break;
+		case "Pitch":
+			values = pitch;
+			break;
+		case "Amplitude":
+			values = amplitude;
+			break;
+		default:
+			return
+	}
+	document.getElementById("env-functionInput").value = values[time];
+	document.getElementById("env-timeInput").value = values[length];
 }
+
+function chosenEnvelope(chosen){
+		var text;
+		var values;
+		var time, length;
+		switch(chosen){
+				case 1:
+						text = "Timbre"
+			values = timbre;
+						break;
+				case 2:
+						text = "Pitch"
+			values = pitch;
+						break;
+				case 3:
+						text = "Amplitude";
+			values = amplitude;
+						break;
+				default:
+		}
+		switch(document.getElementById("chosenTimezone").innerHTML){
+				case "Attack":
+						time = 0;
+						length = 3;
+						break;
+				case "Decay":
+						time = 1;
+						length = 4;
+						break;
+				case "Release":
+						time = 2;
+						length = 5;
+						break;
+				default:
+		}
+
+		
+	document.getElementById("normalizeEnvelope").checked = values[6];
+	document.getElementById("continuousCheckbox").checked = values[7];
+		document.getElementById("env-functionInput").value = values[time];
+		document.getElementById("chosenEnvelope").innerHTML = text;
+		document.getElementById("env-timeInput").value = values[length];
+	graphEnvelope(text);
+}
+
+//Set default
+chosenTimezone(1);
+chosenEnvelope(3);
