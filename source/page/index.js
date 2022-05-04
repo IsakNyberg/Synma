@@ -84,6 +84,8 @@ function keyIndexToNote(index) {
     else {
         key = (index - 3) % 12;
         octave = Math.floor((index) / 12) + 1;
+        if(index%12<3)
+            octave--;
     }
     return[keyIndex[key], octave];
 }
@@ -195,16 +197,21 @@ function pressedKey(pressedKey){
 	switch(pressedKey.keyCode) {
 		case 90: //z
 			if(position > 1 && pianoSpawned){
-				removeMarkers(position);
-				placeMarkers(--position);
-                turnOffAndReset();
+                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
+                    removeMarkers(position);
+                    placeMarkers(--position);
+                    turnOffAndReset();                    
+                }
+
 			}
 			break;
 		case 88: //x
 			if(position < 7 && pianoSpawned){
-				removeMarkers(position);
-				placeMarkers(++position);
-                turnOffAndReset();
+                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){                
+				    removeMarkers(position);
+				    placeMarkers(++position);
+                    turnOffAndReset();
+                }
 			}
 			break;  
 		default:
