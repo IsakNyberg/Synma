@@ -107,28 +107,6 @@ function drawDomainRange(ctx, domain, range, color) {
 			}
 		}
 	};
-  /**
-   const config = {
-		data: data,
-		options: {
-			plugins: {
-				legend: {
-					display: false
-				}
-			},
-			scales: { 
-				x: {
-					display: false 
-				},
-				y: {
-					min: -1,
-					max: +1,
-					beginAtZero:false
-				}, 
-			}
-		}
-	};
-   */
 	return new Chart(ctx, config);
 }
 /** 

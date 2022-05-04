@@ -54,7 +54,7 @@ function addEventListeners(key, extra){
 		mouseUp(key);
 	};
 	document.getElementById(id).onmouseenter = function() {
-	  setKeyColor(key, "lightgrey");
+		setKeyColor(key, "lightgrey");
 	};
 	document.getElementById(id).onmouseleave = function() {
 		resetKeyColor(key);
@@ -80,13 +80,11 @@ function both(){
 		var temp = [whiteLabels[6]  + "#", (serieCounter - 1)]
 		var temp2 = [whiteLabels[0], serieCounter];
 		addTripleEventListeners(temp, temp2);
-	}
-	else {
+	} else {
 		document.getElementById("piano").insertAdjacentHTML("beforeend", "<div class=\"both\"><div class=\"black\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "#" + "\"></div><div class=\"leftWhite\" id=\"" + whiteLabels[whiteCounter]  + serieCounter + "R" + "\"></div><div class=\"rightWhite\" id=\"" + whiteLabels[++whiteCounter] + serieCounter + "L" + "\"></div></div>");
 		var temp = [whiteLabels[whiteCounter - 1] + "#", serieCounter];
 		var temp2 = [whiteLabels[whiteCounter], serieCounter];
 		addTripleEventListeners(temp, temp2);
-		
 	} 
 }
 
@@ -182,88 +180,87 @@ function removeMarkers(x){
 
 
 function chosenTimezone(chosen){
-    var text;
-    var values;
-    var time, length;
-    switch(chosen){
-        case 1:
-            text = "Attack"
-            time = 0;
-            length = 3;
-            break;
-        case 2:
-            text = "Decay"
-            time = 1;
-            length = 4;
-            break;
-        case 3:
-            text = "Release";
-            time = 2;
-            length = 5;
-            break;
-        default:
-    }
-    document.getElementById("chosenTimezone").innerHTML = text;
-    
-    
-    switch(document.getElementById("chosenEnvelope").innerHTML){
-        case "Timbre":
+	var text;
+	var values;
+	var time, length;
+	switch(chosen){
+		case 1:
+			text = "Attack"
+			time = 0;
+			length = 3;
+			break;
+		case 2:
+			text = "Decay"
+			time = 1;
+			length = 4;
+			break;
+		case 3:
+			text = "Release";
+			time = 2;
+			length = 5;
+			break;
+		default:
+	}
+	document.getElementById("chosenTimezone").innerHTML = text;
+	
+	switch(document.getElementById("chosenEnvelope").innerHTML){
+		case "Timbre":
 			values = timbre;
-            break;
-        case "Pitch":
+			break;
+		case "Pitch":
 			values = pitch;
-            break;
-        case "Amplitude":
+			break;
+		case "Amplitude":
 			values = amplitude;
-            break;
-        default:
-            return
-    }
-    document.getElementById("env-functionInput").value = values[time];
-    document.getElementById("env-timeInput").value = values[length];
+			break;
+		default:
+			return
+	}
+	document.getElementById("env-functionInput").value = values[time];
+	document.getElementById("env-timeInput").value = values[length];
 }
 
 function chosenEnvelope(chosen){
-    var text;
-    var values;
-    var time, length;
-    switch(chosen){
-        case 1:
-            text = "Timbre"
+		var text;
+		var values;
+		var time, length;
+		switch(chosen){
+				case 1:
+						text = "Timbre"
 			values = timbre;
-            break;
-        case 2:
-            text = "Pitch"
+						break;
+				case 2:
+						text = "Pitch"
 			values = pitch;
-            break;
-        case 3:
-            text = "Amplitude";
+						break;
+				case 3:
+						text = "Amplitude";
 			values = amplitude;
-            break;
-        default:
-    }
-    switch(document.getElementById("chosenTimezone").innerHTML){
-        case "Attack":
-            time = 0;
-            length = 3;
-            break;
-        case "Decay":
-            time = 1;
-            length = 4;
-            break;
-        case "Release":
-            time = 2;
-            length = 5;
-            break;
-        default:
-    }
+						break;
+				default:
+		}
+		switch(document.getElementById("chosenTimezone").innerHTML){
+				case "Attack":
+						time = 0;
+						length = 3;
+						break;
+				case "Decay":
+						time = 1;
+						length = 4;
+						break;
+				case "Release":
+						time = 2;
+						length = 5;
+						break;
+				default:
+		}
 
-    
+		
 	document.getElementById("normalizeEnvelope").checked = values[6];
 	document.getElementById("continuousCheckbox").checked = values[7];
-    document.getElementById("env-functionInput").value = values[time];
-    document.getElementById("chosenEnvelope").innerHTML = text;
-    document.getElementById("env-timeInput").value = values[length];
+		document.getElementById("env-functionInput").value = values[time];
+		document.getElementById("chosenEnvelope").innerHTML = text;
+		document.getElementById("env-timeInput").value = values[length];
 	graphEnvelope(text);
 }
 

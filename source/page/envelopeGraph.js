@@ -72,7 +72,7 @@ function makeEnvelopeRange(fn, max, domain, continous) {
  * @param domain The set of values on the horizontal axis.
  * @returns The normalized set of values which are the result of applying the function fn to the domain.
  */
-function makeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
+function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
 	var range = Array(domain.length);
 	let offset1 = 0;
 	let offset2 = 0;
@@ -118,7 +118,7 @@ function makeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, contino
 function makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous) {
 	var domain = makeEnvelopeDomain(numPoints, maxValues[2]);
 	var range;
-	if (normalize) range = makeNormalizedRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
+	if (normalize) range = makeEnvelopeNormalizedRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
 	else range = makeEnvelopeRange(functions, maxValues, domain, continous);
 	return [domain, range];
 }
