@@ -5,7 +5,7 @@
  * @param maxX The maximum value of the horizontal axis.
  * @returns The set of values on the horizontal axis. 
  */
- function makeDomain(numPoints, maxX) {
+ function makeEnvelopeDomain(numPoints, maxX) {
 	var step = maxX / numPoints;
 	var domain = Array(numPoints);
 	var x = 0;
@@ -34,7 +34,13 @@ function makeRangeContinous(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain) {
 	return range;
 }
 
-function makeRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
+function makeEnvelopeRange(fn, max, domain, continous) {
+	var fn1 = fn[0];
+	var fn2 = fn[1];
+	var fn3 = fn[2]; 
+	var maxX1 = max[0]; 
+	var maxX2 = max[1]; 
+	var maxX3 = max[2];
 	var range = Array(domain.length);
 
 	let offset1 = 0;
@@ -66,9 +72,7 @@ function makeRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
  * @param domain The set of values on the horizontal axis.
  * @returns The normalized set of values which are the result of applying the function fn to the domain.
  */
-
 function makeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, continous) {
-
 	var range = Array(domain.length);
 	let offset1 = 0;
 	let offset2 = 0;
@@ -111,11 +115,11 @@ function makeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain, contino
  * @param normalize The boolean flag indicating whether to normalize or not.
  * @returns The domain and range of the function.
  */
-function makeDatapoints(functions, numPoints, maxValues, normalize, continous) {
-	var domain = makeDomain(numPoints, maxValues[2]);
+function makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous) {
+	var domain = makeEnvelopeDomain(numPoints, maxValues[2]);
 	var range;
 	if (normalize) range = makeNormalizedRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
-	else range = makeRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
+	else range = makeEnvelopeRange(functions, maxValues, domain, continous);
 	return [domain, range];
 }
 /**
@@ -127,37 +131,62 @@ function makeDatapoints(functions, numPoints, maxValues, normalize, continous) {
  * @param domain The set of values on the horizontal axis.
  * @param range The set of values which are the result of applying the function fn to the domain.
  * @param color The color of the border.
- * @returns The graph.
+ * @returns The graph..
  */
-function drawDomainRange(ctx, domain, range, color) {
-	var data = {
-		labels: domain, // x-axeln
-		datasets: [{
-			borderColor: color, // Färgspektrum
-			data: range, // y-axeln
+function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues) {
+	var index1 = (domain.length * maxValues[0]) / (maxValues[2]);
+	var index2 = (domain.length * maxValues[1]) / (maxValues[2]);
+	var index3 = (domain.length);
+	
+	const lineColour = (ctx) => {
+		if (ctx.p0.parsed.x < index1)
+			return colorValues[0];
+		if (ctx.p0.parsed.x < index2)
+			return colorValues[1];
+		if (ctx.p0.parsed.x < index3)
+			return colorValues[2];
+		return 'rgba(0, 0, 0, 1)';
+	}
+
+	const data = {
+		labels: domain, 
+		datasets: [{	
+			type: 'line',
+			borderColor: [
+				'rgba(0, 0, 0, 1)',
+			],
+			tension: 0.4,
+			segment: {
+				borderColor: ctx =>  lineColour(ctx),
+			},
+			spanGaps: true,
+			data: range, 
 			fill: false,
+			pointRadius: 0,
 		}]
 	};
 	// Configuration of chart
 	const config = {
-		type: 'line',
 		data: data,
 		options: {
-			legend: { display: false },
+			plugins: {
+				legend: {
+					display: false
+				}
+			},
 			scales: { 
-				xAxes: [{ 
+				x: {
 					display: false 
-				}],
-				yAxes: [{
-					ticks: {
-					  min: -1,
-					  max: +1,
-					  beginAtZero:false
-					}
-				}]    
+				},
+				y: {
+					min: -1,
+					max: +1,
+					beginAtZero:false
+				}, 
 			}
 		}
 	};
+	
 	return new Chart(ctx, config);
 }
 /** 
@@ -169,7 +198,7 @@ function drawDomainRange(ctx, domain, range, color) {
  * @param color The color of the curve of the graph.
  * @returns The graph.  
  */
-function drawGraph(ctx, functions, numPoints, maxValues, normalize, continous, color) {
-	var [domain, range] = makeDatapoints(functions, numPoints, maxValues, normalize, continous);
-	return drawDomainRange(ctx, domain, range, color);
+function drawEnvelope(ctx, functions, numPoints, maxValues, normalize, continous, colorValues) {
+	var [domain, range] = makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous);
+	return drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues);
 }

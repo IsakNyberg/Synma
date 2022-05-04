@@ -244,7 +244,8 @@ function graphEnvelope(chosenEnvelope){
 	}	
 	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
-	envelopeGraph = drawEnvelope(ctx, functions, 1000, limits,  chosen[6], chosen[7], 'rgb(0, 0, 0, 1)');
+	// drawEnvelope(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 100, [10, 20, 30], true, true, ['#0f0','#ff3','#f00'])
+	envelopeGraph = drawEnvelope(ctx, functions, 100, limits,  chosen[6], chosen[7], ['#0a0','#aa0','#a00']);
 	createEnvelope(functions,chosen,chosenEnvelope);
 }
 function createEnvelope(functions,chosen,chosenEnvelope) {

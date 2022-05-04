@@ -2,8 +2,7 @@
   <head> 
     <title>Graph</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
-    <script src="envelopeGraph.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
   </head> 
    
   <body>
@@ -14,7 +13,7 @@
       function main() {
         var ctx = document.getElementById('myChart');
        
-        var g = drawGraph(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 1000, [10, 20, 30], true, true, 'rgb(0, 0, 0, 1)');
+        var g = drawEnvelope(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 100, [10, 20, 30], true, true, ['#0f0','#ff3','#f00']);
       }
       window.onload = main();
     </script>
