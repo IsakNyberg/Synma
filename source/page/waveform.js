@@ -1,19 +1,16 @@
-
-
 /**
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor(audioContext) {
+	constructor(audioContext, samplingBuffer) {
 		this.audioContext = audioContext;
-		this.samplingBuffer = null;
+		this.samplingBuffer = samplingBuffer;
 		this.masterSource = null;
 		this.bufferGain = this.audioContext.createGain();
-		this.channelData = null;
+		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
-		this.analyser = this.audioContext.createAnalyser();
-		this.analyser.fftSize = 2048;
-		this.noteFreq= initFreqs();
+		//this.analyser = this.audioContext.createAnalyser();
+		//this.analyser.fftSize = 2048;
 	}
 	/**
 	 * this function will set the volume for primary gain controll
@@ -30,54 +27,28 @@ class WaveForm{
 	getBuffer() {
 		return this.channelData;
 	}
-	
-	/**
-	 * will fill the buffer completely with periodBuffer
-	 * @param {Float32Array} periodBuffer - this buffer contain the sampling points but 
-	 * it's only one period long, the period depends on what we have specified
-	 */
-	fillBuffer(periodBuffer) {
-		this.channelData = this.samplingBuffer.getChannelData(0)
-		for (let i = 0; i < this.samplingBuffer.length; i++) {
-			this.channelData[i] = periodBuffer[i % periodBuffer.length];
-		}
-	}
-	
-	/**
-	 * will create the complete buffer using the function and key to decide what frequency 
-	 * the function will be created at
-	 * ! NOTE: the period used currently is predefined to 2π
-	 * @param {Function} fn - the funciton to be sampled
-	 * @param {String} key - the piano key 
-	 */
-	genBufferFromNote(fn, key){
-		this.generateBuffer(fn,this.noteFreq[key[1]][key[0]],2*Math.PI)
-	}	
-	
-	/**
-	 * thus function will create the periodBuffer depending on the params below and will then
-	 * fill out the whole buffer
-	 * @param {Function} fn 
-	 * @param {Number} freq 
-	 * @param {Number} period 
-	 */
-	generateBuffer(fn, freq, period) {
-		let bufferLength = this.audioContext.sampleRate / freq;
-		let buffer = new Float32Array(bufferLength);
-		this.samplingBuffer = this.audioContext.createBuffer(
+
+	static computeBase(audioContext, fn, maxX, resolution) {
+		// let baseFrequencyLength = this.audioContext.sampleRate / mult;
+		let baseFrequencyLength = resolution;
+		let samplingBuffer = audioContext.createBuffer(
 			1, 
-			buffer.length * 25,
-			this.audioContext.sampleRate,
+			baseFrequencyLength,
+			audioContext.sampleRate,
 		);
-			
-		let step = period / bufferLength;
+		let channelData = samplingBuffer.getChannelData(0);
+		//console.time("precompute");
+		let step = maxX / baseFrequencyLength;
 		let x = 0;
-		for (let t = 0; t < bufferLength; t++) {
-			buffer[t] = fn(x);
+		for (let t = 0; t < baseFrequencyLength; t++) {
+			channelData[t] = fn(x);
 			x += step;
 		}
-		this.fillBuffer(buffer);
+		//console.timeEnd("precompute");
+
+		return samplingBuffer;
 	}
+	
 	
 	/**
 	 * we will find the max valye in our buffer and then divide all the values by it to normalize 
@@ -91,8 +62,8 @@ class WaveForm{
 		for (let i = 0; i < this.samplingBuffer.length; i++) {
 			this.channelData[i] /= max;
 		}
-	}
-
+	}	
+	
 	/**
 	 * Fades out the last part of the buffer 
 	 * @param {Number} numSamples 
@@ -119,14 +90,15 @@ class WaveForm{
 			this.channelData[i] = 0;
 		}
 	}*/
+  
 	/**
 	 * this function will play the buffer we have created
 	 */
-	playBuffer() {
+	playBuffer(freq) {
 		
 		//this.bufferGain.gain.setValueAtTime(0.1, 0);
-
 		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferGain);
@@ -139,7 +111,6 @@ class WaveForm{
 		this.masterSourceStartTime = this.audioContext.currentTime;
 		this.primaryGainControl.connect(this.audioContext.destination);
 
-		
 	}
 	
 	stopBuffer(releaseLen) {
