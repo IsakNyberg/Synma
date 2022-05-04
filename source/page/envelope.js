@@ -11,13 +11,12 @@
     step = n/samples;
     let i,j = 0;
     for (i = 0; i < n; i+=step) {
-        arr[j++]=fn(i);
+        arr[j++]=fn(i)/10;
     }
     return arr;
 }
 class Envelope {
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-        console.log(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx)
         this.attackLen=attackLen;
         this.decayLen=decayLen;
         this.releaseLen=releaseLen;
@@ -37,16 +36,13 @@ class PitchEnvelope extends Envelope {
         for (let i = 0; i < curve.length; i++) {
             source.playbackRate.setValueAtTime(curve[i],startTime + i*deltaTime);
         }
-
     }
     /**
      * Applies the gain-values of the attackBuffer, which is created from the attack function.
      * @param {AudioBufferSourceNode} source
      */
      apply_attack(source){
-        console.log("Applying attack!\n"+this.attackBuffer);
         this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
-        
     }
     /**
      * Applies the gain-values of the decayBuffer, which is created from the decay function.
@@ -54,7 +50,6 @@ class PitchEnvelope extends Envelope {
      */
     apply_decay(source){
         let timeOffset = this.attackLen;
-        console.log("Applying decay!\n"+this.decayBuffer);
         this.#setValueCurveAtTime(this.decayBuffer,source,this.audioCtx.currentTime+timeOffset,this.decayLen);
     }
     /**
@@ -63,7 +58,6 @@ class PitchEnvelope extends Envelope {
      */
     apply_release(source){
         source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
-        console.log("Applying release!\n"+this.releaseBuffer);
         this.#setValueCurveAtTime(this.releaseBuffer,source,this.audioCtx.currentTime,this.releaseLen);
     }
 }
@@ -83,16 +77,13 @@ class TimbreEnvelope extends Envelope {
         for (let i = 0; i < curve.length; i++) {
             filter.frequency.setValueAtTime(curve[i],startTime + i*deltaTime);
         }
-
     }
     /**
      * Applies the gain-values of the attackBuffer, which is created from the attack function.
      * @param {BiquadFilterNode} filter
      */
     apply_attack(filter){
-        console.log("Applying attack!\n"+this.attackBuffer);
         this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
-        
     }
     /**
      * Applies the gain-values of the decayBuffer, which is created from the decay function.
@@ -100,7 +91,6 @@ class TimbreEnvelope extends Envelope {
      */
     apply_decay(filter){
         let timeOffset = this.attackLen;
-        console.log("Applying decay!\n"+this.decayBuffer);
         this.#setValueCurveAtTime(this.decayBuffer,filter,this.audioCtx.currentTime+timeOffset,this.decayLen);
     }
     /**
@@ -109,7 +99,6 @@ class TimbreEnvelope extends Envelope {
      */
     apply_release(filter){
         source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
-        console.log("Applying release!\n"+this.releaseBuffer);
         this.#setValueCurveAtTime(this.releaseBuffer,filter,this.audioCtx.currentTime,this.releaseLen);
     }
 }
@@ -139,8 +128,6 @@ class AmpEnvelope extends Envelope {
      * @param {GainNode} gain 
      */
     apply_attack(gain){
-        //gain.gain.cancelScheduledValues(this.audioCtx.currentTime);
-        console.log("Applying attack!\n"+this.attackBuffer);
         this.#setValueCurveAtTime(this.attackBuffer,gain,this.audioCtx.currentTime,this.attackLen);
         
     }
@@ -150,7 +137,6 @@ class AmpEnvelope extends Envelope {
      */
     apply_decay(gain){
         let timeOffset = this.attackLen;
-        console.log("Applying decay!\n"+this.decayBuffer);
         this.#setValueCurveAtTime(this.decayBuffer,gain,this.audioCtx.currentTime+timeOffset,this.decayLen);
     }
     /**
@@ -159,7 +145,6 @@ class AmpEnvelope extends Envelope {
      */
     apply_release(gain){
         gain.gain.cancelScheduledValues(this.audioCtx.currentTime);
-        console.log("Applying release!\n"+this.releaseBuffer);
         this.#setValueCurveAtTime(this.releaseBuffer,gain,this.audioCtx.currentTime,this.releaseLen);
     }
 }
