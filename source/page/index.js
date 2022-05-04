@@ -88,9 +88,9 @@ function keyIndexToNote(index) {
     return[keyIndex[key], octave];
 }
 
-var amplitude = ["t", "1", "1-t", 1, 1, 1, true, true];
-var pitch = ["1-t", "0", "t", 1, 1, 1, true, true];
-var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, true, true];
+var amplitude = ["t", "1", "1-t", 1, 1, 1, false, false];
+var pitch = ["1-t", "0", "t", 1, 1, 1, false, false];
+var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, false, false];
 
 var functionGraph = null;
 document.getElementById("functionButton").onclick = submitFunction;

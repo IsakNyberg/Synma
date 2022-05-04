@@ -157,7 +157,7 @@ function startAnimation(i){
 	}
 	buildAnimation[i]();
 	i += 1;
-	setTimeout(()=>{startAnimation(i)}, 20);
+	setTimeout(()=>{startAnimation(i)}, 8);
 }
 
 
@@ -257,6 +257,10 @@ function chosenEnvelope(chosen){
             break;
         default:
     }
+
+    
+	document.getElementById("normalizeEnvelope").checked = values[6];
+	document.getElementById("continuousCheckbox").checked = values[7];
     document.getElementById("env-functionInput").value = values[time];
     document.getElementById("chosenEnvelope").innerHTML = text;
     document.getElementById("env-timeInput").value = values[length];
