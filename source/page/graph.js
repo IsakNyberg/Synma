@@ -38,7 +38,7 @@ function makeRange(fn, domain) {
 function makeNormalizedRange(fn, domain) {
 	var range = Array(domain.length);
 	var max = 0;
-	for (var i = 0; i < domain.length; i++) range[i] = fn(domain[i]);
+	for (let i = 0; i < domain.length; i++) range[i] = fn(domain[i]);
 	for (let i = 0; i < range.length; i++) max = Math.max(max, Math.abs(range[i]));
 	for (let i = 0; i < range.length; i++) range[i] /= max;
 	return range;
@@ -88,21 +88,47 @@ function drawDomainRange(ctx, domain, range, color) {
 		type: 'line',
 		data: data,
 		options: {
-			legend: { display: false },
+			plugins: {
+				legend: {
+					display: false
+				}
+			},
 			scales: { 
-				xAxes: [{ 
+        x: {
 					display: false 
-				}],
-				yAxes: [{
+				},
+				y: {
 					ticks: {
 					  min: -1,
 					  max: +1,
 					  beginAtZero:false
 					}
-				}]    
+				}  
 			}
 		}
 	};
+  /**
+   const config = {
+		data: data,
+		options: {
+			plugins: {
+				legend: {
+					display: false
+				}
+			},
+			scales: { 
+				x: {
+					display: false 
+				},
+				y: {
+					min: -1,
+					max: +1,
+					beginAtZero:false
+				}, 
+			}
+		}
+	};
+   */
 	return new Chart(ctx, config);
 }
 /** 

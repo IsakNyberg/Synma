@@ -1,4 +1,15 @@
-var audioContext = null;
+var ampEnvelope = new AmpEnvelope(
+	//standardvärden
+);
+var pitchEnvelope = new PitchEnvelope(
+	//standardvärden
+);
+var timbreEnvelope = new TimbreEnvelope(
+	//standardvärden
+);
+var releaseLen=0;
+
+var audioContext = new AudioContext({sampleRate: 44100});
 var wfArray = [];
 var baseBuffer = null;
 var mouseClickKey = -1;
@@ -24,9 +35,16 @@ function getLengthDiv() {
 function getFunction() {
 	return document.getElementById("functionInput").value;
 }
+function getEnvelope() {
+	return document.getElementById("env-functionInput").value;
+}
 function getParsedFunction() {
 	return parser.parse(getFunction());
 }
+function getParsedEnvelope() {
+	return parser.parse(getEnvelope());
+}
+
 
 function getMaxX() {
 	return document.getElementById("maxXInput").value;
@@ -55,12 +73,22 @@ function noteToKeyIndex(note) {
 	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
 }
 
+var amplitude = ["t", "1", "1-t", 1, 1, 1, true, true];
+var pitch = ["1-t", "0", "t", 1, 1, 1, true, true];
+var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, true, true];
+
 var functionGraph = null;
 document.getElementById("functionButton").onclick = submitFunction;
 function submitFunction() {
 	if(!pianoSpawned){
 		createPiano();
 		pianoSpawned = !pianoSpawned;
+		
+		// sksapa envelope!!! :)
+		createEnvelope([parser.parse(amplitude[0]),parser.parse(amplitude[1]),parser.parse(amplitude[2])],amplitude[3],amplitude[4],amplitude[5],"Amplitude");
+		//createEnvelope(parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2]),pitch[3],pitch[4],pitch[5],"Pitch");
+		//createEnvelope(parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2]),timbre[3],timbre[4],timbre[5],"Timbre");
+
 	}
 	var ctx = document.getElementById('waveformGraph');
 	var fn = getParsedFunction();
@@ -88,11 +116,13 @@ function startNote(note){
 		//console.log(baseBuffer);
 		const wf = new WaveForm(audioContext, baseBuffer);
 		wfArray[note] = wf;		
+		ampEnvelope.apply_attack(wf.bufferGain);
+		ampEnvelope.apply_decay(wf.bufferGain);
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
 		if(input != document.activeElement){
-			console.log(note + " startades");
+			
 			var fn = getParsedFunction();
 			if (isNormalized) {
 				wf.normalizeBuffer();
@@ -107,8 +137,8 @@ function stopNote(note){
 	// everything must be in the if statement
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
-		console.log(note + " stoppades");
-		wfArray[note].stopBuffer();
+		ampEnvelope.apply_release(wfArray[note].bufferGain);
+		wfArray[note].stopBuffer(releaseLen);
 	}
 }
 
@@ -166,6 +196,92 @@ document.getElementById("env-functionButton").addEventListener("click", submitEn
 function submitEnvelope(){
     var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
     var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
-    var currentLength = document.getElementById("env-timeInput").value;
-    console.log(currentLength + currentEnvelope + currentTimezone); // These values to be used to update correct part of the graph when submitted
+	var interval, chosenFunction;
+	var chosen;
+	switch(currentEnvelope){
+		case "Amplitude":
+			chosen = amplitude;
+			break;
+		case "Pitch":
+			chosen = pitch;
+			break;
+		case "Timbre":
+			chosen = timbre;
+			break;
+		default:
+			return;
+	}
+	switch(currentTimezone){
+		case "Attack":
+			interval = 3;
+			chosenFunction = 0;
+			break;
+		case "Decay":
+			interval = 4;
+			chosenFunction = 1;
+			break;
+		case "Release":
+			interval = 5;
+			chosenFunction = 2;
+			break;
+		default:
+			return;
+	}
+    var currentLength = parseInt(document.getElementById("env-timeInput").value);
+	chosen[interval] = currentLength;
+	chosen[chosenFunction] = getEnvelope();
+	var isNormalized = document.getElementById("normalizeEnvelope").checked;
+	var isContinuous = document.getElementById("continuousCheckbox").checked;
+	chosen[6] = isNormalized;
+	chosen[7] = isContinuous;
+	graphEnvelope(currentEnvelope);
+	
+}
+//flyttade uppåt ^
+//var amplitude = ["t", "1", "1-t", 10, 10, 10, true, true];
+//var pitch = ["1-t", "0", "t", 10, 10, 30, true, true];
+//var timbre = ["1/2", "1/2", "1/2", 10, 20, 30, true, true];
+var envelopeGraph = null;
+
+function graphEnvelope(chosenEnvelope){
+	var chosen;
+	switch(chosenEnvelope){
+		case "Amplitude":
+			chosen = amplitude;
+			break;
+		case "Pitch":
+			chosen = pitch;
+			break;
+		case "Timbre":
+			chosen = timbre;
+			break;
+		default:
+			return;
+	}
+	var ctx = document.getElementById('envelopeGraph');
+	if (envelopeGraph) {
+		envelopeGraph.destroy();
+	}	
+	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
+	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
+	// drawEnvelope(ctx, [(x)=>Math.pow(x, 2), (x)=>-1*x, (x)=>-1*Math.pow(x, 2)], 100, [10, 20, 30], true, true, ['#0f0','#ff3','#f00'])
+	envelopeGraph = drawEnvelope(ctx, functions, 100, limits,  chosen[6], chosen[7], ['#0a0','#aa0','#a00']);
+	createEnvelope(functions,chosen[3],chosen[4],chosen[5],chosenEnvelope);
+}
+function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {
+	
+	switch(chosenEnvelope){
+		case "Amplitude":
+			releaseLen=c3;
+			ampEnvelope = new AmpEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
+			break;
+		case "Pitch":
+			pitchEnvelope = new PitchEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
+			break;
+		case "Timbre":
+			timbreEnvelope = new TimbreEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
+			break;
+		default:
+			return;
+	}
 }

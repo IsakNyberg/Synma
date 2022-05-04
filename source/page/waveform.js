@@ -6,7 +6,7 @@ class WaveForm{
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
 		this.masterSource = null;
-		this.bufferGain = null;
+		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
 		//this.analyser = this.audioContext.createAnalyser();
@@ -65,14 +65,38 @@ class WaveForm{
 	}	
 	
 	/**
+	 * Fades out the last part of the buffer 
+	 * @param {Number} numSamples 
+	 */
+	fadeOutEnd(numSamples) {
+		let start = this.samplingBuffer.length - numSamples;
+		let ratio = 1;
+		let step = 1/numSamples;
+		for (let i = start; i < this.samplingBuffer.length; i++) {
+			this.channelData[i] *= ratio;
+			ratio -= step;
+		}
+	}
+
+	/*
+	fadeOutFrom(index, numSamples) {
+		let ratio = 1;
+		let step = 1/numSamples;
+		for (let i = index; i < index + numSamples; i++) {
+			this.channelData[i] *= ratio;
+			ratio -= step;
+		}
+		for (let i = index + numSamples; i < this.audioContext.sampleRate; i++) {
+			this.channelData[i] = 0;
+		}
+	}*/
+  
+	/**
 	 * this function will play the buffer we have created
 	 */
 	playBuffer(freq) {
 		
-		this.bufferGain = this.audioContext.createGain();
-		this.bufferGain.gain.setValueAtTime(0.1, 0);
-		
-		//console.log(1111111, freq);
+		//this.bufferGain.gain.setValueAtTime(0.1, 0);
 		this.masterSource = this.audioContext.createBufferSource();
 		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
@@ -89,8 +113,9 @@ class WaveForm{
 
 	}
 	
-	stopBuffer() {
-		this.masterSource.loop = false;		
-		this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+	stopBuffer(releaseLen) {
+		//this.masterSource.loop = false;		
+		this.masterSource.stop(this.audioContext.currentTime + releaseLen);
+		//this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
 	}
 }

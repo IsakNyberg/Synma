@@ -7,9 +7,10 @@
   <script src="frequencies.js"></script>
   <script src="waveform.js"></script>
   <script src="parse.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
   <script src="graph.js"></script>
-  <script src="precomputes.js"></script>
+  <script src="envelopeGraph.js"></script>
+  <script src="envelope.js"></script>
 
   
 </head>
@@ -42,6 +43,7 @@
       <div class="submit">
         <form action="javascript:submitFunction()">
           <input type="text" name="function" id="functionInput" placeholder="f(t)" class="inputDesign"/>
+          <input type="text" name="function" id="maxXInput" placeholder="max x" class="inputDesign"/>
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
           <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
           <label>Normalize</label>
@@ -53,13 +55,11 @@
       </div>
     </div>
     <div class="flex-container-column2">
-      <div class="headLine">Envelope</div>
+      <div class="headLine">Envelope <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope"> <label>Normalize</label><input class="normalize-chkbox" type="checkbox" id="continuousCheckbox"><label>Continuous</label></div>
       <div class="env-inputs">
         <form action="javascript:submitEnvelope()">
-          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
-          <input type="text" name="env-time" placeholder="ms" class="inputDesign" id="env-timeInput"/>
           <div class="dropdown">
-            <button id="chosenEnvelope" class="dropbtn"></button>
+            <button id="chosenEnvelope" class="dropbtn">None</button>
             <div class="dropdown-content">
               <a onclick="chosenEnvelope(1)">Timbre</a>
               <a onclick="chosenEnvelope(2)">Pitch</a>
@@ -74,6 +74,8 @@
               <a onclick="chosenTimezone(3)">Release</a>
             </div>
           </div>
+          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
+          <input type="text" name="env-time" placeholder="ms" class="inputDesign" id="env-timeInput"/>
           <input class="text-btn" type="button" name="Go" value="Go" id="env-functionButton"/>
           </form>
       </div>
@@ -99,9 +101,9 @@
     <span class="arrow-btn"> X </span></div>
   </div> 
   </div>
-	<script src="design.js">
-	</script>
 	<script src="index.js">
+	</script>
+	<script src="design.js">
 	</script>
 </body>
 </html>
