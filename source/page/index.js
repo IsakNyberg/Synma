@@ -129,12 +129,19 @@ function submitFunction() {
 
 /* Manage start and stop of sound */
 function startNote(note){
+	if (audioContext == null) {
+		audioContext = new AudioContext({sampleRate: 44100});
+	}
+	const wf = new WaveForm(audioContext);
+	wfArray[note] = wf;
 	if (!playing[noteToKeyIndex(note)]) {
+
 		//console.log(baseBuffer);
 		const wf = new WaveForm(audioContext, baseBuffer);
 		wfArray[note] = wf;		
 		ampEnvelope.apply_attack(wf.bufferGain);
 		ampEnvelope.apply_decay(wf.bufferGain);
+
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");

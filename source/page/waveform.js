@@ -33,6 +33,7 @@ class WaveForm{
 	 * @param {Number} maxX the maxX for the function .
 	 * @param {Number} resolution the number of samples of the base waveform .
 	 * @returns {AudioBuffer} The buffer of the base waveform.
+
 	 */
 	static computeBase(audioContext, fn, maxX, resolution) {
 		let baseFrequencyLength = resolution;
