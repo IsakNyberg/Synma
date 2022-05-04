@@ -8,7 +8,7 @@ class WaveForm{
 		this.audioContext = audioContext;
 		this.samplingBuffer = null;
 		this.masterSource = null;
-		this.bufferGain = null;
+		this.bufferGain = this.audioContext.createGain();
 		this.channelData = null;
 		this.primaryGainControl = this.audioContext.createGain();
 		this.analyser = this.audioContext.createAnalyser();
@@ -119,14 +119,12 @@ class WaveForm{
 			this.channelData[i] = 0;
 		}
 	}*/
-	
-	
 	/**
 	 * this function will play the buffer we have created
 	 */
 	playBuffer() {
-		this.bufferGain = this.audioContext.createGain();
-		this.bufferGain.gain.setValueAtTime(0.1, 0);
+		
+		//this.bufferGain.gain.setValueAtTime(0.1, 0);
 
 		this.masterSource = this.audioContext.createBufferSource();
 		this.masterSource.loop = true;
@@ -144,8 +142,9 @@ class WaveForm{
 		
 	}
 	
-	stopBuffer() {
-		this.masterSource.loop = false;		
-		this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+	stopBuffer(releaseLen) {
+		//this.masterSource.loop = false;		
+		this.masterSource.stop(this.audioContext.currentTime + releaseLen);
+		//this.bufferGain.gain.linearRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
 	}
 }
