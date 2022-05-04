@@ -227,7 +227,7 @@ function submitEnvelope(){
 		default:
 			return;
 	}
-    var currentLength = parseInt(document.getElementById("env-timeInput").value);
+    var currentLength = parseFloat(document.getElementById("env-timeInput").value);
 	chosen[interval] = currentLength;
 	chosen[chosenFunction] = getEnvelope();
 	var isNormalized = document.getElementById("normalizeEnvelope").checked;
