@@ -1,6 +1,6 @@
 var audioContext = null;
 var wfArray = [];
-var precomputedNotes = [];
+var baseBuffer = null;
 var mouseClickKey = -1;
 var playing = new Array(128);       //Booleans to manage sound playing
 for(var i=0; i<playing.length; i++) {
@@ -9,6 +9,7 @@ for(var i=0; i<playing.length; i++) {
 //const wf = new WaveForm();
 const parser = new MathParser("t");
 var isNormalized;
+var noteFreq = initFreqs();
 
 /* GET input value, attach id to input field. If input field = input do ".value"; else if div do ".innerHTML"*/ 
 function getFunctionDiv() {
@@ -74,17 +75,18 @@ function submitFunction() {
 	if (audioContext == null) {
 		audioContext = new AudioContext({sampleRate: 44100});
 	}
-	alert("Precomputing notes");
-	precomputedNotes = precomputeAllNotes(audioContext, fn, maxX);
-	alert("Done");
+	//alert("Precomputing notes");
+	//console.time("precompute");
+	baseBuffer = WaveForm.computeBase(audioContext, fn, maxX, 4410);
+	//console.timeEnd("precompute");
+	//alert("Done");
 }
 
 /* Manage start and stop of sound */
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
-		let samplingBuffer = getPrecompute(precomputedNotes, note);
-		console.log(samplingBuffer);
-		const wf = new WaveForm(audioContext, samplingBuffer);
+		//console.log(baseBuffer);
+		const wf = new WaveForm(audioContext, baseBuffer);
 		wfArray[note] = wf;		
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
@@ -95,7 +97,8 @@ function startNote(note){
 			if (isNormalized) {
 				wf.normalizeBuffer();
 			}
-			wf.playBuffer();
+			let freq = noteFreq[note[1]][note[0]];
+			wf.playBuffer(freq);
 		}
 	}
 }

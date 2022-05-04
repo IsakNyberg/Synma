@@ -11,7 +11,6 @@ class WaveForm{
 		this.primaryGainControl = this.audioContext.createGain();
 		//this.analyser = this.audioContext.createAnalyser();
 		//this.analyser.fftSize = 2048;
-		this.noteFreq = initFreqs();
 	}
 	/**
 	 * this function will set the volume for primary gain controll
@@ -28,6 +27,28 @@ class WaveForm{
 	getBuffer() {
 		return this.channelData;
 	}
+
+	static computeBase(audioContext, fn, maxX, resolution) {
+		// let baseFrequencyLength = this.audioContext.sampleRate / mult;
+		let baseFrequencyLength = resolution;
+		let samplingBuffer = audioContext.createBuffer(
+			1, 
+			baseFrequencyLength,
+			audioContext.sampleRate,
+		);
+		let channelData = samplingBuffer.getChannelData(0);
+		//console.time("precompute");
+		let step = maxX / baseFrequencyLength;
+		let x = 0;
+		for (let t = 0; t < baseFrequencyLength; t++) {
+			channelData[t] = fn(x);
+			x += step;
+		}
+		//console.timeEnd("precompute");
+
+		return samplingBuffer;
+	}
+	
 	
 	/**
 	 * we will find the max valye in our buffer and then divide all the values by it to normalize 
@@ -46,11 +67,14 @@ class WaveForm{
 	/**
 	 * this function will play the buffer we have created
 	 */
-	playBuffer() {
+	playBuffer(freq) {
+		
 		this.bufferGain = this.audioContext.createGain();
 		this.bufferGain.gain.setValueAtTime(0.1, 0);
-
+		
+		//console.log(1111111, freq);
 		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferGain);
