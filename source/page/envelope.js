@@ -7,34 +7,44 @@
  * @returns {Array} Function samples
  */
  function soundBufferFromFunc(n,samples,fn){
-    var arr=new Array(samples);
+    var arr = new Array(samples);
     step = n/samples;
     let i,j = 0;
-    for (i = 0; i < n; i+=step) {
-        arr[j++]=fn(i)/10;
+    for (i = 0; i < n; i += step) {
+        arr[j++] = fn(i)/10;
     }
     return arr;
 }
 class Envelope {
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-        this.attackLen=attackLen;
-        this.decayLen=decayLen;
-        this.releaseLen=releaseLen;
+        this.attackLen = attackLen;
+        this.decayLen = decayLen;
+        this.releaseLen = releaseLen;
         this.attackBuffer = soundBufferFromFunc(attackLen,noOfSamples,attack);
         this.decayBuffer = soundBufferFromFunc(decayLen,noOfSamples,decay);
         this.releaseBuffer = soundBufferFromFunc(releaseLen,noOfSamples,release);
-        this.audioCtx=audioCtx;
+        this.audioCtx = audioCtx;
     }  
 
 }
 class PitchEnvelope extends Envelope {
+    #initialPlaybackRate;
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
         super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
+        this.#initialPlaybackRate = 1;
     }
-    #setValueCurveAtTime(curve,source,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+    /**
+     * Sets value of the playback rates according to values of curve. distributes assignments evenly across duration
+     * @param {Array<Number>} curve 
+     * @param {AudioBufferSourceNode} source 
+     * @param {Number} startTime 
+     * @param {Number} stopTime 
+     */
+    #setValueCurveAtTime(curve,source,startTime,duration){
+        let deltaTime = duration/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            source.playbackRate.setValueAtTime(curve[i],startTime + i*deltaTime);
+            //console.log(this.#initialPlaybackRate * curve[i]);
+            source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
         }
     }
     /**
@@ -42,6 +52,8 @@ class PitchEnvelope extends Envelope {
      * @param {AudioBufferSourceNode} source
      */
      apply_attack(source){
+        this.#initialPlaybackRate = source.playbackRate.value;
+        //console.log(this.#initialPlaybackRate);
         this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -73,9 +85,19 @@ class TimbreEnvelope extends Envelope {
     * @param {Number} stopTime 
     */
     #setValueCurveAtTime(curve,filter,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+        let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            filter.frequency.setValueAtTime(curve[i],startTime + i*deltaTime);
+            let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
+            if (value < 0) { 
+                value = 0; 
+                document.getElementById("env-functionInput").value = "0";
+            } else if (1 < value) {
+                value = 1;
+                console.log("helloooo");
+                document.getElementById("env-functionInput").value = "1";
+                
+            }
+            filter.frequency.setValueAtTime(20000 * value, startTime + i * deltaTime);
         }
     }
     /**
@@ -83,6 +105,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_attack(filter){
+        console.log("applying attack");
         this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -98,7 +121,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_release(filter){
-        source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
+        filter.frequency.cancelScheduledValues(this.audioCtx.currentTime);
         this.#setValueCurveAtTime(this.releaseBuffer,filter,this.audioCtx.currentTime,this.releaseLen);
     }
 }
@@ -117,7 +140,7 @@ class AmpEnvelope extends Envelope {
     * @param {Number} stopTime 
     */
     #setValueCurveAtTime(curve,gain,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+        let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
             gain.gain.setValueAtTime(curve[i],startTime + i*deltaTime);
         }
