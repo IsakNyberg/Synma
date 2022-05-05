@@ -76,23 +76,23 @@ function noteToKeyIndex(note) {
 	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
 }
 function keyIndexToNote(index) {
-    var key, octave;
-    if(index < 3){
-        key = index + 9;
-        octave = 0;
-    }
-    else {
-        key = (index - 3) % 12;
-        octave = Math.floor((index) / 12) + 1;
-        if(index%12<3)
-            octave--;
-    }
-    return[keyIndex[key], octave];
+		var key, octave;
+		if(index < 3){
+				key = index + 9;
+				octave = 0;
+		}
+		else {
+				key = (index - 3) % 12;
+				octave = Math.floor((index) / 12) + 1;
+				if(index%12<3)
+						octave--;
+		}
+		return[keyIndex[key], octave];
 }
 
 var amplitude = ["1", "1", "1", 0.1, 0.1, 0.1, false, false];
 var pitch = ["0", "0", "0", 1, 1, 1, false, false];
-var timbre = ["20000", "20000", "20000", 1, 1, 1, false, false];
+var timbre = ["1", "1", "1", 1, 1, 1, false, false];
 
 var functionGraph = null;
 document.getElementById("functionButton").onclick = submitFunction;
@@ -168,7 +168,7 @@ function stopNote(note){
 		let applyPitch = document.getElementById("applyPitch").checked;
 		let applyTimbre = document.getElementById("applyTimbre").checked;
 		if (applyAmplitude) {	ampEnvelope.apply_release(wfArray[note].bufferGain);}
-	  if (applyPitch) {	timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);} 
+		if (applyPitch) {	timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);} 
 		if (applyTimbre) { pitchEnvelope.apply_release(wfArray[note].masterSource);}
 		wfArray[note].stopBuffer(releaseLen);
 	}
@@ -200,33 +200,33 @@ function releasedKey(pressedKey){
 }
 
 function turnOffAndReset(){
-    for(var i=0; i<playing.length; i++) {
-        if (playing[i]){
-            resetKeyColor(keyIndexToNote(i));
-            stopNote(keyIndexToNote(i));
-        }
-    }
+		for(var i=0; i<playing.length; i++) {
+				if (playing[i]){
+						resetKeyColor(keyIndexToNote(i));
+						stopNote(keyIndexToNote(i));
+				}
+		}
 }
 
 function pressedKey(pressedKey){
 	switch(pressedKey.keyCode) {
 		case 90: //z
 			if(position > 1 && pianoSpawned){
-                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
-                    removeMarkers(position);
-                    placeMarkers(--position);
-                    turnOffAndReset();                    
-                }
+								if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
+										removeMarkers(position);
+										placeMarkers(--position);
+										turnOffAndReset();                    
+								}
 
 			}
 			break;
 		case 88: //x
 			if(position < 7 && pianoSpawned){
-                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){                
-				    removeMarkers(position);
-				    placeMarkers(++position);
-                    turnOffAndReset();
-                }
+								if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){                
+						removeMarkers(position);
+						placeMarkers(++position);
+										turnOffAndReset();
+								}
 			}
 			break;  
 		default:
@@ -241,8 +241,8 @@ function pressedKey(pressedKey){
 
 document.getElementById("env-functionButton").addEventListener("click", submitEnvelope);
 function submitEnvelope(){
-    var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
-    var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
+		var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
+		var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
 	var interval, chosenFunction;
 	var chosen;
 	switch(currentEnvelope){
@@ -274,7 +274,7 @@ function submitEnvelope(){
 		default:
 			return;
 	}
-    var currentLength = parseFloat(document.getElementById("env-timeInput").value);
+		var currentLength = parseFloat(document.getElementById("env-timeInput").value);
 	chosen[interval] = currentLength;
 	chosen[chosenFunction] = getEnvelope();
 	var isNormalized = document.getElementById("normalizeEnvelope").checked;

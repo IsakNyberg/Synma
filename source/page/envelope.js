@@ -43,7 +43,7 @@ class PitchEnvelope extends Envelope {
     #setValueCurveAtTime(curve,source,startTime,duration){
         let deltaTime = duration/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            console.log(this.#initialPlaybackRate * curve[i]);
+            //console.log(this.#initialPlaybackRate * curve[i]);
             source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
         }
     }
@@ -53,7 +53,7 @@ class PitchEnvelope extends Envelope {
      */
      apply_attack(source){
         this.#initialPlaybackRate = source.playbackRate.value;
-        console.log(this.#initialPlaybackRate);
+        //console.log(this.#initialPlaybackRate);
         this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -87,7 +87,17 @@ class TimbreEnvelope extends Envelope {
     #setValueCurveAtTime(curve,filter,startTime,stopTime){
         let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            filter.frequency.setValueAtTime(10 * curve[i], startTime + i * deltaTime);       
+            let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
+            if (value < 0) { 
+                value = 0; 
+                document.getElementById("env-functionInput").value = "0";
+            } else if (1 < value) {
+                value = 1;
+                console.log("helloooo");
+                document.getElementById("env-functionInput").value = "1";
+                
+            }
+            filter.frequency.setValueAtTime(20000 * value, startTime + i * deltaTime);
         }
     }
     /**
@@ -95,7 +105,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_attack(filter){
-        //console.log(this.audioCtx);
+        console.log("applying attack");
         this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
     }
     /**
