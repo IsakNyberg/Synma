@@ -9,6 +9,7 @@ class WaveForm{
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
+		this.bufferBiquadFilter = this.audioContext.createBiquadFilter();
 	}
 
 	/**
@@ -74,8 +75,12 @@ class WaveForm{
 			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.bufferGain);
+		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/
+		this.bufferBiquadFilter.type = 'lowpass';
+		this.bufferBiquadFilter.Q.value = 1;
+		this.bufferBiquadFilter.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);
+		//this.bufferGain.connect(this.primaryGainControl);
 		this.primaryGainControl.connect(this.audioContext.destination);
 		this.masterSource.start();
 	}

@@ -75,7 +75,7 @@ class TimbreEnvelope extends Envelope {
     #setValueCurveAtTime(curve,filter,startTime,stopTime){
         let deltaTime=stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            filter.frequency.setValueAtTime(curve[i],startTime + i*deltaTime);
+            filter.frequency.setValueAtTime(10 * curve[i], startTime + i * deltaTime);       
         }
     }
     /**
@@ -83,6 +83,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_attack(filter){
+        //console.log(this.audioCtx);
         this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -98,7 +99,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_release(filter){
-        source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
+        filter.frequency.cancelScheduledValues(this.audioCtx.currentTime);
         this.#setValueCurveAtTime(this.releaseBuffer,filter,this.audioCtx.currentTime,this.releaseLen);
     }
 }
