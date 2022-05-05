@@ -132,12 +132,21 @@ function startNote(note){
 		//console.log(baseBuffer);
 		const wf = new WaveForm(audioContext, baseBuffer, noteFreq[note[1]][note[0]]);
 		wfArray[note] = wf;		
-		ampEnvelope.apply_attack(wf.bufferGain);
-		ampEnvelope.apply_decay(wf.bufferGain);
-		//timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
-		//timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
-		pitchEnvelope.apply_attack(wf.masterSource);
-		pitchEnvelope.apply_decay(wf.masterSource);
+		let applyAmplitude = document.getElementById("applyAmplitude").checked;
+		let applyPitch = document.getElementById("applyPitch").checked;
+		let applyTimbre = document.getElementById("applyTimbre").checked;
+		if (applyAmplitude) {
+			ampEnvelope.apply_attack(wf.bufferGain);
+			ampEnvelope.apply_decay(wf.bufferGain);
+		}
+		if (applyPitch) {
+			pitchEnvelope.apply_attack(wf.masterSource);
+			pitchEnvelope.apply_decay(wf.masterSource);
+		}
+		if (applyTimbre) {
+			timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+			timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
+		}
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
@@ -155,9 +164,12 @@ function stopNote(note){
 	// everything must be in the if statement
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
-		ampEnvelope.apply_release(wfArray[note].bufferGain);
-		//timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);
-		pitchEnvelope.apply_release(wfArray[note].masterSource);
+		let applyAmplitude = document.getElementById("applyAmplitude").checked;
+		let applyPitch = document.getElementById("applyPitch").checked;
+		let applyTimbre = document.getElementById("applyTimbre").checked;
+		if (applyAmplitude) {	ampEnvelope.apply_release(wfArray[note].bufferGain);}
+	  if (applyPitch) {	timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);} 
+		if (applyTimbre) { pitchEnvelope.apply_release(wfArray[note].masterSource);}
 		wfArray[note].stopBuffer(releaseLen);
 	}
 }
