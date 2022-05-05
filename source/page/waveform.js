@@ -2,10 +2,12 @@
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor(audioContext, samplingBuffer) {
+	constructor(audioContext, samplingBuffer, freq) {
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
-		this.masterSource = this.audioContext.createBufferSource();;
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = this.audioContext.createGain();
@@ -69,9 +71,9 @@ class WaveForm{
 	 * Play the waveform at the given frequency.
 	 * @param {Number} freq The frequency to play.
 	 */
-	playBuffer(freq) {
-		this.masterSource.playbackRate.value =
-			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+	playBuffer() {
+		
+		
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/

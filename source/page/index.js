@@ -91,7 +91,7 @@ function keyIndexToNote(index) {
 }
 
 var amplitude = ["1", "1", "1", 0.1, 0.1, 0.1, false, false];
-var pitch = ["t/10", "1", "1", 1, 1, 1, false, false];
+var pitch = ["1", "1", "1", 1, 1, 1, false, false];
 var timbre = ["20000", "20000", "20000", 1, 1, 1, false, false];
 
 var functionGraph = null;
@@ -130,12 +130,12 @@ function submitFunction() {
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
 		//console.log(baseBuffer);
-		const wf = new WaveForm(audioContext, baseBuffer);
+		const wf = new WaveForm(audioContext, baseBuffer, noteFreq[note[1]][note[0]]);
 		wfArray[note] = wf;		
 		ampEnvelope.apply_attack(wf.bufferGain);
 		ampEnvelope.apply_decay(wf.bufferGain);
-		timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
-		timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
+		//timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+		//timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
 		pitchEnvelope.apply_attack(wf.masterSource);
 		pitchEnvelope.apply_decay(wf.masterSource);
 		playing[noteToKeyIndex(note)] = true;
@@ -146,8 +146,7 @@ function startNote(note){
 			if (isNormalized) {
 				wf.normalizeBuffer();
 			}
-			let freq = noteFreq[note[1]][note[0]];
-			wf.playBuffer(freq);
+			wf.playBuffer();
 		}
 	}
 }
@@ -157,7 +156,7 @@ function stopNote(note){
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
 		ampEnvelope.apply_release(wfArray[note].bufferGain);
-		timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);
+		//timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);
 		pitchEnvelope.apply_release(wfArray[note].masterSource);
 		wfArray[note].stopBuffer(releaseLen);
 	}

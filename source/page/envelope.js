@@ -31,7 +31,7 @@ class PitchEnvelope extends Envelope {
     #initialPlaybackRate;
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
         super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
-        this.#initialPlaybackRate = 0;
+        this.#initialPlaybackRate = 1;
     }
     /**
      * Sets value of the playback rates according to values of curve. distributes assignments evenly across duration
@@ -43,7 +43,8 @@ class PitchEnvelope extends Envelope {
     #setValueCurveAtTime(curve,source,startTime,duration){
         let deltaTime = duration/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            source.playbackRate.setValueAtTime(this.#initialPlaybackRate*curve[i],startTime + i*deltaTime);
+            console.log(10 * this.#initialPlaybackRate * curve[i]);
+            source.playbackRate.setValueAtTime(10 * this.#initialPlaybackRate * curve[i],startTime + i*deltaTime);
         }
     }
     /**
@@ -52,6 +53,7 @@ class PitchEnvelope extends Envelope {
      */
      apply_attack(source){
         this.#initialPlaybackRate = source.playbackRate.value;
+        console.log(this.#initialPlaybackRate);
         this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
     }
     /**
