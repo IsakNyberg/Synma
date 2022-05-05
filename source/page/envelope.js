@@ -43,8 +43,8 @@ class PitchEnvelope extends Envelope {
     #setValueCurveAtTime(curve,source,startTime,duration){
         let deltaTime = duration/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            console.log(10 * this.#initialPlaybackRate * curve[i]);
-            source.playbackRate.setValueAtTime(10 * this.#initialPlaybackRate * curve[i],startTime + i*deltaTime);
+            console.log(this.#initialPlaybackRate * curve[i]);
+            source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
         }
     }
     /**
