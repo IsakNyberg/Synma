@@ -92,7 +92,7 @@ function keyIndexToNote(index) {
 
 var amplitude = ["1", "1", "1", 0.1, 0.1, 0.1, false, false];
 var pitch = ["t/10", "1", "1", 1, 1, 1, false, false];
-var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, false, false];
+var timbre = ["20000", "20000", "20000", 1, 1, 1, false, false];
 
 var functionGraph = null;
 document.getElementById("functionButton").onclick = submitFunction;
