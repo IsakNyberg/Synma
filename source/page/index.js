@@ -91,7 +91,7 @@ function keyIndexToNote(index) {
 }
 
 var amplitude = ["1", "1", "1", 0.1, 0.1, 0.1, false, false];
-var pitch = ["1-t", "0", "t", 1, 1, 1, false, false];
+var pitch = ["t/10", "1", "1", 1, 1, 1, false, false];
 var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, false, false];
 
 var functionGraph = null;
@@ -103,7 +103,7 @@ function submitFunction() {
 		
 		// sksapa envelope!!! :)
 		createEnvelope([parser.parse(amplitude[0]),parser.parse(amplitude[1]),parser.parse(amplitude[2])],amplitude[3],amplitude[4],amplitude[5],"Amplitude");
-		//createEnvelope(parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2]),pitch[3],pitch[4],pitch[5],"Pitch");
+		createEnvelope(parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2]),pitch[3],pitch[4],pitch[5],"Pitch");
 		//createEnvelope(parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2]),timbre[3],timbre[4],timbre[5],"Timbre");
 
 	}
@@ -135,6 +135,8 @@ function startNote(note){
 		wfArray[note] = wf;		
 		ampEnvelope.apply_attack(wf.bufferGain);
 		ampEnvelope.apply_decay(wf.bufferGain);
+		pitchEnvelope.apply_attack(wf.masterSource);
+		pitchEnvelope.apply_decay(wf.masterSource);
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
@@ -155,6 +157,7 @@ function stopNote(note){
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
 		ampEnvelope.apply_release(wfArray[note].bufferGain);
+		pitchEnvelope.apply_release(wfArray[note].masterSource);
 		wfArray[note].stopBuffer(releaseLen);
 	}
 }
