@@ -103,9 +103,8 @@ function submitFunction() {
 		
 		// sksapa envelope!!! :)
 		createEnvelope([parser.parse(amplitude[0]),parser.parse(amplitude[1]),parser.parse(amplitude[2])],amplitude[3],amplitude[4],amplitude[5],"Amplitude");
-		createEnvelope(parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2]),pitch[3],pitch[4],pitch[5],"Pitch");
-		//createEnvelope(parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2]),timbre[3],timbre[4],timbre[5],"Timbre");
-
+		createEnvelope([parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2])],timbre[3],timbre[4],timbre[5],"Timbre");
+		createEnvelope([parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2])],pitch[3],pitch[4],pitch[5],"Pitch");
 	}
 	var ctx = document.getElementById('waveformGraph');
 	var fn = getParsedFunction();
@@ -135,14 +134,15 @@ function startNote(note){
 		wfArray[note] = wf;		
 		ampEnvelope.apply_attack(wf.bufferGain);
 		ampEnvelope.apply_decay(wf.bufferGain);
+		timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+		timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
 		pitchEnvelope.apply_attack(wf.masterSource);
 		pitchEnvelope.apply_decay(wf.masterSource);
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
 		if(input != document.activeElement){
-			
-			var fn = getParsedFunction();
+			//var fn = getParsedFunction();
 			if (isNormalized) {
 				wf.normalizeBuffer();
 			}
@@ -157,6 +157,7 @@ function stopNote(note){
 	if (playing[noteToKeyIndex(note)]) {
 		playing[noteToKeyIndex(note)] = false;
 		ampEnvelope.apply_release(wfArray[note].bufferGain);
+		timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);
 		pitchEnvelope.apply_release(wfArray[note].masterSource);
 		wfArray[note].stopBuffer(releaseLen);
 	}
