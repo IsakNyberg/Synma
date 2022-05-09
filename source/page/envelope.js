@@ -7,23 +7,23 @@
  * @returns {Array} Function samples
  */
  function soundBufferFromFunc(n,samples,fn){
-    var arr=new Array(samples);
+    var arr = new Array(samples);
     step = n/samples;
-    let i,j = 0;
-    for (i = 0; i < n; i+=step) {
-        arr[j++]=fn(i)/10;
+    let i, j = 0;
+    for (i = 0; i < n; i += step) {
+        arr[j++] = fn(i)/10;
     }
     return arr;
 }
 class Envelope {
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-        this.attackLen=attackLen;
-        this.decayLen=decayLen;
-        this.releaseLen=releaseLen;
+        this.attackLen = attackLen;
+        this.decayLen = decayLen;
+        this.releaseLen = releaseLen;
         this.attackBuffer = soundBufferFromFunc(attackLen,noOfSamples,attack);
         this.decayBuffer = soundBufferFromFunc(decayLen,noOfSamples,decay);
         this.releaseBuffer = soundBufferFromFunc(releaseLen,noOfSamples,release);
-        this.audioCtx=audioCtx;
+        this.audioCtx = audioCtx;
     }  
 
 }
