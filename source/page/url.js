@@ -1,5 +1,5 @@
 function saveSettings(){
-let origin = window.location.origin + window.location.pathname;
+let origin = window.location.pathname;
 origin+="?";
 origin+="func1=";
 origin+=document.getElementById("functionInput").value+ "&";
@@ -27,23 +27,48 @@ else origin+="!normalise";
         if(!timbre[i]) origin += "!";
         origin += "t" + labels[i]; 
     }
-    navigator.clipboard.writeText(origin);
+
+	var divs = ["applyAmplitude", "applyTimbre", "applyPitch"];
+	var apply = ["appA", "appF", "appP"];
+    for(let i = 0; i<apply.length; i++){
+	if(document.getElementById(divs[i]).checked) origin +=  "&" + apply[i];
+	else origin +=  "&" + "!" + apply[i];
+	}
+
+
+    navigator.clipboard.writeText(window.location.origin + toURLSafe(origin));
 }
 
+function toURLSafe(url){
+    if(url.includes("+")){
+        return url.replaceAll("+", "plus");
+    }
+    return url;
+}
+function fromURLSafe(url){
+    if(url.includes("plus")){
+        return url.replaceAll("plus", "+");
+    }
+    return url;
+}
 
 let origin = window.location.search;
 const urlParams = new URLSearchParams(origin);
-
 if(urlParams.has('func1')){
-    document.getElementById("functionInput").value = urlParams.get('func1');
+    document.getElementById("functionInput").value = fromURLSafe(urlParams.get('func1'));
     document.getElementById("maxXInput").value= urlParams.get("max");
-    document.getElementById("normalizeCheckbox").checked=urlParams.get("normalizeCheckbox")
+    var normalizeCheckbox;
+    if(urlParams.get("normalise") == '')
+        normalizeCheckbox = true;
+    else 
+        normalizeCheckbox = false;
+    document.getElementById("normalizeCheckbox").checked = normalizeCheckbox;
 
     var labels = ['funcAtt', 'funcDec', 'funcRel', 'lengthAtt', 'lengthDec', 'lengthRel', 'norm', 'cont'];
     for(let i = 0; i<pitch.length - 2; i++){
-        amplitude[i] = urlParams.get('a' + labels[i]);
-        pitch[i] = urlParams.get('p' + labels[i]);
-        timbre[i] = urlParams.get('t' + labels[i]);
+        amplitude[i] = fromURLSafe(urlParams.get('a' + labels[i]));
+        pitch[i] = fromURLSafe(urlParams.get('p' + labels[i]));
+        timbre[i] = fromURLSafe(urlParams.get('t' + labels[i]));
     }
     for(let i = 3; i<6; i++){
         amplitude[i] = parseFloat(amplitude[i]);
@@ -59,7 +84,14 @@ if(urlParams.has('func1')){
         if(urlParams.get('t' + labels[i]) == '') timbre[i] = true;
         else timbre[i] = false;
     }
-    console.log("fixat");
+
+	
+	var divs = ["applyAmplitude", "applyTimbre", "applyPitch"];
+	var apply = ["appA", "appF", "appP"];
+    for(let i = 0; i<apply.length; i++){
+        if(urlParams.get(apply[i]) == '') {document.getElementById(divs[i]).checked = true;}
+        else document.getElementById(divs[i]).checked = false;
+	}
 
     submitFunction();
     chosenEnvelope(1);
