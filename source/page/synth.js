@@ -138,7 +138,7 @@ class Piano{
     }
     #pressedKey(pressedKey){
         if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
-            this.removeMarkers(this.#markersPosition);
+            this.#removeMarkers(this.#markersPosition);
             if(pressedKey.keyCode == 90)
                 this.#placeMarkers(--this.#markersPosition);
             if(pressedKey.keyCode == 88)
@@ -210,6 +210,7 @@ class Piano{
 
 class Synth {
     #audioContext = null;
+    #masterVolume = null;
     #waveFunction;
     #envFunctions={
         "amplitude" : {
@@ -251,6 +252,7 @@ class Synth {
      */
     #setWave(){
         this.#audioContext = new AudioContext();
+        this.#masterVolume = this.#audioContext.createGain()
         this.#waveFunction = this.#waveParser.parse(document.getElementById("functionInput").value);
         this.#maxX=parseFloat(document.getElementById("maxXInput").value);
         this.#createEnvelopes();
@@ -342,6 +344,9 @@ class Synth {
         this.#piano.playing[note] = false;
         this.#ampEnvelope.apply_release(this.#waveforms[note].bufferGain);
         this.#waveforms[note].stopBuffer(this.#releaseLen);
+    }
+    setMasterVolume(){
+
     }
 
 }
