@@ -163,6 +163,7 @@ function startNote(note){
 function stopNote(note){
 	// everything must be in the if statement
 	if (playing[noteToKeyIndex(note)]) {
+		resetKeyColor(note);
 		playing[noteToKeyIndex(note)] = false;
 		console.log("stopppades: ", note);
 		let applyAmplitude = document.getElementById("applyAmplitude").checked;
@@ -332,4 +333,108 @@ function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {
 		default:
 			return;
 	}
+}
+
+function play(i) {
+    var x = [
+    ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  350],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  400],
+        ["C", 4,  1300],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  400],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["C", 4,  400],
+        ["B", 3,  400],
+        ["A", 3,  1000],
+        ["B", 3,  400],
+        ["C", 4,  400],
+        ["D", 4,  400],
+        ["E", 4,  1000],
+        ["G", 3,  400],
+        ["F", 4,  400],
+        ["E", 4,  400],
+        ["D", 4,  1000],
+        ["E", 3,  400],
+        ["E", 4,  400],
+        ["D", 4,  400],
+        ["C", 4,  1000],
+        ["D", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["B", 3,  1400],
+        ["E", 4,  400],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  350],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  400],
+        ["C", 4,  1300],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  400],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["C", 4,  400],
+        ["B", 3,  400],
+        ["A", 3,  1000],
+    ];
+    if (i >= x.length) {
+    	return;
+    }
+    var xx = x[i];
+    var note1 = [xx[0], xx[1]+1];
+    var note2 = [xx[0], xx[1]];
+    var note3 = [xx[0], xx[1]-1];
+    var time = xx[2]*1;
+    startNote(note1);
+    startNote(note2);
+    startNote(note3);
+    setTimeout(()=>stopNote(note1), time);
+    setTimeout(()=>stopNote(note2), time);
+    setTimeout(()=>stopNote(note3), time);
+    setTimeout(()=>play(i+1), time);
 }
