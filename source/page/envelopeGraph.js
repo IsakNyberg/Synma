@@ -160,8 +160,8 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, int
 					display: false 
 				},
 				y: {
-					//min: interval[0],
-					//max: interval[1],
+					min: interval[0],
+					max: interval[1],
 					beginAtZero:false
 				}, 
 			}

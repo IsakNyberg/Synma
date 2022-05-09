@@ -293,15 +293,18 @@ var envelopeGraph = null;
 
 function graphEnvelope(chosenEnvelope){
 	var chosen;
+    var yLimits;
 	switch(chosenEnvelope){
 		case "Amplitude":
 			chosen = amplitude;
+            yLimits = [0, 1]
 			break;
 		case "Pitch":
 			chosen = pitch;
 			break;
 		case "Filter":
 			chosen = timbre;
+            yLimits = [0, 1]
 			break;
 		default:
 			return;
@@ -310,13 +313,91 @@ function graphEnvelope(chosenEnvelope){
 	if (envelopeGraph) {
 		envelopeGraph.destroy();
 	}	
-	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
+	var newFunctions =  [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
+	if(chosen[6] || chosen[7])
+		newFunctions = getNormalizedAndOrContinuousFunctions(newFunctions, 100, chosen[3], chosen[4], chosen[5], chosen[6], chosen[7])
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
+    
+	if(chosen[6] || chosen[7])
+        newFunctions = getNormalizedAndOrContinuousFunctions(newFunctions, 100, chosen[3], chosen[4], chosen[5], chosen[6], chosen[7])
+
+    if(chosen == pitch)
+        yLimits = getYLimits(newFunctions, 100, chosen[3], chosen[4], chosen[5]);
+    console.log(yLimits);
+
 	// drawEnvelope(ctx, [fn1, fn2, fn3], samples, [max1, max2, max3], cont, normal, ['#0f0','#ff3','#f00'])
 	// Yo Lukas my man går det bra o fixa lite y-intervals funktioner
-	envelopeGraph = drawEnvelope(ctx, functions, 100, limits, [chosen[6], chosen[7]], ['#830','#d93','#387'], [-1, 1]);
-	createEnvelope(functions,chosen[3],chosen[4],chosen[5],chosenEnvelope);
+	envelopeGraph = drawEnvelope(ctx, newFunctions, 100, limits, [chosen[6], chosen[7]], ['#830','#d93','#387'], yLimits);
+	createEnvelope(newFunctions,chosen[3],chosen[4],chosen[5],chosenEnvelope);
+    console.log("test");
 }
+
+function getYLimits(functions, steps, maxX1, maxX2, maxX3){
+    var max = 1;
+    var min = 0;
+	var step = (maxX1 + maxX2 + maxX3) / steps;
+    console.log("step: " + step)
+	for (let i = 0; i < maxX1; i += step) {
+		max = Math.max(max, functions[0](i));
+		min = Math.min(min, functions[0](i));
+	}
+	for (let i = 0; i < maxX2; i += step) {
+		max = Math.max(max, functions[1](i));
+		min = Math.min(min, functions[1](i));
+	}
+	for (let i = 0; i <= maxX3; i += step) {
+		max = Math.max(max, functions[2](i));
+		min = Math.min(min, functions[2](i));
+        console.log("min: " + min + "max: " + max)
+	}
+    return [min, max];
+}
+
+/**
+ * 
+ * @param {Array<Function>} functions 
+ * @param {Number} maxX1 
+ * @param {Number} maxX2 
+ * @param {Number} maxX3 
+ * @param {Boolean} normalize 
+ * @param {Boolean} continuous 
+ */
+ function getNormalizedAndOrContinuousFunctions(functions, steps, maxX1, maxX2, maxX3, normalize, continuous){
+	var offset1 = 0;
+	var offset2 = 0;
+
+	if(continuous) {
+		offset1 = functions[0](maxX1) - functions[1](0);
+		offset2 = functions[1](maxX2) + offset1 - functions[2](0);
+
+		let temp1 = functions[1];
+		let temp2 = functions[2];
+		functions[1] = (x) => (temp1(x) + offset1);
+		functions[2] = (x) => (temp2(x) + offset2);
+	}
+	if(normalize){
+		var max = 0;
+		var step = (maxX1 + maxX2 + maxX3) / steps;
+		for (let i = 0; i < maxX1; i += step) {
+			max = Math.max(max, Math.abs(functions[0](i)));
+		}
+		for (let i = 0; i < maxX2; i += step) {
+			max = Math.max(max, Math.abs(functions[1](i)));
+		}
+		for (let i = 0; i <= maxX3; i += step) {
+			max = Math.max(max, Math.abs(functions[2](i)));
+		}
+		let temp1 = functions[0];
+		let temp2 = functions[1];
+		let temp3 = functions[2];
+		functions[0] = (x) => (temp1(x) / max);
+		functions[1] = (x) => (temp2(x) / max);
+		functions[2] = (x) => (temp3(x) / max);
+	} 
+
+	return functions;
+}
+
 function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {
 	
 	switch(chosenEnvelope){
