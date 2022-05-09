@@ -15,24 +15,6 @@
 	}
 	return domain;
 }
-/**
- * Takes each entry in the domain and applies the function on it and returns and 
- * array of theses values.
- * @param fn The function to graph.
- * @param domain The set of values on the horizontal axis.
- * @returns The set of values which are the result of applying the function fn to the domain.
- */
-function makeRangeContinous(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain) {
-	var range = Array(domain.length);
-	 
-	for(let i = 0; i < domain.length; i++) {
-
-		if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
-		if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
-		if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
-	}
-	return range;
-}
 
 function makeEnvelopeRange(fn, max, domain, continous, interval) {
 	var fn1 = fn[0];
@@ -85,7 +67,6 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
 		offset2 = Math.abs(fn2(maxX2 - maxX1) + offset1 - fn3(domain[0]));
 		if((fn2(maxX2) + offset1) < fn3(maxX2)) offset2 = -1 * offset2;
 	}
-
 
 	for(let i = 0; i < domain.length; i++) {
 
@@ -186,7 +167,6 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, int
 			}
 		}
 	};
-	
 	return new Chart(ctx, config);
 }
 /** 
