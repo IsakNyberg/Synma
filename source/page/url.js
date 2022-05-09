@@ -28,6 +28,14 @@ else origin+="!normalise";
         origin += "t" + labels[i]; 
     }
 
+	var divs = ["applyAmplitude", "applyTimbre", "applyPitch"];
+	var apply = ["appA", "appF", "appP"];
+    for(let i = 0; i<apply.length; i++){
+	if(document.getElementById(divs[i]).checked) origin +=  "&" + apply[i];
+	else origin +=  "&" + "!" + apply[i];
+	}
+
+
     navigator.clipboard.writeText(window.location.origin + toURLSafe(origin));
 }
 
@@ -46,7 +54,6 @@ function fromURLSafe(url){
 
 let origin = window.location.search;
 const urlParams = new URLSearchParams(origin);
-console.log(fromURLSafe(origin));
 if(urlParams.has('func1')){
     document.getElementById("functionInput").value = fromURLSafe(urlParams.get('func1'));
     document.getElementById("maxXInput").value= urlParams.get("max");
@@ -77,6 +84,14 @@ if(urlParams.has('func1')){
         if(urlParams.get('t' + labels[i]) == '') timbre[i] = true;
         else timbre[i] = false;
     }
+
+	
+	var divs = ["applyAmplitude", "applyTimbre", "applyPitch"];
+	var apply = ["appA", "appF", "appP"];
+    for(let i = 0; i<apply.length; i++){
+        if(urlParams.get(apply[i]) == '') {document.getElementById(divs[i]).checked = true;}
+        else document.getElementById(divs[i]).checked = false;
+	}
 
     submitFunction();
     chosenEnvelope(1);
