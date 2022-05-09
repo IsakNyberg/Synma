@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <title>Mjukvarusynt</title>
+  <link href="index.css" rel="stylesheet"> 
+  
+
+  
+</head>
+<body>
+ <!---
+  <div>
+     <button class="corner-btn" >
+       Explore our devices
+     </button>
+  </div>
+
+  <div class="">
+    <p class="page-title">
+      Online synths
+    </p>
+
+    <p>
+      A synthesizer is an electronic musical instrument, 
+      and our version creates sound using mathematical functions. 
+      It is also available online, as a web-based application! 
+      The user provides a mathematical function, and an interval, which creates a periodic waveform.
+       The user can then play the waveform on the keyboard.
+    </p>
+  </div>-->
+
+  <div class="flex-container">
+    <div class="flex-container-row">
+      <div class="flex-container-column1">
+        <div class="headLine">Graph</div>
+      <div class="submit">
+        <form action="javascript:submitFunction()">
+          <input type="text" name="function" id="functionInput" placeholder="f(t)" class="inputDesign"/>
+          <input type="text" name="function" id="maxXInput" placeholder="max x" class="inputDesign"/>
+          <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
+          <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
+          <label>Normalize</label>
+        </form>
+        
+      </div> 
+      <div class="waveformGraphDiv">
+        <canvas id="waveformGraph" height="100%"></canvas>
+      </div>
+    </div>
+    <div class="flex-container-column2">
+      <div>
+        <div class="headLine">Envelope</div>
+        </div>
+      <div class="env-inputs">
+        <form action="javascript:submitEnvelope()">
+          <div class="dropdown">
+            <button id="chosenEnvelope" class="dropbtn">None</button>
+            <div class="dropdown-content">
+              <a onclick="chosenEnvelope(1)">Timbre</a>
+              <a onclick="chosenEnvelope(2)">Pitch</a>
+              <a onclick="chosenEnvelope(3)">Amplitude</a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <button id="chosenTimezone" class="dropbtn"></button>
+            <div class="dropdown-content">
+              <a onclick="chosenTimezone(1)">Attack</a>
+              <a onclick="chosenTimezone(2)">Decay</a>
+              <a onclick="chosenTimezone(3)">Release</a>
+            </div>
+          </div>
+          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
+          <input type="text" name="env-time" placeholder="s" class="inputDesign" id="env-timeInput"/>
+          <input class="function-btn" type="button" name="Submit" value="Submit" id="env-functionButton"/>
+          </form>
+      </div>
+      
+      <div id="envelopeGraphDiv">
+        <canvas id="envelopeGraph" height="100%"></canvas>
+      </div>
+      <div id="slider-range">
+        <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope"> 
+        <label>Normalize</label>
+        <input class="normalize-chkbox" type="checkbox" id="continuousCheckbox">
+        <label>Continuous</label></div>
+
+    </div>
+  </div>
+  </div>
+  <div id="piano-container">
+  <div id="piano"></div>
+  <div class="header">
+    <div>Move keys</div>
+    <div><span class="arrow-btn"> Z </span>
+    <span class="move-p" > &#8592; To the left  To the right &#8594; </span>
+    <span class="arrow-btn"> X </span></div>
+  </div> 
+  </div>
+  <script src="frequencies.js"></script>
+  <script src="waveform.js"></script>
+  <script src="parse.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
+  <script src="graph.js"></script>
+  <script src="envelopeGraph.js"></script>
+  <script src="envelope.js"></script>
+  <script src="synth.js"></script>
+</body>
+</html>
