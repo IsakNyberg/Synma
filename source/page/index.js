@@ -103,7 +103,7 @@ function submitFunction() {
 		
 		// sksapa envelope!!! :)
 		createEnvelope([parser.parse(amplitude[0]),parser.parse(amplitude[1]),parser.parse(amplitude[2])],amplitude[3],amplitude[4],amplitude[5],"Amplitude");
-		createEnvelope([parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2])],timbre[3],timbre[4],timbre[5],"Timbre");
+		createEnvelope([parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2])],timbre[3],timbre[4],timbre[5],"Filter");
 		createEnvelope([parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2])],pitch[3],pitch[4],pitch[5],"Pitch");
 	}
 	var ctx = document.getElementById('waveformGraph');
@@ -253,7 +253,7 @@ function submitEnvelope(){
 		case "Pitch":
 			chosen = pitch;
 			break;
-		case "Timbre":
+		case "Filter":
 			chosen = timbre;
 			break;
 		default:
@@ -300,7 +300,7 @@ function graphEnvelope(chosenEnvelope){
 		case "Pitch":
 			chosen = pitch;
 			break;
-		case "Timbre":
+		case "Filter":
 			chosen = timbre;
 			break;
 		default:
@@ -326,7 +326,7 @@ function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {
 		case "Pitch":
 			pitchEnvelope = new PitchEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
 			break;
-		case "Timbre":
+		case "Filter":
 			timbreEnvelope = new TimbreEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
 			break;
 		default:

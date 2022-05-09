@@ -204,7 +204,7 @@ function chosenTimezone(chosen){
 	document.getElementById("chosenTimezone").innerHTML = text;
 	
 	switch(document.getElementById("chosenEnvelope").innerHTML){
-		case "Timbre":
+		case "Filter":
 			values = timbre;
 			break;
 		case "Pitch":
@@ -226,7 +226,7 @@ function chosenEnvelope(chosen){
 		var time, length;
 		switch(chosen){
 				case 1:
-						text = "Timbre"
+						text = "Filter"
 			values = timbre;
 						break;
 				case 2:
