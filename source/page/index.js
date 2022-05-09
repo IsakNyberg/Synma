@@ -313,7 +313,8 @@ function graphEnvelope(chosenEnvelope){
 	var functions = [parser.parse(chosen[0]), parser.parse(chosen[1]), parser.parse(chosen[2])];
 	var limits = [chosen[3], chosen[3] + chosen[4], chosen[3] + chosen[4] + chosen[5]];
 	// drawEnvelope(ctx, [fn1, fn2, fn3], samples, [max1, max2, max3], cont, normal, ['#0f0','#ff3','#f00'])
-	envelopeGraph = drawEnvelope(ctx, functions, 100, limits,  chosen[6], chosen[7], ['#830','#d93','#387']);
+	// Yo Lukas my man går det bra o fixa lite y-intervals funktioner
+	envelopeGraph = drawEnvelope(ctx, functions, 100, limits, [chosen[6], chosen[7]], ['#830','#d93','#387'], [-1, 1]);
 	createEnvelope(functions,chosen[3],chosen[4],chosen[5],chosenEnvelope);
 }
 function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {

@@ -24,17 +24,17 @@
  */
 function makeRangeContinous(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain) {
 	var range = Array(domain.length);
-   
+	 
 	for(let i = 0; i < domain.length; i++) {
 
-        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
-        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
-        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
-    }
+		if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
+		if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
+		if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
+	}
 	return range;
 }
 
-function makeEnvelopeRange(fn, max, domain, continous) {
+function makeEnvelopeRange(fn, max, domain, continous, interval) {
 	var fn1 = fn[0];
 	var fn2 = fn[1];
 	var fn3 = fn[2]; 
@@ -45,9 +45,9 @@ function makeEnvelopeRange(fn, max, domain, continous) {
 
 	let offset1 = 0;
 	let offset2 = 0;
-   
+	 
 	if(continous) {
-   
+	 
 		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
 		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
 
@@ -57,10 +57,10 @@ function makeEnvelopeRange(fn, max, domain, continous) {
 
 	for(let i = 0; i < domain.length; i++) {
 
-        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
-        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i] - maxX1) + offset1));
-        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i] - maxX2) + offset2));
-    }
+		if(domain[i] < maxX1) 												range[i] = Math.min(interval[1], Math.max(interval[0], fn1(domain[i])));
+		if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(interval[1], Math.max(interval[0], fn2(domain[i] - maxX1) + offset1));
+		if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(interval[1], Math.max(interval[0], fn3(domain[i] - maxX2) + offset2));
+	}
 
 	return range;
 }
@@ -78,7 +78,7 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
 	let offset2 = 0;
 
 	if(continous) {
-   
+	 
 		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
 		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
 
@@ -89,10 +89,10 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
 
 	for(let i = 0; i < domain.length; i++) {
 
-        if(domain[i] < maxX1) 							range[i] = fn1(domain[i]);
-        if(domain[i] > maxX1 && domain[i] <= maxX2) 	range[i] = fn2(domain[i]-maxX1) + offset1;
-        if(domain[i] > maxX2 && domain[i] <= maxX3) 	range[i] = fn3(domain[i]-maxX2) + offset2;
-    }
+		if(domain[i] < maxX1) 												range[i] = fn1(domain[i]);
+		if(domain[i] > maxX1 && domain[i] <= maxX2) 	range[i] = fn2(domain[i]-maxX1) + offset1;
+		if(domain[i] > maxX2 && domain[i] <= maxX3) 	range[i] = fn3(domain[i]-maxX2) + offset2;
+	}
 
 	var max = 0;
 	for (let i = 0; i < range.length; i++) {
@@ -115,11 +115,11 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
  * @param normalize The boolean flag indicating whether to normalize or not.
  * @returns The domain and range of the function.
  */
-function makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous) {
+function makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous, interval) {
 	var domain = makeEnvelopeDomain(numPoints, maxValues[2]);
 	var range;
 	if (normalize) range = makeEnvelopeNormalizedRange(functions[0], functions[1], functions[2], maxValues[0], maxValues[1], maxValues[2], domain, continous);
-	else range = makeEnvelopeRange(functions, maxValues, domain, continous);
+	else range = makeEnvelopeRange(functions, maxValues, domain, continous, interval);
 	return [domain, range];
 }
 /**
@@ -133,7 +133,7 @@ function makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, cont
  * @param color The color of the border.
  * @returns The graph..
  */
-function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues) {
+function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, interval) {
 	var index1 = (domain.length * maxValues[0]) / (maxValues[2]);
 	var index2 = (domain.length * maxValues[1]) / (maxValues[2]);
 	var index3 = (domain.length);
@@ -179,8 +179,8 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues) {
 					display: false 
 				},
 				y: {
-					min: -1,
-					max: +1,
+					//min: interval[0],
+					//max: interval[1],
 					beginAtZero:false
 				}, 
 			}
@@ -198,7 +198,7 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues) {
  * @param color The color of the curve of the graph.
  * @returns The graph.  
  */
-function drawEnvelope(ctx, functions, numPoints, maxValues, normalize, continous, colorValues) {
-	var [domain, range] = makeEnvelopeDatapoints(functions, numPoints, maxValues, normalize, continous);
-	return drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues);
+function drawEnvelope(ctx, functions, numPoints, maxValues, options, colorValues, interval) {
+	var [domain, range] = makeEnvelopeDatapoints(functions, numPoints, maxValues, options[0], options[1], interval);
+	return drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, interval);
 }
