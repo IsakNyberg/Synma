@@ -23,7 +23,7 @@ class Piano{
 	#htmlDiv='<div id="piano" style="position:absolute;left:-100%;top:20%"></div>'; // parent div for the piano.
 	constructor(synth){
 		this.#synth = synth;
-		this.#noOfOctaves = 7;
+		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
 		this.#addEventListeners();
@@ -82,11 +82,18 @@ class Piano{
 	#createKeys(){
 		var res = [];
 		for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
-			for (let j = 0; j < 12 /*&& octave != this.#noOfOctaves-1 || octave == this.#noOfOctaves-1 && j< 8*/; j++) {
+			for (let j = 0; j < 12; j++) {
 				let id = 12*octave + j;
 				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
 			}
 		}
+
+		for (let j = 0; j <= 7; j++) {
+			let lastOctave = 10;
+			let id = 12 * lastOctave + j;
+			res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+		}
+
 		return res;
 	}
 	// ************************************************************************
