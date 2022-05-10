@@ -89,13 +89,9 @@ class TimbreEnvelope extends Envelope {
         for (let i = 0; i < curve.length; i++) {
             let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
             if (value < 0) { 
-                value = 0; 
-                document.getElementById("env-functionInput").value = "0";
+                value = 0;                 
             } else if (1 < value) {
-                value = 1;
-                console.log("helloooo");
-                document.getElementById("env-functionInput").value = "1";
-                
+                value = 1;                
             }
             filter.frequency.setValueAtTime(20000 * value, startTime + i * deltaTime);
         }
@@ -105,7 +101,6 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_attack(filter){
-        console.log("applying attack");
         this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -142,9 +137,14 @@ class AmpEnvelope extends Envelope {
     #setValueCurveAtTime(curve,gain,startTime,stopTime){
         let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            gain.gain.setValueAtTime(curve[i],startTime + i*deltaTime);
+            let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
+            if (value < 0) { 
+                value = 0; 
+            } else if (1 < value) {
+                value = 1;
+            }
+            gain.gain.setValueAtTime(value/10,startTime + i*deltaTime);
         }
-
     }
     /**
      * Applies the gain-values of the attackBuffer, which is created from the attack function.
