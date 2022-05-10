@@ -43,6 +43,11 @@
           <label>Normalize</label>
         </form>
         
+      </div>
+      <div>
+        <input type="range" id="volume" name="volume"
+               min="0" max="10">
+        <label for="volume">Volume</label>
       </div> 
       <div class="waveformGraphDiv">
         <canvas id="waveformGraph" height="100%"></canvas>
@@ -57,17 +62,17 @@
           <div class="dropdown">
             <button id="chosenEnvelope" class="dropbtn">None</button>
             <div class="dropdown-content">
-              <a onclick="document.getElementById('chosenEnvelope').innerHTML='Timbre'">Timbre</a>
-              <a onclick="document.getElementById('chosenEnvelope').innerHTML='Pitch'">Pitch</a>
-              <a onclick="document.getElementById('chosenEnvelope').innerHTML='Amplitude'">Amplitude</a>
+              <a class="dropdownOption" id="timbre" onclick="document.getElementById('chosenEnvelope').innerHTML='Timbre'">Timbre</a>
+              <a class="dropdownOption" id="pitch" onclick="document.getElementById('chosenEnvelope').innerHTML='Pitch'">Pitch</a>
+              <a class="dropdownOption" id="amplitude" onclick="document.getElementById('chosenEnvelope').innerHTML='Amplitude'">Amplitude</a>
             </div>
           </div>
           <div class="dropdown">
             <button id="chosenTimezone" class="dropbtn">Attack</button>
             <div class="dropdown-content">
-              <a onclick="document.getElementById('chosenTimezone').innerHTML='Attack'">Attack</a>
-              <a onclick="document.getElementById('chosenTimezone').innerHTML='Decay'">Decay</a>
-              <a onclick="document.getElementById('chosenTimezone').innerHTML='Release'">Release</a>
+              <a class="dropdownOption" id="attack" onclick="document.getElementById('chosenTimezone').innerHTML='Attack'">Attack</a>
+              <a class="dropdownOption" id="decay" onclick="document.getElementById('chosenTimezone').innerHTML='Decay'">Decay</a>
+              <a class="dropdownOption" id="release" onclick="document.getElementById('chosenTimezone').innerHTML='Release'">Release</a>
             </div>
           </div>
           <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
@@ -105,6 +110,7 @@
   <script src="envelopeGraph.js"></script>
   <script src="envelope.js"></script>
   <script src="midi.js"></script>
+  <script src="piano.js"></script>
   <script src="synth.js"></script>
   
 </body>

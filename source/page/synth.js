@@ -1,302 +1,17 @@
 let noteFreq = initFreqs();
-class Piano{
-	static #blackIndecies = [ // Key indecies that are "black" in the range 0-127
-		1,3,6,8,10,13,15,18,20,22,25,27,30,32,34,37,39,42,44,46,49,51,54,56,58,
-		61,63,66,68,70,73,75,78,80,82,85,87,90,92,94,97,99,102,104,106,109,111,
-		114,116,118,121,123,126
-	];
-	static #keyMarkers = ["q", "2", "w", "3", "e", "r", "5", "t", "6", "y", "7", "u"]; // Key markers mapping keyboard to piano keyboard
-	static #keyCodes = [81,50,87,51,69,82,53,84,54,89,55,85]; // the keycodes to the above key-markers
-	static #key = class { // key-class
-		note;       //note in MIDI-index notation
-		htmlDiv;    //the html-div of the key.
-		constructor(note,htmlDiv){
-			this.note = note;
-			this.htmlDiv = htmlDiv;
-		}
-	}
-	#noOfOctaves; // number of octaves to include in the piano
-	keys = []; // Colection of all the key objects in the piano
-	#synth; // reference to the synth
-	#clickedKey = null; // currently clicked key.
-	#markersPosition = 1; // the octave to map to the computer keyboard
-	#htmlDiv='<div id="piano" style="position:absolute;left:-100%;top:20%"></div>'; // parent div for the piano.
-	constructor(synth){
-		this.#synth = synth;
-		this.#noOfOctaves = 9;
-		this.keys = this.#createKeys();
-		this.#spawnPiano();
-		this.#addEventListeners();
-	}
-	// Keys *******************************************************************
-	/**
-	 * Creates html div for a piano key of a certain type and with a certain id
-	 * @param {Number} type 
-	 * @param {Number} id 
-	 * @returns HTMLElement
-	 */
-	#createKeyDiv(type, id) {
-		let bothIndex = [1, 3, 6, 8, 10];
-		let wbrIndex = [4, 11];
-		let wblIndex = [0, 5];
-		let cwIndex = [2, 7, 9];
-		type %= 12;
-		if (bothIndex.includes(type)) {
-			var both = document.createElement("Div");
-			both.className = "both";
-			var black = document.createElement("Div");
-			black.id = id.toString();
-			black.className = "black";
-			both.appendChild(black);
-			var lw = document.createElement("Div");
-			lw.id = (id-1).toString() + "R"; 
-			lw.className = "leftWhite";
-			both.appendChild(lw);
-			var rw = document.createElement("Div");
-			rw.id = (id+1).toString() + "L";
-			rw.className = "rightWhite";
-			both.appendChild(rw);
-			return both;
-		} else if (wbrIndex.includes(type)) {
-			var borderRight = document.createElement("Div");
-			borderRight.className = "white borderRight";
-			borderRight.id = id.toString();
-			return borderRight;
-		} else if (wblIndex.includes(type)) {
-			var borderLeft = document.createElement("Div");
-			borderLeft.className = "white borderLeft";
-			borderLeft.id = id.toString();
-			return borderLeft;
-		} else if (cwIndex.includes(type)) {
-			var coveredWhite = document.createElement("Div");
-			coveredWhite.className = "coveredWhite";
-			coveredWhite.id = id.toString();
-			return coveredWhite;
-		}
-		console.log("Invalid id (not good :O })");
-	}
-	/**
-	 * Creates an array of all the key-objects which the piano will contain. 
-	 * @returns {Array<Key>}
-	 */
-	#createKeys(){
-		var res = [];
-		for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
-			for (let j = 0; j < 12; j++) {
-				let id = 12*octave + j;
-				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
-			}
-		}
-
-		for (let j = 0; j <= 7; j++) {
-			let lastOctave = 10;
-			let id = 12 * lastOctave + j;
-			res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
-		}
-
-		return res;
-	}
-	// ************************************************************************
-	// HTML *****************************************************************************************
-	/**
-	 * Creates a html piano-div and inserts all the keys' html.
-	 */
-	#spawnPiano(){
-		document.getElementById("piano-container").insertAdjacentHTML("beforeend", this.#htmlDiv);
-		let pianoDiv = document.getElementById("piano");
-		for (let i = 0; i < this.keys.length; i++) {
-			pianoDiv.appendChild(this.keys[i].htmlDiv);
-		}
-		this.#placeMarkers(this.#markersPosition);
-	}
-	/**
-	 * Animation for sliding in the piano-div.
-	 */
-	slideInPiano(){
-		this.#slideInDiv(document.getElementById("piano"));
-	}
-	/**
-	 * Slides in a div-element into window.
-	 * @param {HTMLElement} div 
-	 */
-	#slideInDiv(div){
-		var stopPosition = 0;
-		if (parseInt(div.style.left) < stopPosition ) {
-			div.style.left = parseInt(div.style.left) + 2 + "%";
-			setTimeout(()=> this.#slideInDiv(div), 8);
-		}
-	}
-	// ***************************************************************************************************************************
-
-	//USER INPUT *****************************************************************************************************************
-	/**
-	 * Adds the event-listeners required by the piano.
-	 */
-	#addEventListeners(){
-		for (let keyIndex = 0; keyIndex < this.keys.length; keyIndex++) {
-			let divs = this.#getKeyDivsFromKeyIndex(keyIndex);
-			for (let j = 0; j < divs.length; j++) {
-				divs[j].onmousedown = () => this.#mouseDown(keyIndex);
-				divs[j].onmouseup = () => this.#mouseUp(keyIndex);
-				divs[j].onmouseenter = () => this.setKeyColor(keyIndex, "lightgrey");
-				divs[j].onmouseleave = () => this.resetKeyColor(keyIndex);
-			}
-		}
-		document.addEventListener('keydown', (keyCode) => this.#pressedKey(keyCode));
-		document.addEventListener('keyup', (keyCode) => this.#releasedKey(keyCode));
-	}
-
-	/**
-	 * Onclick
-	 * @param {Number} id 
-	 */
-	#mouseDown(keyIndex){
-		this.#clickedKey = keyIndex;
-		this.setKeyColor(keyIndex, "darkgrey");
-		this.#synth.startNote(keyIndex);
-	}
-	/**
-	 * Onclick release
-	 * @param {Number} keyIndex 
-	 */
-	#mouseUp(keyIndex){
-		this.setKeyColor(keyIndex, "lightgrey")
-		this.#synth.stopNote(this.#clickedKey);
-	}
-	// activeElement moaste blur:as efter annan input.
-	/**
-	 * Gets the corresponding html-divs to the specified keyIndex 
-	 * @param {Number} keyIndex 
-	 * @returns {Array<HTMLElement>} 
-	 */
-	#getKeyDivsFromKeyIndex(keyIndex) {
-		var key = document.getElementById(keyIndex);
-		var potentialLeft = document.getElementById(keyIndex+"L");
-		var potentialRight = document.getElementById(keyIndex+"R");
-		var res = [key];
-		if (potentialLeft != undefined) {
-			res.push(potentialLeft);
-		}
-		if (potentialRight != undefined) {
-			res.push(potentialRight);
-		} 
-		return res;
-	}
-	/**
-	 * Onkeypress
-	 * @param {KeyboardEvent} pressedKey 
-	 * @returns {void}
-	 */
-	#pressedKey(pressedKey){
-		if(!(document.activeElement.tagName === "BODY")) {
-			return;
-		}
-		if(pressedKey.keyCode == 90){
-			this.#removeMarkers(this.#markersPosition);
-			this.#markersPosition = Math.max(--this.#markersPosition, 0);
-			this.#placeMarkers(this.#markersPosition);
-			this.#turnOffAndReset();
-			return;
-		}
-		if(pressedKey.keyCode == 88){
-			this.#removeMarkers(this.#markersPosition);
-			this.#markersPosition = Math.min(++this.#markersPosition, this.#noOfOctaves);
-			this.#placeMarkers(this.#markersPosition);
-			this.#turnOffAndReset();
-			return;
-		}
-
-		var keyIndex = this.#keyCodeToNote(pressedKey.keyCode);
-		if (keyIndex === undefined) {
-			return;
-		}
-		console.log(keyIndex);
-		this.setKeyColor(keyIndex, "darkgrey");
-		this.#synth.startNote(keyIndex);
-	}
-	/**
-	 * Onkeyrelease
-	 * @param {KeyboardEvent} pressedKey 
-	 * @returns {void}
-	 */
-	#releasedKey(pressedKey){
-		if(!(document.activeElement.tagName === "BODY"))
-			return;
-		var keyIndex = this.#keyCodeToNote(pressedKey.keyCode);
-		if (keyIndex == undefined) {
-			return;
-		}
-		this.#synth.stopNote(keyIndex);
-		this.resetKeyColor(keyIndex);
-	}
-	/**
-	 * Forces a mock-release on all pressed keys.
-	 */
-	#turnOffAndReset(){
-		for(var i = 0; i< this.keys.length; i++) {
-			this.resetKeyColor(i);
-			this.#synth.stopNote(i);
-		}
-	}
-	// todo make this private !?
-	/**
-	 * Sets the color of the key with the specied index
-	 * @param {Number} index 
-	 * @param {String} color 
-	 */
-	setKeyColor(index, color) {
-		var divs = this.#getKeyDivsFromKeyIndex(index);
-		for (let i = 0; i < divs.length; i++) {
-			divs[i].style.backgroundColor = color;
-		}
-	}
-	/**
-	 * 
-	 * @param {Number} index 
-	 */
-	resetKeyColor(index) {
-		if(Piano.#blackIndecies.includes(index)){
-			document.getElementById(index).style.backgroundColor = "black";
-		} else {
-			var divs = this.#getKeyDivsFromKeyIndex(index);
-			for (let i = 0; i < divs.length; i++) {
-				divs[i].style.backgroundColor = "white";
-			}
-		}
-	}
-	#keyCodeToNote(keyCode){
-		if(Piano.#keyCodes.includes(keyCode))
-			return this.#markersPosition*12 + Piano.#keyCodes.indexOf(keyCode);
-	}
-	#placeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++){
-			let keyIndex = 12*x+i;
-			if(!(Piano.#blackIndecies.includes(keyIndex)))
-				document.getElementById(keyIndex).innerHTML = "<div class=\"blackText\">" + Piano.#keyMarkers[i] + "</div>";
-			else
-				document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
-		}
-	}
-	#removeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++){
-			document.getElementById(12*x+i).innerHTML = "";
-		}
-	}
-	// ***************************************************************************************************************************
-}
-
-
 class Synth {
 	#audioContext = null;
-	#masterVolume = null;
+	#masterVolume;
+	#maxVolume = 1;
 	#waveFunction;
+	#unparsedEnvFun;
 	#envFunctions = {
 		"amplitude" : {
-			"attack" : [()=>1,0.1], "decay" : [()=>1,0.1], "release" : [()=>1,0.1]
+			"attack" : [()=>1,"1",0.1], "decay" : [()=>1,"1",0.1], "release" : [()=>1/2,"1/2",0.1]
 		}, "pitch" : {
-			"attack" : [()=>0,0.1], "decay" : [()=>0,0.1], "release" : [()=>0,0.1]
+			"attack" : [()=>0,"0",0.1], "decay" : [()=>0,"0",0.1], "release" : [()=>0,"0",0.1]
 		}, "timbre" : {
-			"attack" : [()=>0.5,0.1], "decay" : [()=>0.5,0.1], "release" : [()=>0.5,0.1]
+			"attack" : [()=>1/2,"1/2",0.1], "decay" : [()=>1/2,"1/2",0.1], "release" : [()=>1/2,"1/2",0.1]
 		}
 	};
 	#releaseLen;
@@ -307,11 +22,12 @@ class Synth {
 	#baseNote;
 	#waveforms;
 	#maxX;
-	#pianoSpawned = false;
 	piano;
 	#waveParser;
 	#envelopeParser;
 	activeKeys;
+	#envelopeGraph=false;
+	#waveGraph = false;
 	constructor(){
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
@@ -327,45 +43,61 @@ class Synth {
 	 * @param {String} expr 
 	 */
 	#setWave(){
+		document.activeElement.blur();
 		this.#audioContext = new AudioContext(); // flytta? 
-		this.#masterVolume = this.#audioContext.createGain()
+		this.#masterVolume = this.#audioContext.createGain();
 		this.#waveFunction = this.#waveParser.parse(document.getElementById("functionInput").value);
 		this.#maxX = parseFloat(document.getElementById("maxXInput").value);
 		this.#createEnvelopes();
 		this.#createBase();
 		this.#createWaveforms();
+		this.#graphWave();
 		this.piano.slideInPiano();
 	}
 	//***********************************************************************************************************************
+	/**
+	 * Creates a base-note whose playback-rate will be altered to create notes of different frequencies.
+	 */
 	#createBase(){
 		this.#baseNote = WaveForm.computeBase(this.#audioContext, this.#waveFunction, this.#maxX, 4410);
 	}
+	/**
+	 * Create WaveForm instances for all possible notes on a standard midi-controller.
+	 */
 	#createWaveforms(){ 
 		for (let i = 0; i < 128; i++) {
-			this.#waveforms.push(new WaveForm(this.#audioContext,this.#baseNote));
+			this.#waveforms.push(new WaveForm(this.#audioContext,this.#baseNote, this.#masterVolume));
 		}
-		//console.log(this.#waveforms);
-		//console.log(this.#baseNote.getChannelData(0));
 	}
+	/**
+	 * Get and the input:ed function for the currently specified envelope-type and timezone.
+	 */
 
-	//***********************************************************************************************************************
 	#getEnvelopes(){
+		document.activeElement.blur();
 		let envelopString = document.getElementById("chosenEnvelope").innerHTML.toLowerCase();
 		let envelopMaxT = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
-		let parsedFn = this.#waveParser.parse(document.getElementById("env-function").value);
-		let parsedMaxT = parseFloat(document.getElementById("env-timeInput").value);
-		this.#envFunctions[envelopString][envelopMaxT] = [parsedFn, parsedMaxT];
+		let fnString = document.getElementById("env-functionInput").value;
+		let timeString = document.getElementById("env-timeInput").value;
+		let parsedMaxT = parseFloat(timeString);
+		this.#envFunctions[envelopString][envelopMaxT] = [this.#envelopeParser.parse(fnString),fnString, parsedMaxT];
+		this.#createEnvelopes();
+		this.#graphEnvelope(envelopString);
 	}
+	/**
+	 * Creates envelope instances from the currently (class property) specified envelopes.
+	 */
 	#createEnvelopes(){
-		this.#releaseLen = this.#envFunctions["amplitude"]["release"][1];
+		this.#unparsedEnvFun = []
+		this.#releaseLen = this.#envFunctions["amplitude"]["release"][2];
 		this.#ampEnvelope = new AmpEnvelope(
 			this.#envFunctions["amplitude"]["attack"][0],
 			this.#envFunctions["amplitude"]["decay"][0],
 			this.#envFunctions["amplitude"]["release"][0],
 			this.#envSamples,
-			this.#envFunctions["amplitude"]["attack"][1],
-			this.#envFunctions["amplitude"]["decay"][1],
-			this.#envFunctions["amplitude"]["release"][1],
+			this.#envFunctions["amplitude"]["attack"][2],
+			this.#envFunctions["amplitude"]["decay"][2],
+			this.#envFunctions["amplitude"]["release"][2],
 			this.#audioContext
 		);
 		this.#pitchEnvelope = new PitchEnvelope(
@@ -373,9 +105,9 @@ class Synth {
 			this.#envFunctions["pitch"]["decay"][0],
 			this.#envFunctions["pitch"]["release"][0],
 			this.#envSamples,
-			this.#envFunctions["pitch"]["attack"][1],
-			this.#envFunctions["pitch"]["decay"][1],
-			this.#envFunctions["pitch"]["release"][1],
+			this.#envFunctions["pitch"]["attack"][2],
+			this.#envFunctions["pitch"]["decay"][2],
+			this.#envFunctions["pitch"]["release"][2],
 			this.#audioContext
 		);
 		this.#timbreEnvelope = new TimbreEnvelope(
@@ -383,48 +115,77 @@ class Synth {
 			this.#envFunctions["timbre"]["decay"][0],
 			this.#envFunctions["timbre"]["release"][0],
 			this.#envSamples,
-			this.#envFunctions["timbre"]["attack"][1],
-			this.#envFunctions["timbre"]["decay"][1],
-			this.#envFunctions["timbre"]["release"][1],
+			this.#envFunctions["timbre"]["attack"][2],
+			this.#envFunctions["timbre"]["decay"][2],
+			this.#envFunctions["timbre"]["release"][2],
 			this.#audioContext
 		);
+		
 	}
 
-	//***********************************************************************************************************************
+	/**
+	 * Creates an instance of the Piano class
+	 */
 	#createPiano(){
 		this.piano = new Piano(this);
 	}
-	//***********************************************************************************************************************
+	#dropdownClick(){
+		var currentType = document.getElementById("chosenEnvelope").innerHTML.toLowerCase();
+		var currentTime = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
+		document.getElementById("env-functionInput").value = this.#envFunctions[currentType][currentTime][1];
+		document.getElementById("env-timeInput").value = this.#envFunctions[currentType][currentTime][2];
+		this.#graphEnvelope(currentType);
+	}
+	/**
+	 * Adds event-listeners for submiting functions to the synth.
+	 */
 	#addEventListeners(){
 		document.getElementById("functionButton").onclick = () => this.#setWave();
 		document.getElementById("env-functionButton").onclick = () => this.#getEnvelopes();
+		document.getElementById("volume").oninput = () => this.#setMasterVolume(document.getElementById("volume").value);
+		document.querySelectorAll(".dropdownOption").forEach((element)=> {
+			element.addEventListener("click", ()=> this.#dropdownClick())
+		});
+
 	}
-	//***********************************************************************************************************************
+	/**
+	 * Applies all the envelopes (attack and decay) on the specified waveform.
+	 * @param {WaveForm} wf 
+	 */
 	#apply_envelopes(wf){
 		this.#ampEnvelope.apply_attack(wf.bufferGain);
 		this.#ampEnvelope.apply_decay(wf.bufferGain);
+		console.log(this.#ampEnvelope);
 		//this.#pitchEnvelope.apply_attack(wf.masterSource);
 		//this.#pitchEnvelope.apply_decay(wf.masterSource);
 		//this.#timbreEnvelope.apply_attack(wf.biquadFilter);
 		//this.#timbreEnvelope.apply_decay(wf.biquadFilter);
 	}
+	/**
+	 * Start playing the specified note (midi key-index).
+	 * @param {Number} keyIndex 
+	 * @returns {void}
+	 */
 	startNote(keyIndex){
 		if (this.activeKeys[keyIndex]) {
 			return;
 		}
 		this.activeKeys[keyIndex] = true;
-		//const wf = new WaveForm(this.#audioContext, this.#baseNote);
-		//this.#waveforms[note] = wf;
 		let wf = this.#waveforms[keyIndex];
 		if (wf === undefined) {
 			console.log("click on submit function. :)");
-			alert("Before you play a key it is important that you submit a function. you cannot play unless you do this so make sure that a funciton is submutted. this is done by wiriting a funciton into the function field and then pressing the submit button in order to sumbite the funcito wichih si neccesary for playing keys beacause if you dont submite the function does not calucatee the value and the sound does not play. therefore subbmitting is very important.");
+			alert("Before you play a key it is important that you submit a function. you cannot play unless you do this so make sure that a funciton is submitted. this is done by wiriting a funciton into the function field and then pressing the submit button in order to sumbite the funcito wichih si neccesary for playing keys beacause if you dont submite the function does not calucatee the value and the sound does not play. therefore subbmitting is very important.");
 			return;
 		}
 		this.#apply_envelopes(wf);
 		let freq = noteFreq[keyIndex];
 		wf.playBuffer(freq);
 	}
+	/**
+	 * Stop playing the specified note (midi key-index).
+	 * @param {Number} keyIndex 
+	 * @returns {void}
+	 */
 	stopNote(keyIndex){
 		if (!this.activeKeys[keyIndex]) {
 			return;
@@ -433,13 +194,38 @@ class Synth {
 		this.#ampEnvelope.apply_release(this.#waveforms[keyIndex].bufferGain);
 		this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
 	}
-	setMasterVolume(){
-		// todo
+	#setMasterVolume(vol){
+		document.activeElement.blur();
+		if(this.#masterVolume == undefined)
+			return;
+		this.#masterVolume.gain.value = Math.min(Math.abs(vol)/10,Math.abs(this.#maxVolume));
+		console.log("Set master volume to: " + Math.min(Math.abs(vol)/10,Math.abs(this.#maxVolume)));
+	}
+	#graphWave(){
+		var ctx = document.getElementById('waveformGraph');
+		if (this.#waveGraph)
+			this.#waveGraph.destroy();
+		drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
+	}
+	#graphEnvelope(type){
+		var ctx = document.getElementById('envelopeGraph');
+		if (this.#envelopeGraph)
+			this.#envelopeGraph.destroy();
+		let funs = [this.#envFunctions[type]["attack"][0], this.#envFunctions[type]["decay"][0], this.#envFunctions[type]["release"][0]];
+		let times = [
+			this.#envFunctions[type]["attack"][2], 
+			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2], 
+			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2] + this.#envFunctions[type]["release"][2]
+		]
+		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, false, false, ['#830','#d93','#387']);
+		
 	}
 
 }
 window.onload = bootstrap_synt();
-
+/**
+ * Program start. Init. the synth.
+ */
 function bootstrap_synt(){
 	const synth = new Synth();
 	const midi = new Midi(synth, synth.piano);

@@ -2,13 +2,13 @@
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
 class WaveForm{
-	constructor(audioContext, samplingBuffer) {
+	constructor(audioContext, samplingBuffer, masterVolume) {
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
 		this.masterSource = null;
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
-		this.primaryGainControl = this.audioContext.createGain();
+		this.primaryGainControl = masterVolume;
 	}
 
 	/**
