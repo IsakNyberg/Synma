@@ -9,7 +9,7 @@
  function soundBufferFromFunc(n,samples,fn){
     var arr = new Array(samples);
     step = n/samples;
-    let i,j = 0;
+    let i, j = 0;
     for (i = 0; i < n; i += step) {
         arr[j++] = fn(i)/10;
     }
