@@ -84,18 +84,13 @@
       <div id="envelopeGraphDiv">
         <canvas id="envelopeGraph" height="100%"></canvas>
       </div>
-      <div id="slider-range">
-        <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope" onclick="document.activeElement.blur()"> 
-        <label>Normalize</label>
-        <input class="normalize-chkbox" type="checkbox" id="continuousCheckbox" onclick="document.activeElement.blur()">
-        <label>Continuous</label></div>
-        <input class="normalize-chkbox" type="checkbox" id="applyAmplitude" checked onclick="document.activeElement.blur()">
-        <label>Apply Amplitude</label>
-        <input class="normalize-chkbox" type="checkbox" id="applyPitch" checked onclick="document.activeElement.blur()">
-        <label>Apply Pitch</label>
-        <input class="normalize-chkbox" type="checkbox" id="applyTimbre" checked onclick="document.activeElement.blur()">
-        <label>Apply Filter</label>
-
+      <div>
+        <label><input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope" onclick="document.activeElement.blur()">Normalize</label>
+        <label><input class="normalize-chkbox" type="checkbox" id="continuousCheckbox" onclick="document.activeElement.blur()">Continuous</label>
+      </div>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyAmplitude" checked onclick="document.activeElement.blur()">Apply Amplitude</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyPitch" checked onclick="document.activeElement.blur()">Apply Pitch</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyTimbre" checked onclick="document.activeElement.blur()">Apply Filter</label>
     </div>
   </div>
   </div>
