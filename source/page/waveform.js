@@ -66,15 +66,21 @@ class WaveForm{
 		}
 	}	
 
+	createMasterSource(freq){
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+	}
+
 	/**
 	 * Play the waveform at the given frequency.
 	 * @param {Number} freq The frequency to play.
 	 */
-	playBuffer(freq) {
+	playBuffer() {
 
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value =
-			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		//this.masterSource = this.audioContext.createBufferSource();
+		//this.masterSource.playbackRate.value =
+		//	freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/

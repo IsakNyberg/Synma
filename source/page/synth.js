@@ -152,14 +152,19 @@ class Synth {
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
 	 * @param {WaveForm} wf 
 	 */
-	#apply_envelopes(wf){
+	#applyEnvelopesAD(wf){
 		this.#ampEnvelope.apply_attack(wf.bufferGain);
 		this.#ampEnvelope.apply_decay(wf.bufferGain);
-		console.log(this.#ampEnvelope);
-		//this.#pitchEnvelope.apply_attack(wf.masterSource);
-		//this.#pitchEnvelope.apply_decay(wf.masterSource);
-		//this.#timbreEnvelope.apply_attack(wf.biquadFilter);
-		//this.#timbreEnvelope.apply_decay(wf.biquadFilter);
+		this.#pitchEnvelope.apply_attack(wf.masterSource);
+		this.#pitchEnvelope.apply_decay(wf.masterSource);
+		console.log("pbrate: "+ wf.masterSource.playbackRate.value);
+		this.#timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+		this.#timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
+	}
+	#applyEnvelopesR(wf){
+		this.#ampEnvelope.apply_release(wf.bufferGain);
+		this.#pitchEnvelope.apply_release(wf.masterSource);
+		this.#timbreEnvelope.apply_release(wf.bufferBiquadFilter);
 	}
 	/**
 	 * Start playing the specified note (midi key-index).
@@ -177,9 +182,11 @@ class Synth {
 			alert("Before you play a key it is important that you submit a function. you cannot play unless you do this so make sure that a funciton is submitted. this is done by wiriting a funciton into the function field and then pressing the submit button in order to sumbite the funcito wichih si neccesary for playing keys beacause if you dont submite the function does not calucatee the value and the sound does not play. therefore subbmitting is very important.");
 			return;
 		}
-		this.#apply_envelopes(wf);
 		let freq = noteFreq[keyIndex];
-		wf.playBuffer(freq);
+		wf.createMasterSource(freq);
+		this.#applyEnvelopesAD(wf);
+		
+		wf.playBuffer();
 	}
 	/**
 	 * Stop playing the specified note (midi key-index).
@@ -191,7 +198,7 @@ class Synth {
 			return;
 		}
 		this.activeKeys[keyIndex] = false;
-		this.#ampEnvelope.apply_release(this.#waveforms[keyIndex].bufferGain);
+		this.#applyEnvelopesR(this.#waveforms[keyIndex]);
 		this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
 	}
 	#setMasterVolume(vol){
@@ -205,7 +212,7 @@ class Synth {
 		var ctx = document.getElementById('waveformGraph');
 		if (this.#waveGraph)
 			this.#waveGraph.destroy();
-		drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
+		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
 	}
 	#graphEnvelope(type){
 		var ctx = document.getElementById('envelopeGraph');
