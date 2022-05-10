@@ -436,5 +436,4 @@ window.onload = bootstrap_synt();
 function bootstrap_synt(){
 	const synth = new Synth();
 	const midi = new Midi(synth, synth.piano);
-	console.log(midi);
 }
