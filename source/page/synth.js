@@ -59,7 +59,7 @@ class Synth {
 	 * Creates a base-note whose playback-rate will be altered to create notes of different frequencies.
 	 */
 	#createBase(){
-		this.#baseNote = WaveForm.computeBase(this.#audioContext, this.#waveFunction, this.#maxX, 4410);
+		this.#baseNote = WaveForm.computeBase(this.#audioContext, this.#waveFunction, this.#maxX, 4410*4);
 	}
 	/**
 	 * Create WaveForm instances for all possible notes on a standard midi-controller.
@@ -143,10 +143,12 @@ class Synth {
 		document.getElementById("functionButton").onclick = () => this.#setWave();
 		document.getElementById("env-functionButton").onclick = () => this.#getEnvelopes();
 		document.getElementById("volume").oninput = () => this.#setMasterVolume(document.getElementById("volume").value);
-		document.querySelectorAll(".dropdownOption").forEach((element)=> {
-			element.addEventListener("click", ()=> this.#dropdownClick())
-		});
-
+		document.querySelectorAll(".dropdownOption").forEach(
+			(element)=> {element.addEventListener("click", ()=> this.#dropdownClick())}
+		);
+		document.getElementById("midiUpload").addEventListener("change", ()=>{
+			this.playMidi(URL.createObjectURL(document.getElementById("midiUpload").files[0]))
+		}, false);
 	}
 	/**
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
@@ -181,6 +183,22 @@ class Synth {
 		let freq = noteFreq[keyIndex];
 		wf.playBuffer(freq);
 	}
+	playNoteTimeDuration(keyIndex, time, duration) {
+		let wf = this.#waveforms[keyIndex];
+		let freq = noteFreq[keyIndex];
+		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
+		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
+		wf.playBufferAt(freq, time, duration);
+	}
+	async playMidi(url) {
+		const midi = await Midi.fromUrl(url);
+		midi.tracks.forEach(track => {
+			const notes = track.notes;
+			notes.forEach(note => {
+				this.playNoteTimeDuration(note.midi, note.time, note.duration);
+			})
+		})
+	}
 	/**
 	 * Stop playing the specified note (midi key-index).
 	 * @param {Number} keyIndex 
@@ -205,7 +223,7 @@ class Synth {
 		var ctx = document.getElementById('waveformGraph');
 		if (this.#waveGraph)
 			this.#waveGraph.destroy();
-		drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
+		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
 	}
 	#graphEnvelope(type){
 		var ctx = document.getElementById('envelopeGraph');
@@ -228,5 +246,5 @@ window.onload = bootstrap_synt();
  */
 function bootstrap_synt(){
 	const synth = new Synth();
-	const midi = new Midi(synth, synth.piano);
+	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
 }

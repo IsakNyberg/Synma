@@ -1,4 +1,4 @@
-class Midi {
+class MidiKeybaord {
 
 	#synth;
 	#piano;

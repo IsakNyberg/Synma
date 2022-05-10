@@ -1,14 +1,12 @@
 /**
  * @class WaveForm - it's used to create a waveform from the inputed function by sampling the points and then we can play the buffer.
 */
+
 class WaveForm{
 	constructor(audioContext, samplingBuffer, masterVolume) {
-
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value =
-			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		this.masterSource = null;
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = masterVolume;
@@ -69,22 +67,30 @@ class WaveForm{
 	}	
 
 	/**
-	 * Play the waveform at the given frequency.
-	 * @param {Number} freq The frequency to play.
+	 * Play the waveform 
 	 */
-	playBuffer() {
-		
-		
+	playBuffer(freq) {
+		this.playBufferAt(freq, 0, 0);
+	}
+
+	/**
+	* Plays buffer with a start time and a dration
+	*/
+	playBufferAt(freq, start, duration) {
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/
+		this.masterSource.connect(this.bufferBiquadFilter);
 		this.bufferBiquadFilter.type = 'lowpass';
 		this.bufferBiquadFilter.Q.value = 1;
 		this.bufferBiquadFilter.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);
-		//this.bufferGain.connect(this.primaryGainControl);
 		this.primaryGainControl.connect(this.audioContext.destination);
-		this.masterSource.start();
+		this.masterSource.start(this.audioContext.currentTime + start);
+		if (duration > 0) {
+			this.masterSource.stop(this.audioContext.currentTime + start + duration);
+		}
 	}
 	
 	/**
