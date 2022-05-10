@@ -6,9 +6,7 @@ class WaveForm{
 
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value =
-			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		this.masterSource = null;
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = masterVolume;
@@ -72,9 +70,11 @@ class WaveForm{
 	 * Play the waveform at the given frequency.
 	 * @param {Number} freq The frequency to play.
 	 */
-	playBuffer() {
-		
-		
+	playBuffer(freq) {
+
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/
