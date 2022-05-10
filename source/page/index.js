@@ -76,23 +76,23 @@ function noteToKeyIndex(note) {
 	return 3 + 12*(note[1]-1) + keyIndex.indexOf(note[0]);
 }
 function keyIndexToNote(index) {
-    var key, octave;
-    if(index < 3){
-        key = index + 9;
-        octave = 0;
-    }
-    else {
-        key = (index - 3) % 12;
-        octave = Math.floor((index) / 12) + 1;
-        if(index%12<3)
-            octave--;
-    }
-    return[keyIndex[key], octave];
+		var key, octave;
+		if(index < 3){
+				key = index + 9;
+				octave = 0;
+		}
+		else {
+				key = (index - 3) % 12;
+				octave = Math.floor((index) / 12) + 1;
+				if(index%12<3)
+						octave--;
+		}
+		return[keyIndex[key], octave];
 }
 
 var amplitude = ["1", "1", "1", 0.1, 0.1, 0.1, false, false];
-var pitch = ["1-t", "0", "t", 1, 1, 1, false, false];
-var timbre = ["1/2", "1/2", "1/2", 1, 1, 1, false, false];
+var pitch = ["0", "0", "0", 1, 1, 1, false, false];
+var timbre = ["1", "1", "1", 1, 1, 1, false, false];
 
 var functionGraph = null;
 document.getElementById("functionButton").onclick = submitFunction;
@@ -103,9 +103,8 @@ function submitFunction() {
 		
 		// sksapa envelope!!! :)
 		createEnvelope([parser.parse(amplitude[0]),parser.parse(amplitude[1]),parser.parse(amplitude[2])],amplitude[3],amplitude[4],amplitude[5],"Amplitude");
-		//createEnvelope(parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2]),pitch[3],pitch[4],pitch[5],"Pitch");
-		//createEnvelope(parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2]),timbre[3],timbre[4],timbre[5],"Timbre");
-
+		createEnvelope([parser.parse(timbre[0]),parser.parse(timbre[1]),parser.parse(timbre[2])],timbre[3],timbre[4],timbre[5],"Filter");
+		createEnvelope([parser.parse(pitch[0]),parser.parse(pitch[1]),parser.parse(pitch[2])],pitch[3],pitch[4],pitch[5],"Pitch");
 	}
 	var ctx = document.getElementById('waveformGraph');
 	var fn = getParsedFunction();
@@ -131,21 +130,32 @@ function submitFunction() {
 function startNote(note){
 	if (!playing[noteToKeyIndex(note)]) {
 		//console.log(baseBuffer);
-		const wf = new WaveForm(audioContext, baseBuffer);
+		const wf = new WaveForm(audioContext, baseBuffer, noteFreq[note[1]][note[0]]);
 		wfArray[note] = wf;		
-		ampEnvelope.apply_attack(wf.bufferGain);
-		ampEnvelope.apply_decay(wf.bufferGain);
+		let applyAmplitude = document.getElementById("applyAmplitude").checked;
+		let applyPitch = document.getElementById("applyPitch").checked;
+		let applyTimbre = document.getElementById("applyTimbre").checked;
+		if (applyAmplitude) {
+			ampEnvelope.apply_attack(wf.bufferGain);
+			ampEnvelope.apply_decay(wf.bufferGain);
+		}
+		if (applyPitch) {
+			pitchEnvelope.apply_attack(wf.masterSource);
+			pitchEnvelope.apply_decay(wf.masterSource);
+		}
+		if (applyTimbre) {
+			timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+			timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
+		}
 		playing[noteToKeyIndex(note)] = true;
 		setKeyColor(note, "darkgrey");
 		var input = document.getElementById("functionInput");
 		if(input != document.activeElement){
-			
-			var fn = getParsedFunction();
+			//var fn = getParsedFunction();
 			if (isNormalized) {
 				wf.normalizeBuffer();
 			}
-			let freq = noteFreq[note[1]][note[0]];
-			wf.playBuffer(freq);
+			wf.playBuffer();
 		}
 	}
 }
@@ -153,8 +163,15 @@ function startNote(note){
 function stopNote(note){
 	// everything must be in the if statement
 	if (playing[noteToKeyIndex(note)]) {
+		resetKeyColor(note);
 		playing[noteToKeyIndex(note)] = false;
-		ampEnvelope.apply_release(wfArray[note].bufferGain);
+		console.log("stopppades: ", note);
+		let applyAmplitude = document.getElementById("applyAmplitude").checked;
+		let applyPitch = document.getElementById("applyPitch").checked;
+		let applyTimbre = document.getElementById("applyTimbre").checked;
+		if (applyAmplitude) ampEnvelope.apply_release(wfArray[note].bufferGain);
+		if (applyPitch) pitchEnvelope.apply_release(wfArray[note].masterSource);
+		if (applyTimbre) timbreEnvelope.apply_release(wfArray[note].bufferBiquadFilter);
 		wfArray[note].stopBuffer(releaseLen);
 	}
 }
@@ -185,33 +202,33 @@ function releasedKey(pressedKey){
 }
 
 function turnOffAndReset(){
-    for(var i=0; i<playing.length; i++) {
-        if (playing[i]){
-            resetKeyColor(keyIndexToNote(i));
-            stopNote(keyIndexToNote(i));
-        }
-    }
+		for(var i=0; i<playing.length; i++) {
+				if (playing[i]){
+						resetKeyColor(keyIndexToNote(i));
+						stopNote(keyIndexToNote(i));
+				}
+		}
 }
 
 function pressedKey(pressedKey){
 	switch(pressedKey.keyCode) {
 		case 90: //z
 			if(position > 1 && pianoSpawned){
-                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
-                    removeMarkers(position);
-                    placeMarkers(--position);
-                    turnOffAndReset();                    
-                }
+								if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){
+										removeMarkers(position);
+										placeMarkers(--position);
+										turnOffAndReset();                    
+								}
 
 			}
 			break;
 		case 88: //x
 			if(position < 7 && pianoSpawned){
-                if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){                
-				    removeMarkers(position);
-				    placeMarkers(++position);
-                    turnOffAndReset();
-                }
+								if(!(getMaxXDiv() == document.activeElement || getFunctionDiv() == document.activeElement || getFunction2Div() == document.activeElement || getLengthDiv()  == document.activeElement)){                
+						removeMarkers(position);
+						placeMarkers(++position);
+										turnOffAndReset();
+								}
 			}
 			break;  
 		default:
@@ -226,8 +243,8 @@ function pressedKey(pressedKey){
 
 document.getElementById("env-functionButton").addEventListener("click", submitEnvelope);
 function submitEnvelope(){
-    var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
-    var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
+		var currentEnvelope = document.getElementById("chosenEnvelope").innerHTML;
+		var currentTimezone = document.getElementById("chosenTimezone").innerHTML;
 	var interval, chosenFunction;
 	var chosen;
 	switch(currentEnvelope){
@@ -237,7 +254,7 @@ function submitEnvelope(){
 		case "Pitch":
 			chosen = pitch;
 			break;
-		case "Timbre":
+		case "Filter":
 			chosen = timbre;
 			break;
 		default:
@@ -259,7 +276,7 @@ function submitEnvelope(){
 		default:
 			return;
 	}
-    var currentLength = parseFloat(document.getElementById("env-timeInput").value);
+		var currentLength = parseFloat(document.getElementById("env-timeInput").value);
 	chosen[interval] = currentLength;
 	chosen[chosenFunction] = getEnvelope();
 	var isNormalized = document.getElementById("normalizeEnvelope").checked;
@@ -284,7 +301,7 @@ function graphEnvelope(chosenEnvelope){
 		case "Pitch":
 			chosen = pitch;
 			break;
-		case "Timbre":
+		case "Filter":
 			chosen = timbre;
 			break;
 		default:
@@ -310,10 +327,114 @@ function createEnvelope(functions,c1,c2,c3,chosenEnvelope) {
 		case "Pitch":
 			pitchEnvelope = new PitchEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
 			break;
-		case "Timbre":
+		case "Filter":
 			timbreEnvelope = new TimbreEnvelope(functions[0],functions[1],functions[2],100,c1,c2,c3,audioContext);
 			break;
 		default:
 			return;
 	}
+}
+
+function play(i) {
+    var x = [
+    ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  350],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  400],
+        ["C", 4,  1300],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  400],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["C", 4,  400],
+        ["B", 3,  400],
+        ["A", 3,  1000],
+        ["B", 3,  400],
+        ["C", 4,  400],
+        ["D", 4,  400],
+        ["E", 4,  1000],
+        ["G", 3,  400],
+        ["F", 4,  400],
+        ["E", 4,  400],
+        ["D", 4,  1000],
+        ["E", 3,  400],
+        ["E", 4,  400],
+        ["D", 4,  400],
+        ["C", 4,  1000],
+        ["D", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["B", 3,  1400],
+        ["E", 4,  400],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["D#", 4,  350],
+        ["E", 4,  350],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  350],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  400],
+        ["C", 4,  1300],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["D#", 4,  400],
+        ["E", 4,  400],
+        ["B", 3,  400],
+        ["D", 4,  400],
+        ["C", 4,  400],
+        ["A", 3,  1000],
+        ["D", 3,  400],
+        ["F", 3,  400],
+        ["A", 3,  400],
+        ["B", 3,  1000],
+        ["F", 3,  400],
+        ["C", 4,  400],
+        ["B", 3,  400],
+        ["A", 3,  1000],
+    ];
+    if (i >= x.length) {
+    	return;
+    }
+    var xx = x[i];
+    var note1 = [xx[0], xx[1]+1];
+    var note2 = [xx[0], xx[1]];
+    var note3 = [xx[0], xx[1]-1];
+    var time = xx[2]*1;
+    startNote(note1);
+    startNote(note2);
+    startNote(note3);
+    setTimeout(()=>stopNote(note1), time);
+    setTimeout(()=>stopNote(note2), time);
+    setTimeout(()=>stopNote(note3), time);
+    setTimeout(()=>play(i+1), time);
 }

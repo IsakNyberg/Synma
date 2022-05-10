@@ -28,13 +28,23 @@ class Envelope {
 
 }
 class PitchEnvelope extends Envelope {
+    #initialPlaybackRate;
     constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
         super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
+        this.#initialPlaybackRate = 1;
     }
-    #setValueCurveAtTime(curve,source,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+    /**
+     * Sets value of the playback rates according to values of curve. distributes assignments evenly across duration
+     * @param {Array<Number>} curve 
+     * @param {AudioBufferSourceNode} source 
+     * @param {Number} startTime 
+     * @param {Number} stopTime 
+     */
+    #setValueCurveAtTime(curve,source,startTime,duration){
+        let deltaTime = duration/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            source.playbackRate.setValueAtTime(curve[i],startTime + i*deltaTime);
+            //console.log(this.#initialPlaybackRate * curve[i]);
+            source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
         }
     }
     /**
@@ -42,6 +52,8 @@ class PitchEnvelope extends Envelope {
      * @param {AudioBufferSourceNode} source
      */
      apply_attack(source){
+        this.#initialPlaybackRate = source.playbackRate.value;
+        //console.log(this.#initialPlaybackRate);
         this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
     }
     /**
@@ -73,9 +85,15 @@ class TimbreEnvelope extends Envelope {
     * @param {Number} stopTime 
     */
     #setValueCurveAtTime(curve,filter,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+        let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            filter.frequency.setValueAtTime(curve[i],startTime + i*deltaTime);
+            let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
+            if (value < 0) { 
+                value = 0;                 
+            } else if (1 < value) {
+                value = 1;                
+            }
+            filter.frequency.setValueAtTime(20000 * value, startTime + i * deltaTime);
         }
     }
     /**
@@ -98,7 +116,7 @@ class TimbreEnvelope extends Envelope {
      * @param {BiquadFilterNode} filter
      */
     apply_release(filter){
-        source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
+        filter.frequency.cancelScheduledValues(this.audioCtx.currentTime);
         this.#setValueCurveAtTime(this.releaseBuffer,filter,this.audioCtx.currentTime,this.releaseLen);
     }
 }
@@ -117,11 +135,16 @@ class AmpEnvelope extends Envelope {
     * @param {Number} stopTime 
     */
     #setValueCurveAtTime(curve,gain,startTime,stopTime){
-        let deltaTime=stopTime/curve.length;
+        let deltaTime = stopTime/curve.length;
         for (let i = 0; i < curve.length; i++) {
-            gain.gain.setValueAtTime(curve[i],startTime + i*deltaTime);
+            let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
+            if (value < 0) { 
+                value = 0; 
+            } else if (1 < value) {
+                value = 1;
+            }
+            gain.gain.setValueAtTime(value/10,startTime + i*deltaTime);
         }
-
     }
     /**
      * Applies the gain-values of the attackBuffer, which is created from the attack function.

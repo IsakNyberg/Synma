@@ -3,12 +3,16 @@
 */
 class WaveForm{
 	constructor(audioContext, samplingBuffer, masterVolume) {
+
 		this.audioContext = audioContext;
 		this.samplingBuffer = samplingBuffer;
-		this.masterSource = null;
+		this.masterSource = this.audioContext.createBufferSource();
+		this.masterSource.playbackRate.value =
+			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.bufferGain = this.audioContext.createGain();
 		this.channelData = this.samplingBuffer.getChannelData(0);
 		this.primaryGainControl = masterVolume;
+		this.bufferBiquadFilter = this.audioContext.createBiquadFilter();
 	}
 
 	/**
@@ -68,14 +72,17 @@ class WaveForm{
 	 * Play the waveform at the given frequency.
 	 * @param {Number} freq The frequency to play.
 	 */
-	playBuffer(freq) {
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value =
-			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+	playBuffer() {
+		
+		
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.bufferGain);
+		this.masterSource.connect(this.bufferBiquadFilter);/*connect(this.audioContext.destination);*/
+		this.bufferBiquadFilter.type = 'lowpass';
+		this.bufferBiquadFilter.Q.value = 1;
+		this.bufferBiquadFilter.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);
+		//this.bufferGain.connect(this.primaryGainControl);
 		this.primaryGainControl.connect(this.audioContext.destination);
 		this.masterSource.start();
 	}

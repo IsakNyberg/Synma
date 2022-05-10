@@ -11,6 +11,8 @@
   <script src="graph.js"></script>
   <script src="envelopeGraph.js"></script>
   <script src="envelope.js"></script>
+  
+
 
   
 </head>
@@ -47,6 +49,8 @@
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
           <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
           <label>Normalize</label>
+          
+          <input onclick="saveSettings()"  class="function-btn" type="button" value="Save settings">
         </form>
         
       </div> 
@@ -63,7 +67,7 @@
           <div class="dropdown">
             <button id="chosenEnvelope" class="dropbtn">None</button>
             <div class="dropdown-content">
-              <a onclick="chosenEnvelope(1)">Timbre</a>
+              <a onclick="chosenEnvelope(1)">Filter</a>
               <a onclick="chosenEnvelope(2)">Pitch</a>
               <a onclick="chosenEnvelope(3)">Amplitude</a>
             </div>
@@ -89,7 +93,15 @@
         <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope"> 
         <label>Normalize</label>
         <input class="normalize-chkbox" type="checkbox" id="continuousCheckbox">
-        <label>Continuous</label></div>
+        <label>Continuous</label>
+        <input class="normalize-chkbox" type="checkbox" id="applyAmplitude" checked>
+        <label>Apply Amplitude</label>
+        <input class="normalize-chkbox" type="checkbox" id="applyPitch" checked>
+        <label>Apply Pitch</label>
+        <input class="normalize-chkbox" type="checkbox" id="applyTimbre" checked>
+        <label>Apply Filter</label>
+      </div>
+      </div>
 
     </div>
   </div>
@@ -107,5 +119,6 @@
 	</script>
 	<script src="design.js">
 	</script>
+  <script src="url.js"></script>
 </body>
 </html>

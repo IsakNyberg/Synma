@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>description</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="description.css" type="text/css"></link>
+       
+    </head>
+    <body>
+
+        <div class="jumbotron text-center">
+            <h1>Online Synth Player</h1>
+            <p>General description of the mathematical music instrument and the various functional modules</p>
+            <form class="form-inline">
+                <div class="input-group">
+                  <input type="text" class="form-control" size="50" placeholder="Enter Single Variable Function" required>
+                  <div class="input-group-btn">
+                    <button type="button" class="btn btn-danger">Test Function</button>
+                  </div>
+                </div>
+              </form>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h2>
+                        Introduction
+                    </h2>
+                    <p>
+                        This project was created in the course II1305 Project in Information and Communications Technology, 
+                        offered by KTH Royal Institute of Technology. A synthesizer is an electronic musical instrument, 
+                        and our version creates sound using mathematical functions. It is also available online, 
+                        as a web-based application! The user provides a mathematical function, and an interval, 
+                        which creates a periodic waveform. The user can then play the waveform on the keyboard.
+                    </p>
+                    <button 
+                        class="btn btn-default btn-lg" onclick="location.href='/index.html'">Access Synth
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <span class="glyphicon glyphicon-music logo"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-fluid bg-grey">
+        <h2>Method</h2>
+            Our synthesizer creates sound by repeatedly playing a periodic waveform from a constrained mathematical function.
+            The detailed steps are as follows: Initially, a user defined mathematical function g is parsed from input. 
+            We will not dive into this since it's not part of the audio synthesis technique (and also quite boring). 
+            The following step is to buffer the audio signal when a musical note is played 
+            (which is what happens when a key on the synth is pushed). 
+            This part is quite simple, and only requires computing the samples for the waveform for a given frequency (note), 
+            and then repeatedly looping through those samples. That's it, that is how the synth makes sound!
+        </div>
+
+        <div class="container-fluid text-center">
+            <h2>Modules</h2>
+            <h4>and their functionality</h4>
+            <br>
+
+            <div class="row">
+                <div class="col-sm-4">
+                <h4>Graph</h4>
+                <p>Plots the given mathematical function but limits the range in the interval [1, 1]</p>
+            </div>
+
+            <div class="col-sm-4">
+                <h4>Parser</h4>
+                <p>Converts the given mathematical function into javascript readable code</p>
+            </div>
+
+            <div class="col-sm-4">
+                <h4>Waveform</h4>
+                <p>
+                    Handles the I/O functionality, 
+                    i.e responsibility for interpreting functions and user input, upon which actual sound is produced
+                </p>
+                </div>
+            </div>
+
+                <br><br>
+            <div class="row">
+                <div class="col-sm-4">
+            
+                <h4>Design and Pipelining</h4>
+                <p>Handles user interface and website aesthetics, enabling the user to play the instrument in a piano-like fashion</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+            
+                <h4>Envelope Graph</h4>
+                <p>Displays three separate concatenated functions</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+            
+                <h4>Envelope</h4>
+                <p>
+                    Instead of repeating the same function constantly, envelope takes several functions into consideration when
+                    calculating how sound should be emitted and changed over time.
+                </p>
+            </div>
+                
+            </div>
+            </div>
+
+            <div class="container-fluid bg-grey">
+                <h3>Graph</h3>
+                Receives several arguments which shape the graph. The graph is based upon Chart JS, a javascript library that--
+                given a dataset in the form of a domain and range, plots a graph out of said dataset. The arguments received are first 
+                and foremost a value maxX, which is the maximum rendering range of the graph in the x-direction. Another argument, numPoints
+                is the amount of points that should be evenly distributed along this x-axis of legth maxX. The delta between each point is maxX/numPoints.
+                A function is provided that provides the corresponding range for each point, i.e each domain value associated with the point.
+
+                Finally, a boolean: normalize is used as its names implies, if the client wants to normalize the graph. The range of the
+                graph is beforehand limited to the interval [-1, 1], this however can severly limit how the graph is displayed
+                as soon as the range falls out of the aforementioned interval. In order to preserve the derivative of the graph in all points,
+                the range can be normalzied in order to fall between the specified range. This is achieved by dividing all values
+                in the range with the biggest value in the range (in magnitude, i.e absolute amount). Consequently, the largest value 
+                in the range will amount to 1 (or -1) and the rest will be distributed in the interval [-1, 1].
+                <ul class="list-group">
+                    <li class="list-group-item">MaxX: Indicates the upper bound of the domain interval in the span [0, maxX], i.e how far the graph wll go in the x-direction</li>
+                    <li class="list-group-item">numPoints: The amount of points that will be calculated and plotted</li>
+                    <li class="list-group-item">fn: The function that will be plotted</li>
+                    <li class="list-group-item">normalize: Boolean that indicates whether to let the function be plotted fully or constrict it to the interval -1 to 1</li>
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item">Output: Graph that displays a function within a constrained domain and range</li>
+                </ul>
+            </div>
+
+            <div class="container-fluid">
+                <h3>Parser</h3>
+                Parser receives a mathematical function as input in text form and translates said function into javascript-readable
+                code. This is achieved through regex (regular expression), a way of categorizing strings or sub-strings by imposing
+                syntactical rules that search through said strings. 
+                <ul class="list-group">
+                    <li class="list-group-item">expr: expression that the user provides in the input field</li>
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item">Output: The expression in javascript-readable code</li>
+                </ul>
+            </div>
+
+            <div class="container-fluid bg-grey">
+                <h3>Envelope graph</h3>
+                Envelope graph is similar in all but the amount of functions taken as input, as well as three different intervals that
+                for each respective function. These functions are concatenated and displayed as one continous function.
+                <ul class="list-group">
+                    <li class="list-group-item">maxX1-maxX3: Indicates the upper bound of the domain interval in the span [0, maxX], i.e how far the graph wll go in the x-direction</li>
+                    <li class="list-group-item">fn1-fn3: The functions that will be plotted</li>
+                    <li class="list-group-item"></li>
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item">Output: The graph with the concatenated functions</li>
+
+                </ul>
+            </div>
+
+            <div class="container-fluid">
+                <h3>Waveform</h3>
+                Handles the I/O functionality, i.e responsibility for interpreting functions and user input, 
+                upon which actual sound is produced. The module works by sampling values along the imagined function line in the graph.
+                Taking all values in the range is unfeasible as the range has an infinite amount of members within any interval
+                of the domain. Instead, values are sampled according to a set sample rate, similar to points with a given delta in a graph.
+                This buffer plays the sampled values by passing on these values to the computer output device. The frequency
+                with which these samples are played is further impacted by frequency, which is mapped to the various computer keyboard
+                keys.
+                <ul class="list-group">
+                    <li class="list-group-item">maxX1-maxX3: Indicates the upper bound of the domain interval in the span [0, maxX], i.e how far the graph wll go in the x-direction</li>
+                    <li class="list-group-item">fn1-fn3: The functions that will be plotted</li>
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item">Output: The graph with the concatenated functions</li>
+                </ul>
+            </div>
+
+            <div class="container-fluid bg-grey">
+                <h3>Envelope</h3>
+                
+            </div>
+
+            <div class="container-fluid">
+                <h3>Design And Pipelingin</h3>
+                General design and aesthetics of the webpage, e.g graph sizes, settings and a graphical display of the synth piano. 
+                This module is also responsible for connecting all other aforementioned modules, 
+                i.e creating pipelines between them.                 
+            </div>
+
+
+    </body>
+</html>
