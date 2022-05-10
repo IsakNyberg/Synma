@@ -225,7 +225,12 @@ class Synth {
 		}
 		this.activeKeys[keyIndex] = false;
 		this.#applyEnvelopesR(this.#waveforms[keyIndex]);
-		this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
+		if (this.#activeEnvelopes[0]) {
+			this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
+		}else {
+			this.#waveforms[keyIndex].stopBuffer(0);
+		}
+		
 	}
 	#setMasterVolume(vol){
 		document.activeElement.blur();
