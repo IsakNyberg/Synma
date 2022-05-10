@@ -28,6 +28,7 @@ class Synth {
 	activeKeys;
 	#envelopeGraph=false;
 	#waveGraph = false;
+    #record = null;
 	constructor(){
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
@@ -140,6 +141,7 @@ class Synth {
 	 * Adds event-listeners for submiting functions to the synth.
 	 */
 	#addEventListeners(){
+		document.getElementById("recordButton").onclick = () => this.#recorder();
 		document.getElementById("functionButton").onclick = () => this.#setWave();
 		document.getElementById("env-functionButton").onclick = () => this.#getEnvelopes();
 		document.getElementById("volume").oninput = () => this.#setMasterVolume(document.getElementById("volume").value);
@@ -170,6 +172,9 @@ class Synth {
 		if (this.activeKeys[keyIndex]) {
 			return;
 		}
+        if(this.#record != null){
+            this.#record.startedIndex(keyIndex, this.#audioContext.currentTime)
+        }
 		this.activeKeys[keyIndex] = true;
 		let wf = this.#waveforms[keyIndex];
 		if (wf === undefined) {
@@ -190,6 +195,9 @@ class Synth {
 		if (!this.activeKeys[keyIndex]) {
 			return;
 		}
+        if(this.#record != null){
+            this.#record.stoppedIndex(keyIndex, this.#audioContext.currentTime)
+        }
 		this.activeKeys[keyIndex] = false;
 		this.#ampEnvelope.apply_release(this.#waveforms[keyIndex].bufferGain);
 		this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
@@ -220,6 +228,17 @@ class Synth {
 		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, false, false, ['#830','#d93','#387']);
 		
 	}
+    #recorder(){
+        if(document.getElementById("recordButton").value == "Record"){
+            this.#record = new record();
+            this.#record.startRec(this.#audioContext.currentTime);
+            document.getElementById("recordButton").value = "Stop";
+        }
+        else{
+            console.log(this.#record.stopRec());
+            document.getElementById("recordButton").value	= "Record";
+        }
+    }
 
 }
 window.onload = bootstrap_synt();
