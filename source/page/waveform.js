@@ -87,6 +87,23 @@ class WaveForm{
 		this.masterSource.start();
 	}
 	
+    playBufferAt(freq, start, duration) {
+        this.masterSource = this.audioContext.createBufferSource();
+        this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+        this.masterSource.loop = true;
+        this.masterSource.buffer = this.samplingBuffer;
+        this.masterSource.connect(this.bufferBiquadFilter);
+        this.bufferBiquadFilter.type = 'lowpass';
+        this.bufferBiquadFilter.Q.value = 1;
+        this.bufferBiquadFilter.connect(this.bufferGain);
+        this.bufferGain.connect(this.primaryGainControl);
+        this.primaryGainControl.connect(this.audioContext.destination);
+        this.masterSource.start(this.audioContext.currentTime + start);
+        if (duration > 0) {
+            this.masterSource.stop(this.audioContext.currentTime + start + duration);
+        }
+    }
+
 	/**
 	 * Stop the waveform.
 	 *  @param {Number} releaseLen The length of the release in units of time.

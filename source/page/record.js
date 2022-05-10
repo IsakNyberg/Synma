@@ -2,10 +2,12 @@ class record{
     #startedIndexs = [];
     #stoppedIndexs = [];
     #startTime = 0;
+    #result = [];
     
     constructor(){
         this.#startedIndexs = [];
         this.#stoppedIndexs = [];
+        this.#result = [];
         this.#startTime = 0;
     }
     startRec(startTime){

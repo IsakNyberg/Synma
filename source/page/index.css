@@ -62,7 +62,9 @@ label {
 	width: 100%;
 	height: 280px;
 }
-
+#playButton {
+    display: none;
+}
 #piano {
 	border: solid 1px var(--borders);
 	background-color: var(--piano-bg);;

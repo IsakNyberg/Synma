@@ -29,6 +29,7 @@ class Synth {
 	#envelopeGraph=false;
 	#waveGraph = false;
     #record = null;
+    #recordResult = [];
 	constructor(){
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
@@ -142,6 +143,7 @@ class Synth {
 	 */
 	#addEventListeners(){
 		document.getElementById("recordButton").onclick = () => this.#recorder();
+		document.getElementById("playButton").onclick = () => this.#player();
 		document.getElementById("functionButton").onclick = () => this.#setWave();
 		document.getElementById("env-functionButton").onclick = () => this.#getEnvelopes();
 		document.getElementById("volume").oninput = () => this.#setMasterVolume(document.getElementById("volume").value);
@@ -186,6 +188,13 @@ class Synth {
 		let freq = noteFreq[keyIndex];
 		wf.playBuffer(freq);
 	}
+    playNoteTimeDuration(keyIndex, time, duration) {
+        let wf = this.#waveforms[keyIndex];
+        let freq = noteFreq[keyIndex];
+        setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
+        setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
+        wf.playBufferAt(freq, time, duration);
+    }
 	/**
 	 * Stop playing the specified note (midi key-index).
 	 * @param {Number} keyIndex 
@@ -235,9 +244,16 @@ class Synth {
             document.getElementById("recordButton").value = "Stop";
         }
         else{
-            console.log(this.#record.stopRec());
-            document.getElementById("recordButton").value	= "Record";
+            this.#recordResult = this.#record.stopRec();
+            document.getElementById("recordButton").value = "Record";
+            document.getElementById("playButton").style.display	= "block";
         }
+    }
+    #player(){
+        this.#recordResult.forEach(element => {
+            this.playNoteTimeDuration(element[0], element[1], element[2]);
+        });
+        document.getElementById("playButton").value = "Playing";
     }
 
 }
