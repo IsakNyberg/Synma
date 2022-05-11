@@ -65,26 +65,35 @@ class WaveForm{
 			this.channelData[i] /= max;
 		}
 	}	
-
+	/**
+	 * Creates the sourceBuffer. Seperate function from playBuffer(), so that pitch envelopes can be applied
+	 * before the source is scrapped.
+	 * @param {Number} freq 
+	 */
 	createMasterSource(freq){
 		this.masterSource = this.audioContext.createBufferSource();
 		this.masterSource.playbackRate.value =
 			freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+		this.bufferGain.gain.cancelScheduledValues(this.audioContext.currentTime);
+		this.masterSource.playbackRate.cancelScheduledValues(this.audioContext.currentTime);
+		this.bufferBiquadFilter.frequency.cancelScheduledValues(this.audioContext.currentTime);
+		this.bufferGain.gain.value = 1.0;
+		this.bufferBiquadFilter.frequency.value = 220000; // for a lowpass this ~should~ neutralize the biquad.
 	}
 
 	/**
 	 * Play the waveform 
 	 */
-	playBuffer(freq) {
-		this.playBufferAt(freq, 0, 0);
+	playBuffer(/*freq*/) {
+		this.playBufferAt(/*freq, */0, 0);
 	}
 
 	/**
 	* Plays buffer with a start time and a dration
 	*/
-	playBufferAt(freq, start, duration) {
-		this.masterSource = this.audioContext.createBufferSource();
-		this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+	playBufferAt(/*freq,*/ start, duration) {
+		//this.masterSource = this.audioContext.createBufferSource();
+		//this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);

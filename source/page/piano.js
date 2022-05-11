@@ -1,4 +1,16 @@
 class Piano{
+	static #PIANO_PARENT_DIV_ID = "piano-container";
+	static #PIANO_DIV_ID = "piano";
+	static #PIANO_INIT_STYLE = "position:absolute;left:-100%;bot:20%";
+	static #PIANO_DIV='<div id="'+this.#PIANO_DIV_ID+'" style='+this.#PIANO_INIT_STYLE+'></div>'; // parent div for the keys.
+	static #SHARPS_AND_FLATS_COLOR = "black";
+	static #NATURAL_NOTES_COLOR = "white";
+	static #HOOVER_COLOR = "lightgrey";
+	static #PRESS_COLOR = "darkgrey";
+	static #AUTO_PRESS_COLOR = "red";
+	
+	
+	
 	static #blackIndecies = [ // Key indecies that are "black" in the range 0-127
 		1,3,6,8,10,13,15,18,20,22,25,27,30,32,34,37,39,42,44,46,49,51,54,56,58,
 		61,63,66,68,70,73,75,78,80,82,85,87,90,92,94,97,99,102,104,106,109,111,
@@ -19,7 +31,7 @@ class Piano{
 	#synth; // reference to the synth
 	#clickedKey = null; // currently clicked key.
 	#markersPosition = 1; // the octave to map to the computer keyboard
-	#htmlDiv='<div id="piano" style="position:absolute;left:-100%;top:20%"></div>'; // parent div for the piano.
+	
 	constructor(synth){
 		this.#synth = synth;
 		this.#noOfOctaves = 9;
@@ -101,8 +113,8 @@ class Piano{
 	 * Creates a html piano-div and inserts all the keys' html.
 	 */
 	#spawnPiano(){
-		document.getElementById("piano-container").insertAdjacentHTML("beforeend", this.#htmlDiv);
-		let pianoDiv = document.getElementById("piano");
+		document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
+		let pianoDiv = document.getElementById(Piano.#PIANO_DIV_ID);
 		for (let i = 0; i < this.keys.length; i++) {
 			pianoDiv.appendChild(this.keys[i].htmlDiv);
 		}
@@ -112,7 +124,7 @@ class Piano{
 	 * Animation for sliding in the piano-div.
 	 */
 	slideInPiano(){
-		this.#slideInDiv(document.getElementById("piano"));
+		this.#slideInDiv(document.getElementById(Piano.#PIANO_DIV_ID));
 	}
 	/**
 	 * Slides in a div-element into window.
@@ -137,7 +149,7 @@ class Piano{
 			for (let j = 0; j < divs.length; j++) {
 				divs[j].onmousedown = () => this.#mouseDown(keyIndex);
 				divs[j].onmouseup = () => this.#mouseUp(keyIndex);
-				divs[j].onmouseenter = () => this.setKeyColor(keyIndex, "lightgrey");
+				divs[j].onmouseenter = () => this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR);
 				divs[j].onmouseleave = () => this.resetKeyColor(keyIndex);
 			}
 		}
@@ -151,7 +163,7 @@ class Piano{
 	 */
 	#mouseDown(keyIndex){
 		this.#clickedKey = keyIndex;
-		this.setKeyColor(keyIndex, "darkgrey");
+		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
 		this.#synth.startNote(keyIndex);
 	}
 	/**
@@ -159,10 +171,9 @@ class Piano{
 	 * @param {Number} keyIndex 
 	 */
 	#mouseUp(keyIndex){
-		this.setKeyColor(keyIndex, "lightgrey")
+		this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR)
 		this.#synth.stopNote(this.#clickedKey);
 	}
-	// activeElement moaste blur:as efter annan input.
 	/**
 	 * Gets the corresponding html-divs to the specified keyIndex 
 	 * @param {Number} keyIndex 
@@ -187,7 +198,7 @@ class Piano{
 	 * @returns {void}
 	 */
 	#pressedKey(pressedKey){
-		if(!(document.activeElement.tagName === "BODY")) {
+		if(!(document.activeElement.tagName === "BODY")) { //Requires that other events in the program blurs activeElement.
 			return;
 		}
 		if(pressedKey.keyCode == 90){
@@ -210,7 +221,7 @@ class Piano{
 			return;
 		}
 		console.log(keyIndex);
-		this.setKeyColor(keyIndex, "darkgrey");
+		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
 		this.#synth.startNote(keyIndex);
 	}
 	/**
@@ -237,7 +248,6 @@ class Piano{
 			this.#synth.stopNote(i);
 		}
 	}
-	// todo make this private !?
 	/**
 	 * Sets the color of the key with the specied index
 	 * @param {Number} index 
@@ -250,23 +260,32 @@ class Piano{
 		}
 	}
 	/**
-	 * 
-	 * @param {Number} index 
+	 * Resets the keycolor (called when the key is released) to either white or black depending on index.
+	 * @param {Number} index - keyIndex
 	 */
 	resetKeyColor(index) {
 		if(Piano.#blackIndecies.includes(index)){
-			document.getElementById(index).style.backgroundColor = "black";
+			document.getElementById(index).style.backgroundColor = Piano.#SHARPS_AND_FLATS_COLOR;
 		} else {
 			var divs = this.#getKeyDivsFromKeyIndex(index);
 			for (let i = 0; i < divs.length; i++) {
-				divs[i].style.backgroundColor = "white";
+				divs[i].style.backgroundColor = Piano.#NATURAL_NOTES_COLOR;
 			}
 		}
 	}
+	/**
+	 * returns the equivalent keyindex on the synt given a keycode for a computer key.
+	 * @param {Number} keyCode - The keycode for pressed key on the computer keyboard (ascii)
+	 * @returns 
+	 */
 	#keyCodeToNote(keyCode){
 		if(Piano.#keyCodes.includes(keyCode))
 			return this.#markersPosition*12 + Piano.#keyCodes.indexOf(keyCode);
 	}
+	/**
+	 * Marks and maps the keys in the octave to computer keys qwerty(white), 23567 (black).
+	 * @param {Number} x - - The octave to be marked and mapped to the computer keyboard 
+	 */
 	#placeMarkers(x){
 		for(var i = 0; i < Piano.#keyMarkers.length; i++){
 			let keyIndex = 12*x+i;
@@ -276,10 +295,13 @@ class Piano{
 				document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
 		}
 	}
+	/**
+	 * 
+	 * @param {Number} x - The octave to be unmarked and unmapped from the computer keyboard 
+	 */
 	#removeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++){
+		for(var i = 0; i < Piano.#keyMarkers.length; i++) 
 			document.getElementById(12*x+i).innerHTML = "";
-		}
 	}
 	// ***************************************************************************************************************************
 }
