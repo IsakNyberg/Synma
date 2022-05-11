@@ -155,7 +155,29 @@ label {
 	font: 14px arial,sans-serif;
 }
 
-
+input[type=range] {
+  height: 7px;
+  -webkit-appearance: none;
+  margin: 10px 0;
+  width: 300px;
+	outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10	px;
+  cursor: pointer;
+  background: var(--button);
+  border-radius: 15px;
+}
+input[type=range]::-webkit-slider-thumb {
+  border: 1px solid var(--piano-border);
+  height: 17px;
+  width: 15px;
+  border-radius: 15px;
+  background: #FFFFFF;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
 
 .function-btn{
 	background: var(--button);
@@ -167,7 +189,7 @@ label {
 	border: none;
 	font: bold 15px arial,sans-serif;
 	text-shadow: none;
-	margin-top: 10px;
+	margin: 5px 0;
 	border-radius: 25px;
 }
 

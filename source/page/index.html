@@ -7,7 +7,10 @@
   <script src="frequencies.js"></script>
   <script src="waveform.js"></script>
   <script src="parse.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src="midiFile.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="envelopeGraph.js"></script>
   <script src="graph.js"></script>
   <script src="envelopeGraph.js"></script>
   <script src="envelope.js"></script>
@@ -51,6 +54,7 @@
           <label>Normalize</label>
           
           <input onclick="saveSettings()"  class="function-btn" type="button" value="Save settings">
+          <p><input type=file id=file size=80 onchange='fromFile();'><input class="function-btn" type="button" name="submit" value="Record" id="recordButton"/></p>
         </form>
         
       </div> 

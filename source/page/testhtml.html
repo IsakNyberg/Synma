@@ -45,8 +45,11 @@
         
       </div>
       <div>
-        <input type="range" id="volume" name="volume"
-               min="0" max="10">
+        <!-- VVV file upload button VVV -->
+        <input class="function-btn" type="button" value="Upload MIDI" onclick="document.getElementById('midiUpload').click();" />
+        <input type="file" id="midiUpload" style="display:none;" name="file"/>
+        <!-- ^^^ file upload button ^^^ -->
+        <input class="volume-slider" type="range" id="volume" name="volume" min="0" max="10">
         <label for="volume">Volume</label>
       </div> 
       <div class="waveformGraphDiv">
@@ -106,7 +109,9 @@
   <script src="frequencies.js"></script>
   <script src="waveform.js"></script>
   <script src="parse.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src="envelopeGraph.js"></script>
   <script src="graph.js"></script>
   <script src="envelopeGraph.js"></script>
   <script src="envelope.js"></script>
