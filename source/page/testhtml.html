@@ -41,13 +41,15 @@
           <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
           <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
           <label>Normalize</label>
-          <input type="file" id="midiUpload">
         </form>
         
       </div>
       <div>
-        <input type="range" id="volume" name="volume"
-               min="0" max="10">
+        <!-- VVV file upload button VVV -->
+        <input class="function-btn" type="button" value="Upload MIDI" onclick="document.getElementById('midiUpload').click();" />
+        <input type="file" id="midiUpload" style="display:none;" name="file"/>
+        <!-- ^^^ file upload button ^^^ -->
+        <input class="volume-slider" type="range" id="volume" name="volume" min="0" max="10">
         <label for="volume">Volume</label>
       </div> 
       <div class="waveformGraphDiv">
