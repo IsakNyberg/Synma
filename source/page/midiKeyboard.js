@@ -1,3 +1,6 @@
+/**
+ * @class MidiKeybaord - it's used to create the connection to the midi keyboard and set funcionallity when pressing the keys on the keyboard 
+*/
 class MidiKeybaord {
 
 	#synth;
@@ -9,10 +12,18 @@ class MidiKeybaord {
 		this.setup();
 	}
 
+	/**
+	 * this function will incase a connection could not be established with midi keyboard will log the error
+	 * @param {String} msg 
+	 */
 	#failure (msg) {
 		console.error('No access to your midi devices. - ', msg);
 	}
 
+	/**
+	 * this function will be run when we have a established to the connection with the midi keyboard and set our custom funciton to be run when we press a key 
+	 * @param {MIDIAccess} midi 
+	 */
 	#successNAssignKeys(midi) {
 		//checking that we have excatly one midi connected
 		if (midi.inputs.size == 1) {
@@ -25,7 +36,10 @@ class MidiKeybaord {
 		}
 	}
 
-
+	/**
+	 * this funciton will check if the webbrowser support the web midi api
+	 * @returns {Boolean}
+	 */
 	#checkMidiAccess() {
 		if (navigator.requestMIDIAccess) {
 			console.info('This browser supports WebMIDI!');
@@ -37,6 +51,9 @@ class MidiKeybaord {
 		}
 	}
 
+	/**
+	 * setup function check access and establish a midi conneciton if possible 
+	 */
 	setup() {
 		let hasMidiAccess = this.#checkMidiAccess();
 		// this is done this way becuase otherwise this is undefined in these functions
@@ -49,6 +66,13 @@ class MidiKeybaord {
 
 }
 
+/**
+ * this function will be run on each key on the midi keyboard and here we call the code to play the 
+ * correct node and set the piano key color
+ * @param {Array} message 
+ * @param {Synth} synth 
+ * @param {Piano} piano 
+ */
 function onMIDIMessage (message, synth, piano) {
 	if ((message.data[0] === 144 || message.data[0] === 153) && message.data[2] > 0) {
 		let index = message.data[1];
