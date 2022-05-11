@@ -1,16 +1,16 @@
-class Input {
+class InputValue {
 	#index;
 	#state; // true = on | false = off
-	#strength;
+	/*#strength;*/
 	/**
 	 * @param {Number} index
 	 * @param {Boolean} state
 	 * @param {Number} strength
 	 */
-	constructor(index, state, strength) {
+	constructor(index, state/*, strength*/) {
 		this.index = index;
 		this.state = state;
-		this.strength = strength;
+		/*this.strength = strength;*/
 	}
 	/**
 	 * @returns {Number}
@@ -27,9 +27,9 @@ class Input {
 	/**
 	 * @returns {Number}
 	 */
-	get strength() {
+	/*get strength() {
 		return this.#strength;
-	}
+	}*/
 	/**
 	 * @param {Number} index
 	 */
@@ -39,13 +39,13 @@ class Input {
 	/**
 	 * @param {Boolean} state
 	 */
-	 set state(state) {
+	set state(state) {
 		this.#state = state;
 	}
 	/**
 	 * @param {Number} strength
 	 */
-	set strength(strength) {
+	/*set strength(strength) {
 		this.#strength = strength;
-	}
+	}*/
 }
