@@ -71,6 +71,7 @@ class Synth {
 	 * Create WaveForm instances for all possible notes on a standard midi-controller.
 	 */
 	#createWaveforms(){ 
+		this.#waveforms = [];
 		for (let i = 0; i < 128; i++) {
 			this.#waveforms.push(new WaveForm(this.#audioContext,this.#baseNote, this.#masterVolume));
 		}
