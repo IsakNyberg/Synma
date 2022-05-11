@@ -4,7 +4,6 @@ class Synth {
 	#masterVolume;
 	#maxVolume = 1;
 	#waveFunction;
-	#unparsedEnvFun;
 	#envFunctions = {
 		"amplitude" : {
 			"attack" : [()=>1,"1",0.1], "decay" : [()=>1,"1",0.1], "release" : [()=>1/2,"1/2",0.1]
@@ -28,6 +27,9 @@ class Synth {
 	activeKeys;
 	#envelopeGraph=false;
 	#waveGraph = false;
+	#graphIsNormalized = false;
+	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "timbre" : [false,false]};
+	#activeEnvelopes = [true,true,true];
 	constructor(){
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
@@ -47,6 +49,7 @@ class Synth {
 		this.#audioContext = new AudioContext(); // flytta? 
 		this.#masterVolume = this.#audioContext.createGain();
 		this.#waveFunction = this.#waveParser.parse(document.getElementById("functionInput").value);
+		this.#graphIsNormalized = document.getElementById("normalizeCheckbox").checked;
 		this.#maxX = parseFloat(document.getElementById("maxXInput").value);
 		this.#createEnvelopes();
 		this.#createBase();
@@ -82,6 +85,8 @@ class Synth {
 		let timeString = document.getElementById("env-timeInput").value;
 		let parsedMaxT = parseFloat(timeString);
 		this.#envFunctions[envelopString][envelopMaxT] = [this.#envelopeParser.parse(fnString),fnString, parsedMaxT];
+		this.#envIsNormalized[envelopString][0] = document.getElementById("normalizeEnvelope").checked;
+		this.#envIsNormalized[envelopString][1] = document.getElementById("continuousCheckbox").checked;
 		this.#createEnvelopes();
 		this.#graphEnvelope(envelopString);
 	}
@@ -89,7 +94,6 @@ class Synth {
 	 * Creates envelope instances from the currently (class property) specified envelopes.
 	 */
 	#createEnvelopes(){
-		this.#unparsedEnvFun = []
 		this.#releaseLen = this.#envFunctions["amplitude"]["release"][2];
 		this.#ampEnvelope = new AmpEnvelope(
 			this.#envFunctions["amplitude"]["attack"][0],
@@ -99,7 +103,9 @@ class Synth {
 			this.#envFunctions["amplitude"]["attack"][2],
 			this.#envFunctions["amplitude"]["decay"][2],
 			this.#envFunctions["amplitude"]["release"][2],
-			this.#audioContext
+			this.#audioContext,
+			this.#envIsNormalized["amplitude"][0],
+			this.#envIsNormalized["amplitude"][1]
 		);
 		this.#pitchEnvelope = new PitchEnvelope(
 			this.#envFunctions["pitch"]["attack"][0],
@@ -109,7 +115,9 @@ class Synth {
 			this.#envFunctions["pitch"]["attack"][2],
 			this.#envFunctions["pitch"]["decay"][2],
 			this.#envFunctions["pitch"]["release"][2],
-			this.#audioContext
+			this.#audioContext,
+			this.#envIsNormalized["pitch"][0],
+			this.#envIsNormalized["pitch"][1]
 		);
 		this.#timbreEnvelope = new TimbreEnvelope(
 			this.#envFunctions["timbre"]["attack"][0],
@@ -119,7 +127,9 @@ class Synth {
 			this.#envFunctions["timbre"]["attack"][2],
 			this.#envFunctions["timbre"]["decay"][2],
 			this.#envFunctions["timbre"]["release"][2],
-			this.#audioContext
+			this.#audioContext,
+			this.#envIsNormalized["timbre"][0],
+			this.#envIsNormalized["timbre"][1]
 		);
 		
 	}
@@ -155,14 +165,28 @@ class Synth {
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
 	 * @param {WaveForm} wf 
 	 */
-	#apply_envelopes(wf){
-		this.#ampEnvelope.apply_attack(wf.bufferGain);
-		this.#ampEnvelope.apply_decay(wf.bufferGain);
-		console.log(this.#ampEnvelope);
-		//this.#pitchEnvelope.apply_attack(wf.masterSource);
-		//this.#pitchEnvelope.apply_decay(wf.masterSource);
-		//this.#timbreEnvelope.apply_attack(wf.biquadFilter);
-		//this.#timbreEnvelope.apply_decay(wf.biquadFilter);
+	#applyEnvelopesAD(wf){
+		if(this.#activeEnvelopes[0]){
+			this.#ampEnvelope.apply_attack(wf.bufferGain);
+			this.#ampEnvelope.apply_decay(wf.bufferGain);
+		}
+		if(this.#activeEnvelopes[1])
+		{
+			this.#pitchEnvelope.apply_attack(wf.masterSource);
+			this.#pitchEnvelope.apply_decay(wf.masterSource);
+		}
+		if(this.#activeEnvelopes[2]){
+			this.#timbreEnvelope.apply_attack(wf.bufferBiquadFilter);
+			this.#timbreEnvelope.apply_decay(wf.bufferBiquadFilter);
+		}
+	}
+	#applyEnvelopesR(wf){
+		if(this.#activeEnvelopes[0])
+			this.#ampEnvelope.apply_release(wf.bufferGain);
+		if(this.#activeEnvelopes[1])
+			this.#pitchEnvelope.apply_release(wf.masterSource);
+		if(this.#activeEnvelopes[2])
+			this.#timbreEnvelope.apply_release(wf.bufferBiquadFilter);
 	}
 	/**
 	 * Start playing the specified note (midi key-index).
@@ -180,9 +204,18 @@ class Synth {
 			alert("Before you play a key it is important that you submit a function. you cannot play unless you do this so make sure that a funciton is submitted. this is done by wiriting a funciton into the function field and then pressing the submit button in order to sumbite the funcito wichih si neccesary for playing keys beacause if you dont submite the function does not calucatee the value and the sound does not play. therefore subbmitting is very important.");
 			return;
 		}
-		this.#apply_envelopes(wf);
+		this.#activeEnvelopes = [
+			document.getElementById("applyAmplitude").checked,
+			document.getElementById("applyPitch").checked,
+			document.getElementById("applyTimbre").checked
+		];
+		if(this.#graphIsNormalized)
+			wf.normalizeBuffer();
 		let freq = noteFreq[keyIndex];
-		wf.playBuffer(freq);
+		wf.createMasterSource(freq);
+		this.#applyEnvelopesAD(wf);
+		
+		wf.playBuffer();
 	}
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.#waveforms[keyIndex];
@@ -210,8 +243,13 @@ class Synth {
 			return;
 		}
 		this.activeKeys[keyIndex] = false;
-		this.#ampEnvelope.apply_release(this.#waveforms[keyIndex].bufferGain);
-		this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
+		this.#applyEnvelopesR(this.#waveforms[keyIndex]);
+		if (this.#activeEnvelopes[0]) {
+			this.#waveforms[keyIndex].stopBuffer(this.#releaseLen);
+		}else {
+			this.#waveforms[keyIndex].stopBuffer(0);
+		}
+		
 	}
 	#setMasterVolume(vol){
 		document.activeElement.blur();
@@ -224,7 +262,7 @@ class Synth {
 		var ctx = document.getElementById('waveformGraph');
 		if (this.#waveGraph)
 			this.#waveGraph.destroy();
-		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, false, 'rgb(0, 0, 0, 1)');
+		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, this.#graphIsNormalized, 'rgb(0, 0, 0, 1)');
 	}
 	#graphEnvelope(type){
 		var ctx = document.getElementById('envelopeGraph');
@@ -236,7 +274,7 @@ class Synth {
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2], 
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2] + this.#envFunctions[type]["release"][2]
 		]
-		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, false, false, ['#830','#d93','#387']);
+		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, this.#envIsNormalized[type][0], this.#envIsNormalized[type][1], ['#830','#d93','#387']);
 		
 	}
 

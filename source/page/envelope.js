@@ -6,26 +6,45 @@
  * @param {Function} fn - Funtction to sample.
  * @returns {Array} Function samples
  */
- function soundBufferFromFunc(n,samples,fn){
+ function soundBufferFromFunc(n,samples,fn,offset){
     var arr = new Array(samples);
     step = n/samples;
     let i, j = 0;
     for (i = 0; i < n; i += step) {
-        arr[j++] = fn(i)/10;
+        arr[j++] = offset + fn(i)/10;
     }
     return arr;
 }
+	
 class Envelope {
-    constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
+    constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx,normalized,continuos){
         this.attackLen = attackLen;
         this.decayLen = decayLen;
         this.releaseLen = releaseLen;
-        this.attackBuffer = soundBufferFromFunc(attackLen,noOfSamples,attack);
-        this.decayBuffer = soundBufferFromFunc(decayLen,noOfSamples,decay);
-        this.releaseBuffer = soundBufferFromFunc(releaseLen,noOfSamples,release);
+        this.attackBuffer = soundBufferFromFunc(attackLen,noOfSamples,attack,0);
+        let offset = continuos ? this.attackBuffer[this.attackBuffer.length-1] : 0;
+        this.decayBuffer = soundBufferFromFunc(decayLen,noOfSamples,decay,offset);
+        offset = continuos ? this.decayBuffer[this.decayBuffer.length-1] : 0;
+        this.releaseBuffer = soundBufferFromFunc(releaseLen,noOfSamples,release,offset);
         this.audioCtx = audioCtx;
+        if(normalized)
+            this.#normalizeEnv();
     }  
-
+    /**
+     * Normalize according to the peak amplitude of the buffer.
+     */
+    #normalizeEnv() {
+        [this.attackBuffer,this.decayBuffer,this.releaseBuffer].forEach(function(x){
+            let max = 0;
+            for (let i = 0; i < x.length; i++) {
+                max = Math.max(max, Math.abs(x[i]));
+            }
+            for (let i = 0; i < x.length; i++) {
+                x[i] /= max;
+            }
+        })
+        
+    }
 }
 class PitchEnvelope extends Envelope {
     #initialPlaybackRate;
