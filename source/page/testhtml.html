@@ -49,8 +49,11 @@
         
       </div>
       <div>
-        <input type="range" id="volume" name="volume"
-               min="0" max="10">
+        <!-- VVV file upload button VVV -->
+        <input class="function-btn" type="button" value="Upload MIDI" onclick="document.getElementById('midiUpload').click();" />
+        <input type="file" id="midiUpload" style="display:none;" name="file"/>
+        <!-- ^^^ file upload button ^^^ -->
+        <input class="volume-slider" type="range" id="volume" name="volume" min="0" max="100">
         <label for="volume">Volume</label>
       </div> 
       <div class="waveformGraphDiv">
@@ -64,11 +67,11 @@
       <div class="env-inputs">
         <form action="javascript:submitEnvelope()">
           <div class="dropdown">
-            <button id="chosenEnvelope" class="dropbtn">None</button>
+            <button id="chosenEnvelope" class="dropbtn">Amplitude</button>
             <div class="dropdown-content">
-              <a class="dropdownOption" id="timbre" onclick="document.getElementById('chosenEnvelope').innerHTML='Timbre'">Timbre</a>
-              <a class="dropdownOption" id="pitch" onclick="document.getElementById('chosenEnvelope').innerHTML='Pitch'">Pitch</a>
               <a class="dropdownOption" id="amplitude" onclick="document.getElementById('chosenEnvelope').innerHTML='Amplitude'">Amplitude</a>
+              <a class="dropdownOption" id="pitch" onclick="document.getElementById('chosenEnvelope').innerHTML='Pitch'">Pitch</a>
+              <a class="dropdownOption" id="timbre" onclick="document.getElementById('chosenEnvelope').innerHTML='Filter'">Filter</a>              
             </div>
           </div>
           <div class="dropdown">
@@ -88,17 +91,17 @@
       <div id="envelopeGraphDiv">
         <canvas id="envelopeGraph" height="100%"></canvas>
       </div>
-      <div id="slider-range">
-        <input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope"> 
-        <label>Normalize</label>
-        <input class="normalize-chkbox" type="checkbox" id="continuousCheckbox">
-        <label>Continuous</label></div>
-
+      <div>
+        <label><input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope" onclick="document.activeElement.blur()">Normalize</label>
+        <label><input class="normalize-chkbox" type="checkbox" id="continuousCheckbox" onclick="document.activeElement.blur()">Continuous</label>
+      </div>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyAmplitude" checked onclick="document.activeElement.blur()">Apply Amplitude</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyPitch" checked onclick="document.activeElement.blur()">Apply Pitch</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyFilter" checked onclick="document.activeElement.blur()">Apply Filter</label>
     </div>
   </div>
   </div>
   <div id="piano-container">
-  <div id="piano"></div>
   <div class="header">
     <div>Move keys</div>
     <div><span class="arrow-btn"> Z </span>
@@ -110,7 +113,9 @@
   <script src="waveform.js"></script>
   <script src="record.js"></script>
   <script src="parse.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="envelopeGraph.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src="envelopeGraph.js"></script>
   <script src="graph.js"></script>
   <script src="envelopeGraph.js"></script>
   <script src="envelope.js"></script>
