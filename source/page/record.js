@@ -44,4 +44,11 @@ class record{
         }
         return recording;
     }
+
+    createDownloadFile(array, name) {
+        var a = document.getElementById("download");
+        var file = new Blob([JSON.stringify(array)], {type: 'application/json'});
+        a.href = URL.createObjectURL(file);
+        a.download = name;
+    }
 }

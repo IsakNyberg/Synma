@@ -238,22 +238,34 @@ class Synth {
 		
 	}
     #recorder(){
-        if(document.getElementById("recordButton").value == "Record"){
+        if(document.getElementById("recordButton").value == "Record" && document.getElementById("playButton").value != "Playing"){
             this.#record = new record();
             this.#record.startRec(this.#audioContext.currentTime);
             document.getElementById("recordButton").value = "Stop";
+            document.getElementById("playButton").style.display	= "none";
+            document.getElementById("downloadButton").style.display	= "none";
         }
-        else{
+        else if(document.getElementById("recordButton").value == "Stop"){
             this.#recordResult = this.#record.stopRec();
             document.getElementById("recordButton").value = "Record";
+            document.getElementById("playButton").value = "Play";
             document.getElementById("playButton").style.display	= "block";
+            this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.txt");
+            document.getElementById("downloadButton").style.display	= "block";
         }
+        document.activeElement.blur();
     }
     #player(){
-        this.#recordResult.forEach(element => {
-            this.playNoteTimeDuration(element[0], element[1], element[2]);
-        });
-        document.getElementById("playButton").value = "Playing";
+        if(document.getElementById("playButton").value == "Play again" || document.getElementById("playButton").value == "Play"){
+            var playTime = 0;
+            this.#recordResult.forEach(element => {
+                this.playNoteTimeDuration(element[0], element[1], element[2]);
+                playTime = Math.max(playTime, element[1] + element[2])
+            });
+            document.getElementById("playButton").value = "Playing";
+            document.activeElement.blur();
+            setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
+        }
     }
 
 }
