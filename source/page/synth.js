@@ -163,7 +163,7 @@ class Synth {
 			(element)=> {element.addEventListener("click", ()=> this.#dropdownClick())}
 		);
 		document.getElementById("midiUpload").addEventListener("change", ()=>{
-			this.playMidi(URL.createObjectURL(document.getElementById("midiUpload").files[0]))
+			this.playFile(document.getElementById("midiUpload").files[0]);
 		}, false);
 	}
 	/**
@@ -229,7 +229,24 @@ class Synth {
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
 		wf.playBufferAt(freq, time, duration);
 	}
-	async playMidi(url) {
+	playFile(file) {
+		let fileSplit = file.name.split(".")
+		let fileExtentaiton = fileSplit[fileSplit.length-1];
+		if (fileExtentaiton === "mid") {
+			this.#playMidi(URL.createObjectURL(file))
+		} else if (fileExtentaiton === "synth") {
+				const reader = new FileReader();
+				reader.addEventListener("load", () => {
+					 let parsed = JSON.parse(reader.result);
+					this.#recordResult = parsed;
+					this.#player();
+				}, false);
+				reader.readAsText(file);
+		} else {
+			alert("Invalid file extention: " + fileExtentaiton);
+		}
+	}
+	async #playMidi(url) {
 		const midi = await Midi.fromUrl(url);
 		midi.tracks.forEach(track => {
 			const notes = track.notes;
@@ -244,7 +261,6 @@ class Synth {
 		let freq = noteFreq[keyIndex];
 		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-		
 		wf.playBufferAt(time, duration);
 	}
 	/**
@@ -277,7 +293,6 @@ class Synth {
 		document.activeElement.blur();
 		if(this.#masterVolume == undefined) return;
 		this.#masterVolume.gain.value = Math.min(Math.abs(vol)/100,Math.abs(this.#maxVolume));
-		console.log("Set master volume to: " + Math.min(Math.abs(vol)/100,Math.abs(this.#maxVolume)));
 	}
 	/**
 	 * Graphs the current wave function in the html canvas element with id "waveformGraph".
@@ -341,5 +356,4 @@ window.onload = bootstrap_synt();
 function bootstrap_synt(){
 	const synth = new Synth();
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
-	loadURL();
 }

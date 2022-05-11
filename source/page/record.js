@@ -24,9 +24,6 @@ class record{
 	}
 	#convert(){
 		var recording = [];
-		console.log("start: " + this.#startTime);
-		console.log(this.#startedIndexs);
-		console.log(this.#stoppedIndexs);
 		var i = 0;
 		while(this.#stoppedIndexs.length > 0){
 				var k;
@@ -36,7 +33,6 @@ class record{
 								j = this.#stoppedIndexs.length;
 						}
 				}
-				console.log("stopped: " + this.#stoppedIndexs[k][1] + "\nstart:" + this.#startedIndexs[i][1]);
 				recording.push([this.#startedIndexs[i][0], this.#startedIndexs[i][1] - this.#startTime, this.#stoppedIndexs[k][1] - this.#startedIndexs[i][1]]);
 				this.#startedIndexs.splice(i, 1);
 				this.#stoppedIndexs.splice(k, 1)

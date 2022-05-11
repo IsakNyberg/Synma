@@ -84,7 +84,7 @@ class Piano{
 			coveredWhite.id = id.toString();
 			return coveredWhite;
 		}
-		console.log("Invalid id (not good :O })");
+		console.error("Invalid id (not good :O })");
 	}
 	/**
 	 * Creates an array of all the key-objects which the piano will contain. 
