@@ -1,10 +1,4 @@
 function saveSettings(presets, norms){
-	var amplitude = presets["amplitude"];
-	var filter = presets["filter"];
-	var pitch = presets["pitch"];
-	console.log(amplitude);
-	console.log(filter);
-	console.log(pitch);
 	let origin = window.location.pathname;
 	origin += "?";
 	origin += "func1=";
@@ -17,7 +11,6 @@ function saveSettings(presets, norms){
 	else {
 		origin += "!normalise";
 	}
-	var headers = ["amplitude", "filter", "pitch"];
 	var adr = ["attack", "decay", "release"];
 	var labels = ["funcAtt", "funcDec", "funcRel", "lengthAtt", "lengthDec", "lengthRel", "norm", "cont"];
 	var labelcounter;
@@ -30,12 +23,6 @@ function saveSettings(presets, norms){
 			labelcounter += 3;
 		}
 	}
-
-	/*for(let i = 0; i < pitch.length-2; i++){
-		origin += "&a" + labels[i] + "=" + amplitude[i][adr[i]];
-		origin += "&p" + labels[i] + "=" + pitch[i][adr[i]];
-		origin += "&t" + labels[i] + "=" + filter[i][adr[i]]; 
-	}*/
 	var j = 0;
 	for(let i = 6; i<8; i++){
 		origin += "&";
@@ -48,7 +35,6 @@ function saveSettings(presets, norms){
 		if(!norms["filter"][j++]) origin += "!";
 		origin += "t" + labels[i]; 
 	}
-
 	var divs = ["applyAmplitude", "applyFilter", "applyPitch"];
 	var apply = ["appA", "appF", "appP"];
 	for(let i = 0; i<apply.length; i++){

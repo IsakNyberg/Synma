@@ -33,7 +33,6 @@ class Synth {
 	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	#activeEnvelopes = [true,true,true];
   constructor(envelopePresets){
-		console.log(envelopePresets);
 		this.#waveParser = new MathParser("x");
 		this.#envelopeParser = new MathParser("t");
 		this.#waveforms = [];
@@ -56,6 +55,7 @@ class Synth {
 			this.#createEnvelopes();
 			this.#dropdownClick();
 		}
+		this.#dropdownClick();
 	}
 
 	/**
