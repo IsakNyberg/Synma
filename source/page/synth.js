@@ -230,7 +230,8 @@ class Synth {
 		wf.playBufferAt(freq, time, duration);
 	}
 	playFile(file) {
-		let fileExtentaiton = file.name.split(".")[1];
+		let fileSplit = file.name.split(".")
+		let fileExtentaiton = fileSplit[fileSplit.length-1];
 		if (fileExtentaiton === "mid") {
 			this.#playMidi(URL.createObjectURL(file))
 		} else if (fileExtentaiton === "synth") {
