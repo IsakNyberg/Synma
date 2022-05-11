@@ -16,16 +16,11 @@ class MidiKeybaord {
 	#successNAssignKeys(midi) {
 		//checking that we have excatly one midi connected
 		if (midi.inputs.size == 1) {
-			//console.log('Got midi!', midi);
-			
 			// this is an iterator object
 			var inputs = midi.inputs.values();
-
 			for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
 				// each time there is a midi message call the onMIDIMessage function
-
 				input.value.onmidimessage = (arg) => onMIDIMessage(arg, this.#synth, this.#piano);
-				
 			}
 		}
 	}
@@ -55,10 +50,9 @@ class MidiKeybaord {
 }
 
 function onMIDIMessage (message, synth, piano) {
-	//console.log("synth inside onMIDIMessage: " + synth);
 	if ((message.data[0] === 144 || message.data[0] === 153) && message.data[2] > 0) {
 		let index = message.data[1];
-		console.log("pressed following key index: " + index);
+		console.log("Midki key press: " + index);
 		piano.setKeyColor(index, "darkgrey");
 		synth.startNote(index);
 	}
@@ -66,7 +60,7 @@ function onMIDIMessage (message, synth, piano) {
 	 // piano key is released
 	if ((message.data[0] === 128 || message.data[0] === 153) ||  message.data[2] === 0) {
 		let index = message.data[1];
-		console.log("released following key index: " + index);
+		console.log("keyboard key press: " + index);
 		piano.resetKeyColor(index);
 		synth.stopNote(index);
 	}

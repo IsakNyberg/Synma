@@ -220,7 +220,6 @@ class Piano{
 		if (keyIndex === undefined) {
 			return;
 		}
-		console.log(keyIndex);
 		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
 		this.#synth.startNote(keyIndex);
 	}

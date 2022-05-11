@@ -219,7 +219,6 @@ class Synth {
 		];
 		if(this.#graphIsNormalized) wf.normalizeBuffer();
 		wf.createMasterSource(noteFreq[keyIndex]);
-		console.log("gain: " + wf.bufferGain.gain.value);
 		this.#applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}

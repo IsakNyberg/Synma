@@ -5,44 +5,44 @@ class record{
 	#result = [];
 	
 	constructor(){
-			this.#startedIndexs = [];
-			this.#stoppedIndexs = [];
-			this.#result = [];
-			this.#startTime = 0;
+		this.#startedIndexs = [];
+		this.#stoppedIndexs = [];
+		this.#result = [];
+		this.#startTime = 0;
 	}
 	startRec(startTime){
-			this.#startTime = startTime;
+		this.#startTime = startTime;
 	}
 	stopRec(){
-			return this.#convert();
+		return this.#convert();
 	}
 	startedIndex(index, time){
-			this.#startedIndexs.push([index, time]);
+		this.#startedIndexs.push([index, time]);
 	}
 	stoppedIndex(index, time){
-			this.#stoppedIndexs.push([index, time]);
+		this.#stoppedIndexs.push([index, time]);
 	}
 	#convert(){
-			var recording = [];
-			console.log("start: " + this.#startTime);
-			console.log(this.#startedIndexs);
-			console.log(this.#stoppedIndexs);
-			var i=0;
-			while(this.#stoppedIndexs.length > 0){
-					var k;
-					for(let j=0; j<this.#stoppedIndexs.length; j++){
-							if(this.#stoppedIndexs[j][0] == this.#startedIndexs[i][0]){
-									k = j;
-									j = this.#stoppedIndexs.length;
-							}
-					}
-					console.log("stopped: " + this.#stoppedIndexs[k][1] + "\nstart:" + this.#startedIndexs[i][1]);
-					recording.push([this.#startedIndexs[i][0], this.#startedIndexs[i][1] - this.#startTime, this.#stoppedIndexs[k][1] - this.#startedIndexs[i][1]]);
-					this.#startedIndexs.splice(i, 1);
-					this.#stoppedIndexs.splice(k, 1)
-					i = 0;
-			}
-			return recording;
+		var recording = [];
+		console.log("start: " + this.#startTime);
+		console.log(this.#startedIndexs);
+		console.log(this.#stoppedIndexs);
+		var i = 0;
+		while(this.#stoppedIndexs.length > 0){
+				var k;
+				for(let j=0; j<this.#stoppedIndexs.length; j++){
+						if(this.#stoppedIndexs[j][0] == this.#startedIndexs[i][0]){
+								k = j;
+								j = this.#stoppedIndexs.length;
+						}
+				}
+				console.log("stopped: " + this.#stoppedIndexs[k][1] + "\nstart:" + this.#startedIndexs[i][1]);
+				recording.push([this.#startedIndexs[i][0], this.#startedIndexs[i][1] - this.#startTime, this.#stoppedIndexs[k][1] - this.#startedIndexs[i][1]]);
+				this.#startedIndexs.splice(i, 1);
+				this.#stoppedIndexs.splice(k, 1)
+				i = 0;
+		}
+		return recording;
 	}
 
 	createDownloadFile(array, name) {
