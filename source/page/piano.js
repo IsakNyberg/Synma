@@ -37,7 +37,7 @@ class Piano{
 		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
-		this.#addEventListeners();
+		//this.#addEventListeners();
 	}
 	// Keys *******************************************************************
 	/**

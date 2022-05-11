@@ -340,6 +340,22 @@ window.onload = bootstrap_synt();
  */
 function bootstrap_synt(){
 	const synth = new Synth();
-	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
-	loadURL();
+	//const midiKeybaord = new MidiKeybaord(synth, synth.piano);
+	//loadURL();
+	const keys = [
+		'KeyQ',
+		'Digit2',
+		'KeyW',
+		'Digit3',
+		'KeyE',
+		'KeyR',
+		'Digit5',
+		'KeyT',
+		'Digit6',
+		'KeyY',
+		'Digit7',
+		'KeyU',
+		'KeyI'
+	];
+	new Keyboard(window, keys).connect(synth);
 }
