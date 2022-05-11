@@ -250,7 +250,7 @@ class Synth {
             document.getElementById("recordButton").value = "Record";
             document.getElementById("playButton").value = "Play";
             document.getElementById("playButton").style.display	= "block";
-            this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.txt");
+            this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
             document.getElementById("downloadButton").style.display	= "block";
         }
         document.activeElement.blur();
