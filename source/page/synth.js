@@ -32,6 +32,10 @@ class Synth {
 	#graphIsNormalized = false;
 	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	#activeEnvelopes = [true,true,true];
+	/**
+	 * Constructs the class and loads saved settings if such exist
+	 * @param {Array<>} envelopePresets 
+	 */
   constructor(envelopePresets){
 		this.#waveParser = new MathParser("x");
 		this.#envelopeParser = new MathParser("t");
@@ -241,6 +245,12 @@ class Synth {
 		this.#applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
+	/**
+	 * Recieves a keystroke and it's properties to then queue it in the buffer
+	 * @param {Int} keyIndex 
+	 * @param {Float} time 
+	 * @param {Float} duration 
+	 */
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.#waveforms[keyIndex];
 		let freq = noteFreq[keyIndex];
@@ -274,6 +284,12 @@ class Synth {
 			})
 		})
 	}
+	/**
+	 * Recieves a keystroke and it's properties to then queue it in the buffer
+	 * @param {Int} keyIndex 
+	 * @param {Float} time 
+	 * @param {Float} duration 
+	 */
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.#waveforms[keyIndex];
 		wf.createMasterSource(noteFreq[keyIndex]);
@@ -336,6 +352,9 @@ class Synth {
 		]
 		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, this.#envIsNormalized[type][0], this.#envIsNormalized[type][1], ['#830','#d93','#387']);
 	}
+	/**
+	 * Responds to record button and starts or stops a recording of the strokes
+	 */
 	#recorder(){
 		if(document.getElementById("recordButton").value == "Record" && document.getElementById("playButton").value != "Playing"){
 			this.#record = new record();
@@ -354,6 +373,9 @@ class Synth {
 		}
 		document.activeElement.blur();
 	}
+	/**
+	 * Responds to play button and starts the recorded strokes
+	 */
 	#player(){
 		if(document.getElementById("playButton").value == "Play again" || document.getElementById("playButton").value == "Play"){
 			var playTime = 0;
@@ -366,6 +388,9 @@ class Synth {
 			setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
 		}
 	}
+	/**
+	 * Calls function in URL.js with the current settings as arguments
+	 */
 	#saveSettings(){
 		saveSettings(this.#envFunctions, this.#envIsNormalized);
 	}

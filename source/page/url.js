@@ -1,3 +1,8 @@
+/**
+ * Receives current settings and generates a long URL with all settings configured
+ * @param {Array} presets 
+ * @param {Array} norms 
+ */
 function saveSettings(presets, norms){
 	let origin = window.location.pathname;
 	origin += "?";
@@ -43,23 +48,33 @@ function saveSettings(presets, norms){
 	}
 	navigator.clipboard.writeText(window.location.origin + toURLSafe(origin));
 }
-
-
+/**
+ * Translates an URL with settings to one with URL safe chars
+ * @param {String} url 
+ * @returns 
+ */
 function toURLSafe(url){
 	if(url.includes("+")){
 		return url.replaceAll("+", "plus");
 	}
 	return url;
 }
-
-
+/**
+ * Translates an safe URL to a string with the correct chars
+ * @param {String} url 
+ * @returns 
+ */
 function fromURLSafe(url){
 	if(url.includes("plus")){
 		return url.replaceAll("plus", "+");
 	}
 	return url;
 }
-
+/**
+ * Recieves an interface containing values loaded from the URL 
+ * @param {URLSearchParams} urlParams 
+ * @returns Three arrays containg each envelopes' settings in an array
+ */
 function loadURL(urlParams) {
 	document.getElementById("functionInput").value = fromURLSafe(urlParams.get('func1'));
 	document.getElementById("maxXInput").value= urlParams.get("max");
