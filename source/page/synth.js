@@ -32,14 +32,30 @@ class Synth {
 	#graphIsNormalized = false;
 	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	#activeEnvelopes = [true,true,true];
-	constructor(){
+  constructor(envelopePresets){
+		console.log(envelopePresets);
+		this.#waveParser = new MathParser("x");
+		this.#envelopeParser = new MathParser("t");
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
 		for (var i = 0; i < this.activeKeys.length; ++i) { this.activeKeys[i] = false; }
-		this.#waveParser = new MathParser("x");
-		this.#envelopeParser = new MathParser("t");
 		this.#addEventListeners();
 		this.#createPiano();  
+		if(envelopePresets.length > 0){
+			var types = ["amplitude", "filter", "pitch"];
+			var adr = ["attack", "decay", "release"];
+			for(let i=0; i<3; i++){
+				for(let j=0; j<3; j++){
+					this.#envFunctions[types[i]][adr[j]][0] = this.#envelopeParser.parse(envelopePresets[i][0+j]);
+					this.#envFunctions[types[i]][adr[j]][1] = envelopePresets[i][0+j]
+					this.#envFunctions[types[i]][adr[j]][2] = envelopePresets[i][3+j]
+				}
+				this.#envIsNormalized[types[i]] = [envelopePresets[i][6], envelopePresets[i][7]]
+			}
+			this.#setWave();
+			this.#createEnvelopes();
+			this.#dropdownClick();
+		}
 	}
 
 	/**
@@ -148,12 +164,15 @@ class Synth {
 		var currentTime = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
 		document.getElementById("env-functionInput").value = this.#envFunctions[currentType][currentTime][1];
 		document.getElementById("env-timeInput").value = this.#envFunctions[currentType][currentTime][2];
+		document.getElementById("normalizeEnvelope").checked = this.#envIsNormalized[currentType][0];
+		document.getElementById("continuousCheckbox").checked = this.#envIsNormalized[currentType][1];
 		this.#graphEnvelope(currentType);
 	}
 	/**
 	 * Adds event-listeners for submiting functions to the synth.
 	 */
 	#addEventListeners(){
+		document.getElementById("saveSettings").onclick = () => this.#saveSettings();
 		document.getElementById("recordButton").onclick = () => this.#recorder();
 		document.getElementById("playButton").onclick = () => this.#player();
 		document.getElementById("functionButton").onclick = () => this.#setWave();
@@ -314,9 +333,9 @@ class Synth {
 			this.#recordResult = this.#record.stopRec();
 			document.getElementById("recordButton").value = "Record";
 			document.getElementById("playButton").value = "Play";
-			document.getElementById("playButton").style.display	= "block";
+			document.getElementById("playButton").style.display	= "inline";
 			this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
-			document.getElementById("downloadButton").style.display	= "block";
+			document.getElementById("downloadButton").style.display	= "inline";
 		}
 		document.activeElement.blur();
 	}
@@ -332,6 +351,9 @@ class Synth {
 			setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
 		}
 	}
+	#saveSettings(){
+		saveSettings(this.#envFunctions, this.#envIsNormalized);
+	}
 
 }
 window.onload = bootstrap_synt();
@@ -339,7 +361,14 @@ window.onload = bootstrap_synt();
  * Program start. Init. the synth.
  */
 function bootstrap_synt(){
-	const synth = new Synth();
+  var synth;
+	let origin = window.location.search;
+	const urlParams = new URLSearchParams(origin);
+	if(urlParams.has('func1')){
+    synth = new Synth(loadURL(urlParams));
+	}
+	else{
+		synth = new Synth([]);
+	}
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
-	loadURL();
 }
