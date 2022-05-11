@@ -59,7 +59,8 @@ class Synth {
 	 * Creates a base-note whose playback-rate will be altered to create notes of different frequencies.
 	 */
 	#createBase(){
-		this.#baseNote = WaveForm.computeBase(this.#audioContext, this.#waveFunction, this.#maxX, 4410*4);
+		let resolution = this.#audioContext.sampleRate / noteFreq[0];
+		this.#baseNote = WaveForm.computeBase(this.#audioContext, this.#waveFunction, this.#maxX, resolution);
 	}
 	/**
 	 * Create WaveForm instances for all possible notes on a standard midi-controller.
