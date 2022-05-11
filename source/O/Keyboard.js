@@ -40,6 +40,7 @@ class Keyboard extends InputSource {
 		let synth = object.destination;
 		let key = event.code;
 		let index = object.getIndex(key);
+		if (index == -1) return;
 		let state = event.type == 'keydown';
 		let strength = 1;
 		let value = new Input(index, state, strength);
@@ -47,7 +48,7 @@ class Keyboard extends InputSource {
 		console.log(value);
 
 		/* temp */
-		let offset = 0;
+		let offset = 64;
 		index += offset;
 		if (state) synth.startNote(index);
 		else synth.stopNote(index);
