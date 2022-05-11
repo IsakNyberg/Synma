@@ -28,10 +28,10 @@ class MidiKeybaord {
 
 	#checkMidiAccess() {
 		if (navigator.requestMIDIAccess) {
-			console.log('This browser supports WebMIDI!');
+			console.info('This browser supports WebMIDI!');
 			return true;
 		} else {
-			console.log('WebMIDI is not supported in this browser.' );
+			console.error('WebMIDI is not supported in this browser.' );
 			//alert('WebMIDI is not supported in this browser.');
 			return false;
 		}
@@ -52,7 +52,6 @@ class MidiKeybaord {
 function onMIDIMessage (message, synth, piano) {
 	if ((message.data[0] === 144 || message.data[0] === 153) && message.data[2] > 0) {
 		let index = message.data[1];
-		console.log("Midki key press: " + index);
 		piano.setKeyColor(index, "darkgrey");
 		synth.startNote(index);
 	}
@@ -60,7 +59,6 @@ function onMIDIMessage (message, synth, piano) {
 	 // piano key is released
 	if ((message.data[0] === 128 || message.data[0] === 153) ||  message.data[2] === 0) {
 		let index = message.data[1];
-		console.log("keyboard key press: " + index);
 		piano.resetKeyColor(index);
 		synth.stopNote(index);
 	}
