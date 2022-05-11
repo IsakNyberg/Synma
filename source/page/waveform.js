@@ -78,22 +78,20 @@ class WaveForm{
 		this.masterSource.playbackRate.cancelScheduledValues(this.audioContext.currentTime);
 		this.bufferBiquadFilter.frequency.cancelScheduledValues(this.audioContext.currentTime);
 		this.bufferGain.gain.value = 1.0;
-		this.bufferBiquadFilter.frequency.value = 220000; // for a lowpass this ~should~ neutralize the biquad.
+		this.bufferBiquadFilter.frequency.value = 22000; // for a lowpass this ~should~ neutralize the biquad.
 	}
 
 	/**
 	 * Play the waveform 
 	 */
-	playBuffer(/*freq*/) {
-		this.playBufferAt(/*freq, */0, 0);
+	playBuffer() {
+		this.playBufferAt(0, 0);
 	}
 
 	/**
 	* Plays buffer with a start time and a dration
 	*/
-	playBufferAt(/*freq,*/ start, duration) {
-		//this.masterSource = this.audioContext.createBufferSource();
-		//this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
+	playBufferAt(start, duration) {
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);
@@ -108,22 +106,6 @@ class WaveForm{
 		}
 	}
 	
-    playBufferAt(freq, start, duration) {
-        this.masterSource = this.audioContext.createBufferSource();
-        this.masterSource.playbackRate.value = freq * this.samplingBuffer.length / this.audioContext.sampleRate;
-        this.masterSource.loop = true;
-        this.masterSource.buffer = this.samplingBuffer;
-        this.masterSource.connect(this.bufferBiquadFilter);
-        this.bufferBiquadFilter.type = 'lowpass';
-        this.bufferBiquadFilter.Q.value = 1;
-        this.bufferBiquadFilter.connect(this.bufferGain);
-        this.bufferGain.connect(this.primaryGainControl);
-        this.primaryGainControl.connect(this.audioContext.destination);
-        this.masterSource.start(this.audioContext.currentTime + start);
-        if (duration > 0) {
-            this.masterSource.stop(this.audioContext.currentTime + start + duration);
-        }
-    }
 
 	/**
 	 * Stop the waveform.

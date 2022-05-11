@@ -6,7 +6,6 @@ class MidiKeybaord {
 	constructor(synth, piano) {
 		this.#synth = synth;
 		this.#piano = piano;
-	 
 		this.setup();
 	}
 
@@ -72,4 +71,3 @@ function onMIDIMessage (message, synth, piano) {
 		synth.stopNote(index);
 	}
 }
-

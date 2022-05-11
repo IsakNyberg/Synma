@@ -24,13 +24,12 @@
  */
 function makeRangeContinous(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain) {
 	var range = Array(domain.length);
-   
+	 
 	for(let i = 0; i < domain.length; i++) {
-
-        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
-        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
-        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
-    }
+			if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
+			if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i])));
+			if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i])));
+		}
 	return range;
 }
 
@@ -42,25 +41,32 @@ function makeEnvelopeRange(fn, max, domain, continous) {
 	var maxX2 = max[1]; 
 	var maxX3 = max[2];
 	var range = Array(domain.length);
-
+	
 	let offset1 = 0;
 	let offset2 = 0;
-   
-	if(continous) {
-   
-		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
-		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
 
+	if(continous) {
+		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
+		if(fn1(maxX1) < fn2(domain[0])) {
+			offset1 = -1 * offset1;
+		}
 		offset2 = Math.abs(fn2(maxX2 - maxX1) + offset1 - fn3(domain[0]));
-		if((fn2(maxX2) + offset1) < fn3(maxX2)) offset2 = -1 * offset2;
+		if((fn2(maxX2) + offset1) < fn3(maxX2)) {
+			offset2 = -1 * offset2
+		};
 	}
 
 	for(let i = 0; i < domain.length; i++) {
-
-        if(domain[i] < maxX1) 							range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
-        if(domain[i] >= maxX1 && domain[i] < maxX2) 	range[i] = Math.min(1, Math.max(-1, fn2(domain[i] - maxX1) + offset1));
-        if(domain[i] >= maxX2 && domain[i] < maxX3) 	range[i] = Math.min(1, Math.max(-1, fn3(domain[i] - maxX2) + offset2));
-    }
+		if(domain[i] < maxX1){
+			range[i] = Math.min(1, Math.max(-1, fn1(domain[i])));
+		}
+		if(domain[i] >= maxX1 && domain[i] < maxX2){
+			range[i] = Math.min(1, Math.max(-1, fn2(domain[i] - maxX1) + offset1));
+		}
+		if(domain[i] >= maxX2 && domain[i] < maxX3) {
+			range[i] = Math.min(1, Math.max(-1, fn3(domain[i] - maxX2) + offset2));
+		}
+	}
 
 	return range;
 }
@@ -78,7 +84,7 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
 	let offset2 = 0;
 
 	if(continous) {
-   
+	 
 		offset1 = Math.abs(fn1(maxX1) - fn2(domain[0]));
 		if(fn1(maxX1) < fn2(domain[0])) offset1 = -1 * offset1;
 
@@ -89,10 +95,10 @@ function makeEnvelopeNormalizedRange(fn1, fn2, fn3, maxX1, maxX2, maxX3, domain,
 
 	for(let i = 0; i < domain.length; i++) {
 
-        if(domain[i] < maxX1) 							range[i] = fn1(domain[i]);
-        if(domain[i] > maxX1 && domain[i] <= maxX2) 	range[i] = fn2(domain[i]-maxX1) + offset1;
-        if(domain[i] > maxX2 && domain[i] <= maxX3) 	range[i] = fn3(domain[i]-maxX2) + offset2;
-    }
+				if(domain[i] < maxX1) 							range[i] = fn1(domain[i]);
+				if(domain[i] > maxX1 && domain[i] <= maxX2) 	range[i] = fn2(domain[i]-maxX1) + offset1;
+				if(domain[i] > maxX2 && domain[i] <= maxX3) 	range[i] = fn3(domain[i]-maxX2) + offset2;
+		}
 
 	var max = 0;
 	for (let i = 0; i < range.length; i++) {

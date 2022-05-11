@@ -63,10 +63,10 @@ label {
 	height: 280px;
 }
 #playButton, #downloadButton{
-    display: none;
+		display: none;
 }
 a {
-    text-decoration: none;
+		text-decoration: none;
 }
 #piano {
 	border: solid 1px var(--borders);
@@ -161,27 +161,27 @@ a {
 }
 
 input[type=range] {
-  height: 7px;
-  -webkit-appearance: none;
-  margin: 10px 0;
-  width: 300px;
+	height: 7px;
+	-webkit-appearance: none;
+	margin: 10px 0;
+	width: 300px;
 	outline: none;
 }
 input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 10	px;
-  cursor: pointer;
-  background: var(--button);
-  border-radius: 15px;
+	width: 100%;
+	height: 10	px;
+	cursor: pointer;
+	background: var(--button);
+	border-radius: 15px;
 }
 input[type=range]::-webkit-slider-thumb {
-  border: 1px solid var(--piano-border);
-  height: 17px;
-  width: 15px;
-  border-radius: 15px;
-  background: #FFFFFF;
-  cursor: pointer;
-  -webkit-appearance: none;
+	border: 1px solid var(--piano-border);
+	height: 17px;
+	width: 15px;
+	border-radius: 15px;
+	background: #FFFFFF;
+	cursor: pointer;
+	-webkit-appearance: none;
 }
 
 .function-btn{

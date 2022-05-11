@@ -27,8 +27,8 @@ class Synth {
 	activeKeys;
 	#envelopeGraph=false;
 	#waveGraph = false;
-  #record = null;
-  #recordResult = [];
+	#record = null;
+	#recordResult = [];
 	#graphIsNormalized = false;
 	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	#activeEnvelopes = [true,true,true];
@@ -121,7 +121,7 @@ class Synth {
 			this.#envIsNormalized["pitch"][0],
 			this.#envIsNormalized["pitch"][1]
 		);
-		this.#filterEnvelope = new TimbreEnvelope(
+		this.#filterEnvelope = new FilterEnvelope(
 			this.#envFunctions["filter"]["attack"][0],
 			this.#envFunctions["filter"]["decay"][0],
 			this.#envFunctions["filter"]["release"][0],
@@ -205,9 +205,9 @@ class Synth {
 		if (this.activeKeys[keyIndex]) {
 			return;
 		}
-    if(this.#record != null){
-      this.#record.startedIndex(keyIndex, this.#audioContext.currentTime)
-    }
+		if(this.#record != null){
+			this.#record.startedIndex(keyIndex, this.#audioContext.currentTime)
+		}
 		this.activeKeys[keyIndex] = true;
 		let wf = this.#waveforms[keyIndex];
 		if (wf === undefined) return;
@@ -238,13 +238,15 @@ class Synth {
 			})
 		})
 	}
-    playNoteTimeDuration(keyIndex, time, duration) {
-        let wf = this.#waveforms[keyIndex];
-        let freq = noteFreq[keyIndex];
-        setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
-        setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-        wf.playBufferAt(freq, time, duration);
-    }
+	playNoteTimeDuration(keyIndex, time, duration) {
+		let wf = this.#waveforms[keyIndex];
+		wf.createMasterSource(noteFreq[keyIndex]);
+		let freq = noteFreq[keyIndex];
+		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
+		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
+		
+		wf.playBufferAt(time, duration);
+	}
 	/**
 	 * Stop playing the specified note (midi key-index).
 	 * @param {Number} keyIndex 
@@ -254,9 +256,9 @@ class Synth {
 		if (!this.activeKeys[keyIndex]) {
 			return;
 		}
-    if(this.#record != null){
-      this.#record.stoppedIndex(keyIndex, this.#audioContext.currentTime)
-    }
+		if(this.#record != null){
+			this.#record.stoppedIndex(keyIndex, this.#audioContext.currentTime)
+		}
 		this.activeKeys[keyIndex] = false;
 		this.#applyEnvelopesR(this.#waveforms[keyIndex]);
 		if (this.#activeEnvelopes[0]) {
@@ -300,36 +302,36 @@ class Synth {
 		]
 		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, this.#envIsNormalized[type][0], this.#envIsNormalized[type][1], ['#830','#d93','#387']);
 	}
-    #recorder(){
-        if(document.getElementById("recordButton").value == "Record" && document.getElementById("playButton").value != "Playing"){
-            this.#record = new record();
-            this.#record.startRec(this.#audioContext.currentTime);
-            document.getElementById("recordButton").value = "Stop";
-            document.getElementById("playButton").style.display	= "none";
-            document.getElementById("downloadButton").style.display	= "none";
-        }
-        else if(document.getElementById("recordButton").value == "Stop"){
-            this.#recordResult = this.#record.stopRec();
-            document.getElementById("recordButton").value = "Record";
-            document.getElementById("playButton").value = "Play";
-            document.getElementById("playButton").style.display	= "block";
-            this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
-            document.getElementById("downloadButton").style.display	= "block";
-        }
-        document.activeElement.blur();
-    }
-    #player(){
-        if(document.getElementById("playButton").value == "Play again" || document.getElementById("playButton").value == "Play"){
-            var playTime = 0;
-            this.#recordResult.forEach(element => {
-                this.playNoteTimeDuration(element[0], element[1], element[2]);
-                playTime = Math.max(playTime, element[1] + element[2])
-            });
-            document.getElementById("playButton").value = "Playing";
-            document.activeElement.blur();
-            setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
-        }
-    }
+	#recorder(){
+		if(document.getElementById("recordButton").value == "Record" && document.getElementById("playButton").value != "Playing"){
+			this.#record = new record();
+			this.#record.startRec(this.#audioContext.currentTime);
+			document.getElementById("recordButton").value = "Stop";
+			document.getElementById("playButton").style.display	= "none";
+			document.getElementById("downloadButton").style.display	= "none";
+		}
+		else if(document.getElementById("recordButton").value == "Stop"){
+			this.#recordResult = this.#record.stopRec();
+			document.getElementById("recordButton").value = "Record";
+			document.getElementById("playButton").value = "Play";
+			document.getElementById("playButton").style.display	= "block";
+			this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
+			document.getElementById("downloadButton").style.display	= "block";
+		}
+		document.activeElement.blur();
+	}
+	#player(){
+		if(document.getElementById("playButton").value == "Play again" || document.getElementById("playButton").value == "Play"){
+			var playTime = 0;
+			this.#recordResult.forEach(element => {
+				this.playNoteTimeDuration(element[0], element[1], element[2]);
+				playTime = Math.max(playTime, element[1] + element[2])
+			});
+			document.getElementById("playButton").value = "Playing";
+			document.activeElement.blur();
+			setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
+		}
+	}
 
 }
 window.onload = bootstrap_synt();
@@ -339,4 +341,5 @@ window.onload = bootstrap_synt();
 function bootstrap_synt(){
 	const synth = new Synth();
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
+	loadURL();
 }
