@@ -93,6 +93,11 @@ function drawDomainRange(ctx, domain, range, color) {
 					display: false
 				}
 			},
+			elements: {
+				point:{
+					radius: 0
+				}
+			},
 			scales: { 
         x: {
 					display: false 
