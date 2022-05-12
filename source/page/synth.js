@@ -335,13 +335,14 @@ class Synth {
 	#graphWave(){
 		var ctx = document.getElementById('waveformGraph');
 		if (this.#waveGraph) this.#waveGraph.destroy();
-		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, this.#graphIsNormalized, 'rgb(0, 0, 0, 1)');
+		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, this.#graphIsNormalized, "#aa1129");
 	}
 	/**
 	 * Graphs the current envelope of specified type in the html canvas element with id "envelopeGraph".
 	 * @param {String} type 
 	 */
 	#graphEnvelope(type){
+        var yLimits = [0, 1];
 		var ctx = document.getElementById('envelopeGraph');
 		if (this.#envelopeGraph) this.#envelopeGraph.destroy();
 		let funs = [this.#envFunctions[type]["attack"][0], this.#envFunctions[type]["decay"][0], this.#envFunctions[type]["release"][0]];
@@ -350,7 +351,10 @@ class Synth {
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2], 
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2] + this.#envFunctions[type]["release"][2]
 		]
-		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, this.#envIsNormalized[type][0], this.#envIsNormalized[type][1], ['#830','#d93','#387']);
+		if(type == "pitch"){
+				yLimits = [];
+		}
+		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, [this.#envIsNormalized[type][0], this.#envIsNormalized[type][1]], ['#830','#d93','#387'], yLimits);
 	}
 	/**
 	 * Responds to record button and starts or stops a recording of the strokes
