@@ -82,10 +82,11 @@ function loadURL(urlParams) {
 	var amplitude = new Array(8);
 	var pitch = new Array(8);
 	var filter = new Array(8);
-	if(urlParams.get("normalise") == '')
-		normalizeCheckbox = true;
-	else 
-		normalizeCheckbox = false;
+	normalizeCheckbox = urlParams.get("normalise") == '' ? true: false;
+	//if(urlParams.get("normalise") == '')
+	//	normalizeCheckbox = true;
+	//else 
+	//	normalizeCheckbox = false;
 	document.getElementById("normalizeCheckbox").checked = normalizeCheckbox;
 
 	var labels = ['funcAtt', 'funcDec', 'funcRel', 'lengthAtt', 'lengthDec', 'lengthRel', 'norm', 'cont'];
@@ -131,5 +132,5 @@ function loadURL(urlParams) {
 			document.getElementById(divs[i]).checked = false;
 		}
 	}
-	return [amplitude, filter, pitch];
+	return [fromURLSafe(urlParams.get('func1')),urlParams.get("max"),normalizeCheckbox,[amplitude, filter, pitch]];
 }
