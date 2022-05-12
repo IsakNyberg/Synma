@@ -97,9 +97,9 @@ class WaveForm{
 		this.masterSource.connect(this.bufferBiquadFilter);
 		this.bufferBiquadFilter.type = 'lowpass';
 		this.bufferBiquadFilter.Q.value = 1;
-		this.bufferBiquadFilter.connect(this.bufferGain);
+		this.bufferBiquadFilter.connect(this.audioContext.destination);
 		this.bufferGain.connect(this.primaryGainControl);
-		this.primaryGainControl.connect(this.audioContext.destination);
+		this.primaryGainControl.connect(this.bufferBiquadFilter);
 		this.masterSource.start(this.audioContext.currentTime + start);
 		if (duration > 0) {
 			this.masterSource.stop(this.audioContext.currentTime + start + duration);
