@@ -2,13 +2,14 @@ class InputSource {
 	#callback;
 	#destination;
 	#eventTarget;
-	#values = [];
 	/**
 	 * @param {Function} callback
+	 * @param {Synth} destination
 	 * @param {EventTarget} eventTarget
 	 */
-	constructor(callback, eventTarget) {
+	constructor(callback, destination, eventTarget) {
 		this.callback = callback;
+		this.destination = destination;
 		this.eventTarget = eventTarget;
 	}
 	/**
@@ -30,12 +31,6 @@ class InputSource {
 		return this.#eventTarget;
 	}
 	/**
-	 * @returns {Array<Input>}
-	 */
-	get values() {
-		return this.#values;
-	}
-	/**
 	 * @param {Function} callback
 	 */
 	set callback(callback) {
@@ -54,17 +49,9 @@ class InputSource {
 		this.#eventTarget = eventTarget;
 	}
 	/**
-	 * @param {Synth} destination
+	 * @param {String} type
 	 */
-	connect(destination) {
-		//destination.addInput(this);
-		this.destination = destination;
-	}
-	/**
-	 * @param {Number} index
-	 * @param {Input} value
-	 */
-	setValue(index, value) {
-		this.#values[index] = value;
+	listen(type, callback) {
+		this.eventTarget.addEventListener(type, callback);
 	}
 }
