@@ -6,11 +6,11 @@ class Synth {
 	waveFunction;
 	envFunctions = {
 		"amplitude" : {
-			"attack" : [()=>1,"1",0.1], "decay" : [()=>1,"1",0.1], "release" : [()=>1/2,"1/2",0.1]
+			"attack" : [null, null, null], "decay" : [null, null, null], "release" : [null, null, null]
 		}, "pitch" : {
-			"attack" : [()=>0,"0",0.1], "decay" : [()=>0,"0",0.1], "release" : [()=>0,"0",0.1]
+			"attack" : [null, null, null], "decay" : [null, null, null], "release" : [null, null, null]
 		}, "filter" : {
-			"attack" : [()=>1/2,"1/2",0.1], "decay" : [()=>1/2,"1/2",0.1], "release" : [()=>1/2,"1/2",0.1]
+			"attack" : [null, null, null], "decay" : [null, null, null], "release" : [null, null, null]
 		}
 	};
 	releaseLen;
@@ -32,7 +32,7 @@ class Synth {
 	graphIsNormalized = false;
 	envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	activeEnvelopes = [true,true,true];
-  	constructor(urlPresets,waveGraphCanvas,envelopeGraphCanvas){
+	constructor(urlPresets,waveGraphCanvas,envelopeGraphCanvas){
 		this.waveGraphCanvas = waveGraphCanvas;
 		this.envelopeGraphCanvas = envelopeGraphCanvas;
 		this.waveParser = new MathParser("x");
@@ -57,6 +57,26 @@ class Synth {
 			//this.dropdownClick();
 		}
 		//this.dropdownClick();
+		this.setDefault();
+	}
+
+	/**
+	 * Set default settings.
+	 */
+	setDefault() {
+		this.setWave("1 - x", true, "1");
+		let types = ["amplitude", "filter"];
+		let adrs = ["attack", "decay", "release"];
+		let f = ["2t", "1 - t", "1/2 - t/2"];
+		let t = ["0.5", "0.5", "1"];
+		for (let type of types) {
+			let i = 0;
+			for (let adr of adrs) {
+				this.setEnvelopes(type, adr, f[i], t[i], false, false);
+				i++;
+			}
+		}
+		for (let adr of adrs) this.setEnvelopes("pitch", adr, "0", "1", false, false);
 	}
 
 	/**
