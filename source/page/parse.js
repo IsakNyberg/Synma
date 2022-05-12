@@ -106,7 +106,7 @@ class MathParser {
 		if(this.#termsR["exp"].test(expr)) return this.#parse_exp(expr);
 		if(this.#termsR["div"].test(expr)) return this.#parse_div(expr);
 		if(this.#termsR["mul"].test(expr)) return this.#parse_mul(expr);
-		if(this.#termsR["rnd"].test(expr)) return this.#parse_rnd(expr);
+		if(this.#termsR["rnd"].test(expr)) return (dep) => Math.random();
 		return (dep) => {
 			let message = "\"" + expr + "\" Not recognized."
 			if (!alert(message)) {
@@ -220,12 +220,5 @@ class MathParser {
 	#parse_par(expr){
 		var match = expr.match(this.#termsR["par"]);
 		return (dep) => this.#parse_expr(match[1])(dep);
-	}
-	/**
-	 * @param {String} expr - Mathematical term to be parsed.
-	 */
-	#parse_rnd(expr){
-		var match = expr.match(this.#termsR["rnd"]);
-		return (dep) => Math.random();
 	}
 }
