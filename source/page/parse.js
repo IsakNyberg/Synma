@@ -28,6 +28,8 @@ class MathParser {
 		// The following builds the regular expressions to determine legal terms.
 		// terms[x] matches the particular pattern within another pattern, and is used to build other expressions.
 		// termsR[x] matches lone patterns with the start (^) and end ($) being set. Used for testing expressions.
+		this.#terms["rnd"] = "rnd";
+		this.#termsR["rnd"] = new RegExp("^rnd$");
 		this.#terms["num"] = "[0-9.]+";
 		this.#termsR["num"] = new RegExp("^[0-9.]+$");
 		this.#terms["e"] = "e";
@@ -104,6 +106,7 @@ class MathParser {
 		if(this.#termsR["exp"].test(expr)) return this.#parse_exp(expr);
 		if(this.#termsR["div"].test(expr)) return this.#parse_div(expr);
 		if(this.#termsR["mul"].test(expr)) return this.#parse_mul(expr);
+		if(this.#termsR["rnd"].test(expr)) return this.#parse_rnd(expr);
 		return (dep) => {
 			let message = "\"" + expr + "\" Not recognized."
 			if (!alert(message)) {
@@ -217,5 +220,12 @@ class MathParser {
 	#parse_par(expr){
 		var match = expr.match(this.#termsR["par"]);
 		return (dep) => this.#parse_expr(match[1])(dep);
+	}
+	/**
+	 * @param {String} expr - Mathematical term to be parsed.
+	 */
+	#parse_rnd(expr){
+		var match = expr.match(this.#termsR["rnd"]);
+		return (dep) => Math.random();
 	}
 }
