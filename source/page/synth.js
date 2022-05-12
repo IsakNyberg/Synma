@@ -72,7 +72,8 @@ class Synth {
 		this.#masterVolume = this.#audioContext.createGain();
 		this.#waveFunction = this.#waveParser.parse(document.getElementById("functionInput").value);
 		this.#graphIsNormalized = document.getElementById("normalizeCheckbox").checked;
-		this.#maxX = parseFloat(document.getElementById("maxXInput").value);
+		let value = this.#waveParser.parse(document.getElementById("maxXInput").value);
+		this.#maxX = value(0);
 		this.#createEnvelopes();
 		this.#createBase();
 		this.#createWaveforms();

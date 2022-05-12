@@ -16,13 +16,20 @@ class MathParser {
 	* @param {String} variable - The dependent variable, for example "x", only alphabetical characters.
 	*/
 	constructor(variable) {
-		if(!new RegExp("^[a-zA-Z]+$").test(variable)) // Should guard against malicious injections aswell.
-			throw new Error("The dependant variable may only consist of alphabetical characters.");
+		// Should guard against malicious injections aswell.
+		if(!new RegExp("^[a-zA-Z]+$").test(variable)) {
+			let message = "The dependant variable may only consist of alphabetical characters."
+			if (!alert(message)) {
+					throw new Error(message);
+			}
+		}
+			
+			
 		// The following builds the regular expressions to determine legal terms.
 		// terms[x] matches the particular pattern within another pattern, and is used to build other expressions.
 		// termsR[x] matches lone patterns with the start (^) and end ($) being set. Used for testing expressions.
-		this.#terms["num"] = "[0-9]+";
-		this.#termsR["num"] = new RegExp("^[0-9]+$");
+		this.#terms["num"] = "[0-9.]+";
+		this.#termsR["num"] = new RegExp("^[0-9.]+$");
 		this.#terms["e"] = "e";
 		this.#termsR["e"] = new RegExp("^e$");
 		this.#terms["pi"] = "\u03C0";
@@ -85,7 +92,7 @@ class MathParser {
 		if(this.#termsR["e"].test(expr)) 	 return (dep) => Math.E; 
 		if(this.#termsR["pi"].test(expr))  return (dep) => Math.PI; 
 		if(this.#termsR["dep"].test(expr)) return (dep) => parseFloat(dep); 
-		if(this.#termsR["num"].test(expr)) return (dep) => parseInt(expr);
+		if(this.#termsR["num"].test(expr)) return (dep) => parseFloat(expr);
 		if(this.#termsR["neg"].test(expr)) return this.#parse_neg(expr);
 		if(this.#termsR["par"].test(expr)) return this.#parse_par(expr);
 		if(this.#termsR["sin"].test(expr)) return this.#parse_sin(expr);
@@ -97,7 +104,12 @@ class MathParser {
 		if(this.#termsR["exp"].test(expr)) return this.#parse_exp(expr);
 		if(this.#termsR["div"].test(expr)) return this.#parse_div(expr);
 		if(this.#termsR["mul"].test(expr)) return this.#parse_mul(expr);
-		return (dep) => {throw new Error("\"" + expr + "\" Not recognized.");}
+		return (dep) => {
+			let message = "\"" + expr + "\" Not recognized."
+			if (!alert(message)) {
+					throw new Error(message);
+			}
+		}
 	}
 	/**
 	* @param {String} expr - Mathematical term to be parsed.
@@ -134,8 +146,12 @@ class MathParser {
 		var match = expr.match(this.#termsR["div"]);
 		return (dep) => {
 			var reciprocal = this.#parse_expr(match[2])(dep);
-			if(reciprocal == 0)
-				throw new Error("Division by zero.");
+			if(reciprocal == 0) {
+				let message = "Division by zero.";
+				if (!alert(message)) {
+					throw new Error(message);
+				}
+			}
 			else
 				return this.#parse_expr(match[1])(dep) / this.#parse_expr(match[2])(dep);
 		}
