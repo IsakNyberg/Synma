@@ -64,13 +64,13 @@ class Synth {
 	 * @param {String} expr 
 	 */
 	setWave(fnString,normalized,maxXInput){
-		console.log("fun: " + fnString);
 		document.activeElement.blur();
 		this.audioContext = new AudioContext(); 
 		this.masterVolume = this.audioContext.createGain();
 		this.waveFunction = this.waveParser.parse(fnString);
 		this.graphIsNormalized = normalized;
-		this.maxX = parseFloat(maxXInput);
+		let value = this.waveParser.parse(maxXInput);
+		this.maxX = value(0);
 		this.createEnvelopes();
 		this.createBase();
 		this.createWaveforms();
