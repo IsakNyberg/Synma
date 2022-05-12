@@ -32,14 +32,34 @@ class Synth {
 	#graphIsNormalized = false;
 	#envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	#activeEnvelopes = [true,true,true];
-	constructor(){
+	/**
+	 * Constructs the class and loads saved settings if such exist
+	 * @param {Array<>} envelopePresets 
+	 */
+  constructor(envelopePresets){
+		this.#waveParser = new MathParser("x");
+		this.#envelopeParser = new MathParser("t");
 		this.#waveforms = [];
 		this.activeKeys = new Array(60);
 		for (var i = 0; i < this.activeKeys.length; ++i) { this.activeKeys[i] = false; }
-		this.#waveParser = new MathParser("x");
-		this.#envelopeParser = new MathParser("t");
 		this.#addEventListeners();
 		this.#createPiano();  
+		if(envelopePresets.length > 0){
+			var types = ["amplitude", "filter", "pitch"];
+			var adr = ["attack", "decay", "release"];
+			for(let i=0; i<3; i++){
+				for(let j=0; j<3; j++){
+					this.#envFunctions[types[i]][adr[j]][0] = this.#envelopeParser.parse(envelopePresets[i][0+j]);
+					this.#envFunctions[types[i]][adr[j]][1] = envelopePresets[i][0+j]
+					this.#envFunctions[types[i]][adr[j]][2] = envelopePresets[i][3+j]
+				}
+				this.#envIsNormalized[types[i]] = [envelopePresets[i][6], envelopePresets[i][7]]
+			}
+			this.#setWave();
+			this.#createEnvelopes();
+			this.#dropdownClick();
+		}
+		this.#dropdownClick();
 	}
 
 	/**
@@ -52,7 +72,8 @@ class Synth {
 		this.#masterVolume = this.#audioContext.createGain();
 		this.#waveFunction = this.#waveParser.parse(document.getElementById("functionInput").value);
 		this.#graphIsNormalized = document.getElementById("normalizeCheckbox").checked;
-		this.#maxX = parseFloat(document.getElementById("maxXInput").value);
+		let value = this.#waveParser.parse(document.getElementById("maxXInput").value);
+		this.#maxX = value(0);
 		this.#createEnvelopes();
 		this.#createBase();
 		this.#createWaveforms();
@@ -148,12 +169,15 @@ class Synth {
 		var currentTime = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
 		document.getElementById("env-functionInput").value = this.#envFunctions[currentType][currentTime][1];
 		document.getElementById("env-timeInput").value = this.#envFunctions[currentType][currentTime][2];
+		document.getElementById("normalizeEnvelope").checked = this.#envIsNormalized[currentType][0];
+		document.getElementById("continuousCheckbox").checked = this.#envIsNormalized[currentType][1];
 		this.#graphEnvelope(currentType);
 	}
 	/**
 	 * Adds event-listeners for submiting functions to the synth.
 	 */
 	#addEventListeners(){
+		document.getElementById("saveSettings").onclick = () => this.#saveSettings();
 		document.getElementById("recordButton").onclick = () => this.#recorder();
 		document.getElementById("playButton").onclick = () => this.#player();
 		document.getElementById("functionButton").onclick = () => this.#setWave();
@@ -163,7 +187,7 @@ class Synth {
 			(element)=> {element.addEventListener("click", ()=> this.#dropdownClick())}
 		);
 		document.getElementById("midiUpload").addEventListener("change", ()=>{
-			this.playMidi(URL.createObjectURL(document.getElementById("midiUpload").files[0]))
+			this.playFile(document.getElementById("midiUpload").files[0]);
 		}, false);
 	}
 	/**
@@ -222,6 +246,12 @@ class Synth {
 		this.#applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
+	/**
+	 * Recieves a keystroke and it's properties to then queue it in the buffer
+	 * @param {Int} keyIndex 
+	 * @param {Float} time 
+	 * @param {Float} duration 
+	 */
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.#waveforms[keyIndex];
 		let freq = noteFreq[keyIndex];
@@ -229,7 +259,24 @@ class Synth {
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
 		wf.playBufferAt(freq, time, duration);
 	}
-	async playMidi(url) {
+	playFile(file) {
+		let fileSplit = file.name.split(".")
+		let fileExtentaiton = fileSplit[fileSplit.length-1];
+		if (fileExtentaiton === "mid") {
+			this.#playMidi(URL.createObjectURL(file))
+		} else if (fileExtentaiton === "synth") {
+				const reader = new FileReader();
+				reader.addEventListener("load", () => {
+					 let parsed = JSON.parse(reader.result);
+					this.#recordResult = parsed;
+					this.#player();
+				}, false);
+				reader.readAsText(file);
+		} else {
+			alert("Invalid file extention: " + fileExtentaiton);
+		}
+	}
+	async #playMidi(url) {
 		const midi = await Midi.fromUrl(url);
 		midi.tracks.forEach(track => {
 			const notes = track.notes;
@@ -238,13 +285,18 @@ class Synth {
 			})
 		})
 	}
+	/**
+	 * Recieves a keystroke and it's properties to then queue it in the buffer
+	 * @param {Int} keyIndex 
+	 * @param {Float} time 
+	 * @param {Float} duration 
+	 */
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.#waveforms[keyIndex];
 		wf.createMasterSource(noteFreq[keyIndex]);
 		let freq = noteFreq[keyIndex];
 		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-		
 		wf.playBufferAt(time, duration);
 	}
 	/**
@@ -277,7 +329,6 @@ class Synth {
 		document.activeElement.blur();
 		if(this.#masterVolume == undefined) return;
 		this.#masterVolume.gain.value = Math.min(Math.abs(vol)/100,Math.abs(this.#maxVolume));
-		console.log("Set master volume to: " + Math.min(Math.abs(vol)/100,Math.abs(this.#maxVolume)));
 	}
 	/**
 	 * Graphs the current wave function in the html canvas element with id "waveformGraph".
@@ -285,13 +336,14 @@ class Synth {
 	#graphWave(){
 		var ctx = document.getElementById('waveformGraph');
 		if (this.#waveGraph) this.#waveGraph.destroy();
-		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, this.#graphIsNormalized, 'rgb(0, 0, 0, 1)');
+		this.#waveGraph = drawGraph(ctx, this.#waveFunction, 100, this.#maxX, this.#graphIsNormalized, "#aa1129");
 	}
 	/**
 	 * Graphs the current envelope of specified type in the html canvas element with id "envelopeGraph".
 	 * @param {String} type 
 	 */
 	#graphEnvelope(type){
+        var yLimits = [0, 1];
 		var ctx = document.getElementById('envelopeGraph');
 		if (this.#envelopeGraph) this.#envelopeGraph.destroy();
 		let funs = [this.#envFunctions[type]["attack"][0], this.#envFunctions[type]["decay"][0], this.#envFunctions[type]["release"][0]];
@@ -300,8 +352,14 @@ class Synth {
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2], 
 			this.#envFunctions[type]["attack"][2] + this.#envFunctions[type]["decay"][2] + this.#envFunctions[type]["release"][2]
 		]
-		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, this.#envIsNormalized[type][0], this.#envIsNormalized[type][1], ['#830','#d93','#387']);
+		if(type == "pitch"){
+				yLimits = [];
+		}
+		this.#envelopeGraph = drawEnvelope(ctx, funs, 100, times, [this.#envIsNormalized[type][0], this.#envIsNormalized[type][1]], ['#830','#d93','#387'], yLimits);
 	}
+	/**
+	 * Responds to record button and starts or stops a recording of the strokes
+	 */
 	#recorder(){
 		if(document.getElementById("recordButton").value == "Record" && document.getElementById("playButton").value != "Playing"){
 			this.#record = new record();
@@ -314,12 +372,15 @@ class Synth {
 			this.#recordResult = this.#record.stopRec();
 			document.getElementById("recordButton").value = "Record";
 			document.getElementById("playButton").value = "Play";
-			document.getElementById("playButton").style.display	= "block";
+			document.getElementById("playButton").style.display	= "inline";
 			this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
-			document.getElementById("downloadButton").style.display	= "block";
+			document.getElementById("downloadButton").style.display	= "inline";
 		}
 		document.activeElement.blur();
 	}
+	/**
+	 * Responds to play button and starts the recorded strokes
+	 */
 	#player(){
 		if(document.getElementById("playButton").value == "Play again" || document.getElementById("playButton").value == "Play"){
 			var playTime = 0;
@@ -332,6 +393,12 @@ class Synth {
 			setTimeout(() => {document.getElementById("playButton").value = "Play again";}, playTime*1000);
 		}
 	}
+	/**
+	 * Calls function in URL.js with the current settings as arguments
+	 */
+	#saveSettings(){
+		saveSettings(this.#envFunctions, this.#envIsNormalized);
+	}
 
 }
 window.onload = bootstrap_synt();
@@ -339,7 +406,14 @@ window.onload = bootstrap_synt();
  * Program start. Init. the synth.
  */
 function bootstrap_synt(){
-	const synth = new Synth();
+  var synth;
+	let origin = window.location.search;
+	const urlParams = new URLSearchParams(origin);
+	if(urlParams.has('func1')){
+    synth = new Synth(loadURL(urlParams));
+	}
+	else{
+		synth = new Synth([]);
+	}
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
-	loadURL();
 }

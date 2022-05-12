@@ -61,7 +61,6 @@ class PitchEnvelope extends Envelope {
 	#setValueCurveAtTime(curve,source,startTime,duration){
 		let deltaTime = duration/curve.length;
 		for (let i = 0; i < curve.length; i++) {
-			//console.log(this.#initialPlaybackRate * curve[i]);
 			source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
 		}
 	}
@@ -71,7 +70,6 @@ class PitchEnvelope extends Envelope {
 	 */
 	 apply_attack(source){
 		this.#initialPlaybackRate = source.playbackRate.value;
-		//console.log(this.#initialPlaybackRate);
 		this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
 	}
 	/**
