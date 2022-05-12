@@ -5,11 +5,11 @@ class Keyboard extends InputSource {
 	 * @param {Array<String>} keys
 	 */
 	constructor(eventTarget, keys) {
-		super(Keyboard.#listen, eventTarget);
+		let callback = (event) => Keyboard.#listen(this, event);
+		super(callback, eventTarget);
 		for (const key of keys) this.addKey(key);
-		this.eventTarget.addEventListener('keydown', Keyboard.#listen);
-		this.eventTarget.addEventListener('keyup', Keyboard.#listen);
-		this.eventTarget.object = this;
+		this.eventTarget.addEventListener('keydown', this.callback);
+		this.eventTarget.addEventListener('keyup', this.callback);
 	}
 	/**
 	* @returns {Array<String>}
@@ -32,18 +32,16 @@ class Keyboard extends InputSource {
 	/**
 	 * @param {KeyboardEvent} event
 	 */
-	static #listen(event) {
+	static #listen(object, event) {
 		/**
 		 * @type {Keyboard} object
 		 */
-		let object = event.currentTarget.object;
 		let synth = object.destination;
 		let key = event.code;
 		let index = object.getIndex(key);
 		if (index == -1) return;
 		let state = event.type == 'keydown';
-		let strength = 1;
-		let value = new Input(index, state, strength);
+		let value = new InputValue(index, state);
 		object.setValue(index, value);
 		console.log(value);
 
