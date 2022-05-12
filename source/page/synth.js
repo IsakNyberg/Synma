@@ -207,19 +207,21 @@ class Synth {
 		this.applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
+	
 	/**
 	 * Recieves a keystroke and it's properties to then queue it in the buffer
 	 * @param {Int} keyIndex 
 	 * @param {Float} time 
 	 * @param {Float} duration 
 	 */
+	/*
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.waveforms[keyIndex];
 		let freq = noteFreq[keyIndex];
-		setTimeout(()=>this.piano.setKeyColor(keyIndex, "cf1518"), time*1000);
+		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
 		wf.playBufferAt(freq, time, duration);
-	}
+	}*/
 	playFile(file) {
 		let fileSplit = file.name.split(".")
 		let fileExtentaiton = fileSplit[fileSplit.length-1];
@@ -228,9 +230,10 @@ class Synth {
 		} else if (fileExtentaiton === "synth") {
 				const reader = new FileReader();
 				reader.addEventListener("load", () => {
-					 let parsed = JSON.parse(reader.result);
+					let parsed = JSON.parse(reader.result);
 					this.recordResult = parsed;
-					this.player();
+					let playButtonElement = document.getElementById("playButton");
+					this.player(playButtonElement);
 				}, false);
 				reader.readAsText(file);
 		} else {
@@ -255,8 +258,7 @@ class Synth {
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.waveforms[keyIndex];
 		wf.createMasterSource(noteFreq[keyIndex]);
-		let freq = noteFreq[keyIndex];
-		setTimeout(()=>this.piano.setKeyColor(keyIndex, "cf1518"), time*1000);
+		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
 		wf.playBufferAt(time, duration);
 	}
@@ -303,7 +305,6 @@ class Synth {
 	 * @param {String} type 
 	 */
 	graphEnvelope(type){
-		
 		if (this.envelopeGraph) this.envelopeGraph.destroy();
 		let funs = [this.envFunctions[type]["attack"][0], this.envFunctions[type]["decay"][0], this.envFunctions[type]["release"][0]];
 		let times = [

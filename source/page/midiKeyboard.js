@@ -59,6 +59,7 @@ class MidiKeybaord {
 		// this is done this way becuase otherwise this is undefined in these functions
 		var fn1 = (midi) => this.#successNAssignKeys(midi);
 		var fn2 = (msg) => this.#failure(msg);
+		//console.log(this.#synth, this.#piano);
 		if (hasMidiAccess) {
 			navigator.requestMIDIAccess().then(fn1, fn2);
 		} 
@@ -74,8 +75,10 @@ class MidiKeybaord {
  * @param {Piano} piano 
  */
 function onMIDIMessage (message, synth, piano) {
+	
 	if ((message.data[0] === 144 || message.data[0] === 153) && message.data[2] > 0) {
 		let index = message.data[1];
+		//console.log(index);
 		piano.setKeyColor(index, "darkgrey");
 		synth.startNote(index);
 	}

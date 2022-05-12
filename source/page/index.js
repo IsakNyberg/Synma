@@ -8,8 +8,6 @@ function init_synt(){
 	const urlParams = new URLSearchParams(origin);
 	if(urlParams.has('func1')){
         synth = new Synth(loadURL(urlParams),document.getElementById('waveformGraph'),document.getElementById('envelopeGraph'));
-        
-        
 	}
 	else{
 		synth = new Synth([],document.getElementById('waveformGraph'),document.getElementById('envelopeGraph'));
@@ -18,6 +16,7 @@ function init_synt(){
     addEventSynthListeners(synth);
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
 }
+
 function addEventSynthListeners(synth){
     document.getElementById("saveSettings").onclick = () => synth.saveSettings();
     document.getElementById("recordButton").onclick = () => {
