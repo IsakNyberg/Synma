@@ -16,6 +16,7 @@
 }
 	
 class Envelope {
+	#initialValue;	
 	constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx,normalized,continuos){
 		this.attackLen = attackLen;
 		this.decayLen = decayLen;
@@ -28,7 +29,8 @@ class Envelope {
 		this.audioCtx = audioCtx;
 		if(normalized)
 			this.#normalizeEnv();
-	}  
+		this.#initialValue = 0;
+	}
 	/**
 	 * Normalize according to the peak amplitude of the buffer.
 	 */
@@ -41,149 +43,67 @@ class Envelope {
 			for (let i = 0; i < x.length; i++) {
 				x[i] /= max;
 			}
-		})
-		
+		})	
 	}
-}
-class PitchEnvelope extends Envelope {
-	#initialPlaybackRate;
-	constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-		super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
-		this.#initialPlaybackRate = 1;
-	}
+	
 	/**
-	 * Sets value of the playback rates according to values of curve. distributes assignments evenly across duration
-	 * @param {Array<Number>} curve 
-	 * @param {AudioBufferSourceNode} source 
-	 * @param {Number} startTime 
-	 * @param {Number} stopTime 
+	 * 
+	 * @param {Array<Number>} curve
+	 * @param {AudioParam} parameter
+	 * @param {Number} startTime
+	 * @param {Number} duration - of the sound
 	 */
-	#setValueCurveAtTime(curve,source,startTime,duration){
-		let deltaTime = duration/curve.length;
-		for (let i = 0; i < curve.length; i++) {
-			source.playbackRate.setValueAtTime(this.#initialPlaybackRate + curve[i] * 10,startTime + i*deltaTime);
-		}
-	}
-	/**
-	 * Applies the gain-values of the attackBuffer, which is created from the attack function.
-	 * @param {AudioBufferSourceNode} source
-	 */
-	 apply_attack(source){
-		this.#initialPlaybackRate = source.playbackRate.value;
-		this.#setValueCurveAtTime(this.attackBuffer,source,this.audioCtx.currentTime,this.attackLen);
-	}
-	/**
-	 * Applies the gain-values of the decayBuffer, which is created from the decay function.
-	 * @param {AudioBufferSourceNode} source 
-	 */
-	apply_decay(source){
-		let timeOffset = this.attackLen;
-		this.#setValueCurveAtTime(this.decayBuffer,source,this.audioCtx.currentTime+timeOffset,this.decayLen);
-	}
-	/**
-	 * Applies the gain-values of the releaseBuffer, which is created from the release function.
-	 * @param {AudioBufferSourceNode} source
-	 */
-	apply_release(source){
-		source.playbackRate.cancelScheduledValues(this.audioCtx.currentTime);
-		this.#setValueCurveAtTime(this.releaseBuffer,source,this.audioCtx.currentTime,this.releaseLen);
-	}
-}
-class FilterEnvelope extends Envelope {
-	constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-		super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
-	}
-	/**
-	* Alternative to node.setValueCurveAtTime because node.setValueCurveAtTime does not work when node.cancelScheduledValues is used.
-	* @param {Array<Number>} curve 
-	* @param {BiquadFilterNode} filter 
-	* @param {Number} startTime 
-	* @param {Number} stopTime 
-	*/
-	#setValueCurveAtTime(curve,filter,startTime,stopTime){
-		let deltaTime = stopTime/curve.length;
-		for (let i = 0; i < curve.length; i++) {
-			let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
-			if (value < 0) { 
-				value = 0;                 
-			} else if (1 < value) {
-				value = 1;                
+	#setValueCurveAtTime(curve,parameter,startTime,duration){
+		if (startTime != Infinity) {
+			let time = startTime;
+			let step = duration/curve.length;
+			for (let i = 0; i < curve.length; i++) {
+				parameter.setValueAtTime(curve[i],time);
+				time += step;
 			}
-			filter.frequency.setValueAtTime(20000 * value, startTime + i * deltaTime);
+		}
+	}
+	/**
+	 *
+	 * @param {AudioParam} parameter
+	 * @param {Number} startTime
+	 * @param {Number} duration
+	 */
+	applyEnvelope(parameter, startTime, duration){
+		let adr = [this.attackBuffer, this.decayBuffer, this.releaseBuffer];
+		let times = [startTime, startTime + this.attackLen, duration];
+		let durations = [this.attackLen, this.decayLen, this.releaseLen];
+		console.log(adr[0][0]);
+		for (let i = 0; i < adr.length; i++) {
+			this.#setValueCurveAtTime(adr[i], parameter, times[i], durations[i]);
 		}
 	}
 	/**
 	 * Applies the gain-values of the attackBuffer, which is created from the attack function.
-	 * @param {BiquadFilterNode} filter
+	 * @param {AudioParam} parameter
+	 * @param {Number} currentTime
 	 */
-	apply_attack(filter){
-		this.#setValueCurveAtTime(this.attackBuffer,filter,this.audioCtx.currentTime,this.attackLen);
+	 apply_attack(parameter, currentTime){
+		this.#initialValue = parameter.value;
+		this.#setValueCurveAtTime(this.attackBuffer,parameter,currentTime,this.attackLen);
 	}
 	/**
 	 * Applies the gain-values of the decayBuffer, which is created from the decay function.
-	 * @param {BiquadFilterNode} filter 
+	 * @param {AudioParam} parameter
+	 * @param {Number} currentTime 
 	 */
-	apply_decay(filter){
+	apply_decay(parameter, currentTime){
+		parameter.cancelScheduledValues();
 		let timeOffset = this.attackLen;
-		this.#setValueCurveAtTime(this.decayBuffer,filter,this.audioCtx.currentTime+timeOffset,this.decayLen);
+		this.#setValueCurveAtTime(this.decayBuffer,parameter,currentTime+timeOffset,this.decayLen);
 	}
 	/**
 	 * Applies the gain-values of the releaseBuffer, which is created from the release function.
-	 * @param {BiquadFilterNode} filter
+	 * @param {AudioParam} parameter
+	 * @param {Number} currentTime
 	 */
-	apply_release(filter){
-		filter.frequency.cancelScheduledValues(this.audioCtx.currentTime);
-		this.#setValueCurveAtTime(this.releaseBuffer,filter,this.audioCtx.currentTime,this.releaseLen);
-	}
-}
-/**
- * @class An exension of the Envelope class which creates an Amplitude Envelope object. Contains functions for applying attack, decay and release.
- */
-class AmpEnvelope extends Envelope {
-	constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx){
-		super(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx);
-	}
-	/**
-	* Alternative to node.setValueCurveAtTime because node.setValueCurveAtTime does not work when node.cancelScheduledValues is used.
-	* @param {Array<Number>} curve 
-	* @param {GainNode} gain 
-	* @param {Number} startTime 
-	* @param {Number} stopTime 
-	*/
-	#setValueCurveAtTime(curve,gain,startTime,stopTime){
-		let deltaTime = stopTime/curve.length;
-		for (let i = 0; i < curve.length; i++) {
-			let value = curve[i] * 10; // Temporary since 0 <= curve[i] <= 1/10.
-			if (value < 0) { 
-				value = 0; 
-			} else if (1 < value) {
-				value = 1;
-			}
-			gain.gain.setValueAtTime(value/10,startTime + i*deltaTime);
-		}
-	}
-	/**
-	 * Applies the gain-values of the attackBuffer, which is created from the attack function.
-	 * @param {GainNode} gain 
-	 */
-	apply_attack(gain){
-		this.#setValueCurveAtTime(this.attackBuffer,gain,this.audioCtx.currentTime,this.attackLen);
-		
-	}
-	/**
-	 * Applies the gain-values of the decayBuffer, which is created from the decay function.
-	 * @param {GainNode} gain 
-	 */
-	apply_decay(gain){
-		let timeOffset = this.attackLen;
-		this.#setValueCurveAtTime(this.decayBuffer,gain,this.audioCtx.currentTime+timeOffset,this.decayLen);
-	}
-	/**
-	 * Applies the gain-values of the releaseBuffer, which is created from the release function.
-	 * @param {GainNode} gain
-	 */
-	apply_release(gain){
-		gain.gain.cancelScheduledValues(this.audioCtx.currentTime);
-		this.#setValueCurveAtTime(this.releaseBuffer,gain,this.audioCtx.currentTime,this.releaseLen);
+	apply_release(parameter,currentTime){
+		parameter.cancelScheduledValues(currentTime);
+		this.#setValueCurveAtTime(this.releaseBuffer,parameter,currentTime,this.releaseLen);
 	}
 }

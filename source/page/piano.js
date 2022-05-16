@@ -164,7 +164,7 @@ class Piano{
 	#mouseDown(keyIndex){
 		this.#clickedKey = keyIndex;
 		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
-		this.#synth.startNote(keyIndex);
+		this.#synth.startNote(keyIndex,0,Infinity);
 	}
 	/**
 	 * Onclick release
@@ -221,7 +221,7 @@ class Piano{
 			return;
 		}
 		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
-		this.#synth.startNote(keyIndex);
+		this.#synth.startNote(keyIndex,0,Infinity);
 	}
 	/**
 	 * Onkeyrelease

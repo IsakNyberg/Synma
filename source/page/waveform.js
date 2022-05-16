@@ -95,7 +95,7 @@ class WaveForm{
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
 		this.masterSource.connect(this.bufferBiquadFilter);
-		this.bufferBiquadFilter.type = 'lowpass';
+		this.bufferBiquadFilter.type = 'allpass';
 		this.bufferBiquadFilter.Q.value = 1;
 		this.bufferBiquadFilter.connect(this.bufferGain);
 		this.bufferGain.connect(this.primaryGainControl);

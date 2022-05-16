@@ -111,7 +111,7 @@ class Synth {
 	 */
 	createEnvelopes(){
 		this.releaseLen = this.envFunctions["amplitude"]["release"][2];
-		this.ampEnvelope = new AmpEnvelope(
+		this.ampEnvelope = new Envelope(
 			this.envFunctions["amplitude"]["attack"][0],
 			this.envFunctions["amplitude"]["decay"][0],
 			this.envFunctions["amplitude"]["release"][0],
@@ -123,7 +123,7 @@ class Synth {
 			this.envIsNormalized["amplitude"][0],
 			this.envIsNormalized["amplitude"][1]
 		);
-		this.pitchEnvelope = new PitchEnvelope(
+		this.pitchEnvelope = new Envelope(
 			this.envFunctions["pitch"]["attack"][0],
 			this.envFunctions["pitch"]["decay"][0],
 			this.envFunctions["pitch"]["release"][0],
@@ -135,7 +135,7 @@ class Synth {
 			this.envIsNormalized["pitch"][0],
 			this.envIsNormalized["pitch"][1]
 		);
-		this.filterEnvelope = new FilterEnvelope(
+		this.filterEnvelope = new Envelope(
 			this.envFunctions["filter"]["attack"][0],
 			this.envFunctions["filter"]["decay"][0],
 			this.envFunctions["filter"]["release"][0],
@@ -162,7 +162,7 @@ class Synth {
 	 */
 	applyEnvelopesAD(wf){
 		if(this.activeEnvelopes[0]){
-			this.ampEnvelope.apply_attack(wf.bufferGain);
+			this.ampEnvelope.apply_attack(wf.bufferGain.gain);
 			this.ampEnvelope.apply_decay(wf.bufferGain);
 		}
 		if(this.activeEnvelopes[1])
@@ -181,47 +181,42 @@ class Synth {
 	 */
 	applyEnvelopesR(wf){
 		if(this.activeEnvelopes[0])
-			this.ampEnvelope.apply_release(wf.bufferGain);
+			this.ampEnvelope.apply_release(wf.bufferGain.gain,this.audioContext.currentTime);
 		if(this.activeEnvelopes[1])
-			this.pitchEnvelope.apply_release(wf.masterSource);
+			this.pitchEnvelope.apply_release(wf.masterSource.detune,this.audioContext.currentTime);
 		if(this.activeEnvelopes[2])
-			this.filterEnvelope.apply_release(wf.bufferBiquadFilter);
+			this.filterEnvelope.apply_release(wf.bufferBiquadFilter.frequency,this.audioContext.currentTime);
 	}
 	/**
 	 * Start playing the specified note (midi key-index).
-	 * @param {Number} keyIndex 
+	 * @param {Number} keyIndex
+	 * @param {Number} relativeTime
 	 * @returns {void}
 	 */
-	startNote(keyIndex){
-		if (this.activeKeys[keyIndex]) {
-			return;
+	startNote(keyIndex,relativeTime,duration){
+		let time = this.audioContext.currentTime;
+		if (this.activeKeys[keyIndex]) return;
+		if (this.record != null) {
+			this.record.startedIndex(keyIndex, this.audioContext.currentTime);
 		}
-		if(this.record != null){
-			this.record.startedIndex(keyIndex, this.audioContext.currentTime)
-		}
-		this.activeKeys[keyIndex] = true;
 		let wf = this.waveforms[keyIndex];
 		if (wf === undefined) return;
-		if(this.graphIsNormalized) wf.normalizeBuffer();
 		wf.createMasterSource(noteFreq[keyIndex]);
-		this.applyEnvelopesAD(wf);
+		if (this.graphIsNormalized) wf.normalizeBuffer(); // yuck, we could use a class for this
+		if (duration != Infinity){
+			setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
+			setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
+			time += relativeTime;
+			
+		} //else duration = Infinity;
+		this.ampEnvelope.applyEnvelope(wf.bufferGain.gain,time,duration);	
+		this.pitchEnvelope.applyEnvelope(wf.masterSource.detune,time,duration);
+		this.filterEnvelope.applyEnvelope(wf.bufferBiquadFilter.frequency,time,duration);
+		this.activeKeys[keyIndex] = true;
+		duration != Infinity ? wf.playBufferAt(time, duration):
 		wf.playBuffer();
 	}
 	
-	/**
-	 * Recieves a keystroke and it's properties to then queue it in the buffer
-	 * @param {Int} keyIndex 
-	 * @param {Float} time 
-	 * @param {Float} duration 
-	 */
-	/*
-	playNoteTimeDuration(keyIndex, time, duration) {
-		let wf = this.waveforms[keyIndex];
-		let freq = noteFreq[keyIndex];
-		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
-		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-		wf.playBufferAt(freq, time, duration);
-	}*/
 	playFile(file) {
 		let fileSplit = file.name.split(".")
 		let fileExtentaiton = fileSplit[fileSplit.length-1];
@@ -332,8 +327,12 @@ class Synth {
 			recordButtonElement.value = "Record";
 			playButtonElement.value = "Play";
 			playButtonElement.style.display	= "inline";
-			this.record.createDownloadFile(this.recordResult, "Beatiful_song.synth");
-			downloadButtonElement.style.display	= "inline";
+			let filename = prompt("Enter file name", "Beautiful_Song");
+			console.log(filename);
+			if (file != null) {
+				this.record.createDownloadFile(this.recordResult, filename + ".synth");
+				downloadButtonElement.style.display	= "inline";
+			}
 		}
 		document.activeElement.blur();
 	}
@@ -355,5 +354,4 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
-
 }
