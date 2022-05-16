@@ -94,11 +94,11 @@ class WaveForm{
 	playBufferAt(start, duration) {
 		this.masterSource.loop = true;
 		this.masterSource.buffer = this.samplingBuffer;
-		this.masterSource.connect(this.bufferBiquadFilter);
+		this.masterSource.connect(this.bufferGain);
+		this.bufferGain.connect(this.bufferBiquadFilter);
 		this.bufferBiquadFilter.type = 'allpass';
 		this.bufferBiquadFilter.Q.value = 1;
-		this.bufferBiquadFilter.connect(this.bufferGain);
-		this.bufferGain.connect(this.primaryGainControl);
+		this.bufferBiquadFilter.connect(this.primaryGainControl);
 		this.primaryGainControl.connect(this.audioContext.destination);
 		this.masterSource.start(this.audioContext.currentTime + start);
 		if (duration > 0) {

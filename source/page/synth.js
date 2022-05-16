@@ -204,14 +204,16 @@ class Synth {
 		wf.createMasterSource(noteFreq[keyIndex]);
 		if (this.graphIsNormalized) wf.normalizeBuffer(); // yuck, we could use a class for this
 		if (duration != Infinity){
+			time += relativeTime;
 			setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 			setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-			time += relativeTime;
-			
-		} //else duration = Infinity;
-		this.ampEnvelope.applyEnvelope(wf.bufferGain.gain,time,duration);	
-		this.pitchEnvelope.applyEnvelope(wf.masterSource.detune,time,duration);
-		this.filterEnvelope.applyEnvelope(wf.bufferBiquadFilter.frequency,time,duration);
+		}
+		if(this.activeEnvelopes[0])
+			this.ampEnvelope.applyEnvelope(wf.bufferGain.gain,time,duration);	
+		if(this.activeEnvelopes[1])
+			this.pitchEnvelope.applyEnvelope(wf.masterSource.detune,time,duration);
+		if(this.activeEnvelopes[2])
+			this.filterEnvelope.applyEnvelope(wf.bufferBiquadFilter.frequency,time,duration);
 		this.activeKeys[keyIndex] = true;
 		duration != Infinity ? wf.playBufferAt(time, duration):
 		wf.playBuffer();
