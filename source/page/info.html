@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>description</title>
+    <title>Info</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="description.css" type="text/css"></link>
+    <link rel="stylesheet" href="info.css" type="text/css"></link>
   </head>
   <body>
     <div class="jumbotron text-center">
@@ -15,9 +15,18 @@
       <p>General description of the mathematical music instrument and the various functional modules</p>
       <form class="form-inline">
         <div class="input-group">
-          <input type="text" class="form-control" size="50" placeholder="Enter Single Variable Function" required>
+          <input type="text" id="test" class="form-control" size="50" placeholder="Enter Function with Respect to X" required>
+          <script>
+            function getURL() {
+              const first = "http://127.0.0.1:5500/index.html?func1="; 
+              const second = "&max=2*pi&!normalise&afuncAtt=1&tfuncAtt=1/2&pfuncAtt=0&alengthAtt=0.1&tlengthAtt=0.1&plengthAtt=0.1&afuncDec=1&tfuncDec=1/2&pfuncDec=0&alengthDec=0.1&tlengthDec=0.1&plengthDec=0.1&afuncRel=1/2&tfuncRel=1/2&pfuncRel=0&alengthRel=0.1&tlengthRel=0.1&plengthRel=0.1&!anorm&!pnorm&!tnorm&!acont&!pcont&!tcont&appA&appF&appP";
+              const funct = document.getElementById('test').value.replace("+", "plus");
+              
+              window.location.href = first+funct+second;
+            }
+          </script>
           <div class="input-group-btn">
-          <button type="button" class="btn btn-danger">Test Function</button>
+          <button type="button" onclick="getURL()" class="btn btn-danger">Test Function</button>
           </div>
         </div>
       </form>
@@ -37,7 +46,7 @@
             which creates a periodic waveform. The user can then play the waveform on the keyboard.
           </p>
           <button 
-            class="btn btn-default btn-lg" onclick="location.href='/index.html'">Access Synth
+            class="btn btn-primary" onclick="location.href='/index.html'">Access Synth
           </button>
         </div>
         <div class="col-sm-4">
@@ -45,17 +54,18 @@
         </div>
       </div>
     </div>
-
-
+    <div class="preview-div">
+      <img  class="preview-image" alt="missing image" src="preview.png">
+    </div>
     <div class="container-fluid bg-grey">
-    <h2>Method</h2>
-      Our synthesizer creates sound by repeatedly playing a periodic waveform from a constrained mathematical function.
-      The detailed steps are as follows: Initially, a user defined mathematical function g is parsed from input. 
-      We will not dive into this since it's not part of the audio synthesis technique (and also quite boring). 
-      The following step is to buffer the audio signal when a musical note is played 
-      (which is what happens when a key on the synth is pushed). 
-      This part is quite simple, and only requires computing the samples for the waveform for a given frequency (note), 
-      and then repeatedly looping through those samples. That's it, that is how the synth makes sound!
+      <h2>Method</h2>
+        Our synthesizer creates sound by repeatedly playing a periodic waveform from a constrained mathematical function.
+        The detailed steps are as follows: Initially, a user defined mathematical function g is parsed from input. 
+        We will not dive into this since it's not part of the audio synthesis technique (and also quite boring). 
+        The following step is to buffer the audio signal when a musical note is played 
+        (which is what happens when a key on the synth is pushed). 
+        This part is quite simple, and only requires computing the samples for the waveform for a given frequency (note), 
+        and then repeatedly looping through those samples. That's it, that is how the synth makes sound!
     </div>
 
     <div class="container-fluid text-center">
@@ -63,51 +73,75 @@
       <h4>and their functionality</h4>
       <br>
 
-    <div class="row">
-      <div class="col-sm-4">
-      <h4>Graph</h4>
-      <p>Plots the given mathematical function but limits the range in the interval [1, 1]</p>
-    </div>
-
-    <div class="col-sm-4">
-      <h4>Parser</h4>
-      <p>Converts the given mathematical function into javascript readable code</p>
-    </div>
-
-    <div class="col-sm-4">
-      <h4>Waveform</h4>
-      <p>
-        Handles the I/O functionality, 
-        i.e responsibility for interpreting functions and user input, upon which actual sound is produced
-      </p>
+      <div class="row">
+        <div class="col-sm-4">
+        <h4>Graph</h4>
+        <p>Plots the given mathematical function but limits the range in the interval [1, 1]</p>
       </div>
-    </div>
-
+      <div class="col-sm-4">
+        <h4>Parser</h4>
+        <p>Converts the given mathematical function into javascript readable code</p>
+      </div>
+      <div class="col-sm-4">
+        <h4>Waveform</h4>
+        <p>
+          Handles the I/O functionality, 
+          i.e responsibility for interpreting functions and user input, upon which actual sound is produced
+        </p>
+      </div>
       <br><br>
-    <div class="row">
-      <div class="col-sm-4">
-    
-      <h4>Design and Pipelining</h4>
-      <p>Handles user interface and website aesthetics, enabling the user to play the instrument in a piano-like fashion</p>
-    </div>
-    <div class="row">
-      <div class="col-sm-4">
-    
-      <h4>Envelope Graph</h4>
-      <p>Displays three separate concatenated functions</p>
-    </div>
-    <div class="row">
-      <div class="col-sm-4">
-    
-      <h4>Envelope</h4>
-      <p>
-        Instead of repeating the same function constantly, envelope takes several functions into consideration when
-        calculating how sound should be emitted and changed over time.
-      </p>
-    </div>
-      
-    </div>
-    </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <h4>Design and Pipelining</h4>
+          <p>Handles user interface and website aesthetics, enabling the user to play the instrument in a piano-like fashion</p>
+        </div>
+        <div class="col-sm-4">
+          <h4>Envelope Graph</h4>
+          <p>Displays three separate concatenated functions. Options exist to display these as continuous and normalized</p>
+        </div>
+        <div class="col-sm-4">
+          <h4>Envelope</h4>
+          <p>
+            Instead of repeating the same function constantly, envelope takes several functions into consideration when
+            calculating how sound should be emitted and changed over time.
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <h4>Recorder</h4>
+          <p>
+          Records sequences that a user plays. This sequence can be replayed or downloaded in a format that is replayable
+          and compatible with the website.
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <h4>URL</h4>
+          <p>
+            The state of the website can be saved into a URL that can be saved for later use.
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <h4>Synth</h4>
+          <p>
+            Plays sound buffers through utilizing the javascript web audio API
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <h4>Piano</h4>
+          <p>
+            Handles key-press functionality and backend
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <h4>MidiKeyboard</h4>
+          <p>
+          Enables the use of a connected physical midi keyboard
+          </p>
+        </div>
+      </div>
 
     <div class="container-fluid bg-grey">
       <h3>Graph</h3>
@@ -150,7 +184,7 @@
     <div class="container-fluid bg-grey">
       <h3>Envelope graph</h3>
       Envelope graph is similar in all but the amount of functions taken as input, as well as three different intervals that
-      for each respective function. These functions are concatenated and displayed as one continous function.
+      for each respective function. These functions are concatenated and displayed as one continuous function.
       <ul class="list-group">
         <li class="list-group-item">maxX1-maxX3: Indicates the upper bound of the domain interval in the span [0, maxX], i.e how far the graph wll go in the x-direction</li>
         <li class="list-group-item">fn1-fn3: The functions that will be plotted</li>
@@ -175,20 +209,152 @@
         <li class="list-group-item">fn1-fn3: The functions that will be plotted</li>
       </ul>
       <ul class="list-group">
-        <li class="list-group-item">Output: The graph with the concatenated functions</li>
+        <li class="list-group-item">Output: A buffer with playable sampled data points, i.e a waveform</li>
       </ul>
     </div>
 
     <div class="container-fluid bg-grey">
       <h3>Envelope</h3>
-      
+      Changes data points in the buffer created in the waveform module which effectively alters the waveform. These changes
+      can be with reggards to amplitude (volume), pitch (frequency variance) and filtering of sound (only allow certain frequencies).
+      Similarly to waveform and graph, a function is used to alter the value of the datapoints.
+      <ul class="list-group">
+        <li class="list-group-item">N: Number interval</li>
+        <li class="list-group-item">fn: Function to sample</li>
+        <li class="list-group-item">Samples: Number of samples in interval</li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item">Output: An altered buffer with playable sampled data points, i.e a waveform</li>
+      </ul>
     </div>
 
     <div class="container-fluid">
-      <h3>Design And Pipelingin</h3>
+      <h3>Design And Pipelining</h3>
       General design and aesthetics of the webpage, e.g graph sizes, settings and a graphical display of the synth piano. 
       This module is also responsible for connecting all other aforementioned modules, 
       i.e creating pipelines between them.                 
+    </div>
+
+    <div class="container-fluid bg-grey">
+      <h3>Recorder</h3>
+      Records whatever is played by the user. This sequence or data blob can be either downloaded for 
+      later use or replayed instantly.
+      <ul class="list-group">
+        <li class="list-group-item">Output: Playable data blob </li>
+      </ul>
+    </div>
+
+    <div class="container-fluid">
+      <h3>URL</h3>
+      Saves the state of the synth whenever the user wishes to. This action preserves said state in a URL that is saved
+      to the clipboard upon command. The URL can then be reused at user discretion on a later date or time.   
+      <ul class="list-group">
+        <li class="list-group-item">Presets: Settings present at session </li>
+        <li class="list-group-item">Norms: Values such as pitch, amplitude etc </li>
+      </ul> 
+      <ul class="list-group">
+        <li class="list-group-item">Output: URL that holds the saved state of a synth session </li>
+      </ul>
+    </div>
+
+    <div class="container-fluid bg-grey">
+      <h3>Synth</h3>
+      Receives a readily available buffer and produces sound from the data points itt contains.
+      <ul class="list-group">
+        <li class="list-group-item">Output: Sound </li>
+      </ul>
+    </div>
+
+    <div class="container-fluid">
+      <h3>Piano</h3>
+        Handles the backend of the piano UI at display on the website. Keeps track of when keys were pressed,
+        how long they were pressed, and when they were released.
+      <ul class="list-group">
+        <li class="list-group-item">Synth: Receives a synth as argument </li>
+      </ul> 
+      <ul class="list-group">
+        <li class="list-group-item">Output: Sequences of pressed keys</li>
+      </ul>
+    </div>
+
+    
+    <div class="container-fluid bg-grey">
+      <h3>Midi keyboard</h3>
+        When a midi keyboard is present, pressing the piano notes on the keyboard will map to the corresponding
+        notes on the computer keyboard.
+      <ul class="list-group">
+        <li class="list-group-item">Synth: Receives a synth as argument </li>
+        <li class="list-group-item">Synth: Receives a piano as argument </li>
+      </ul> 
+      <ul class="list-group">
+        <li class="list-group-item">Output: Simulates the sequences of pressed keys in piano</li>
+      </ul>
+    </div>
+
+    <div class="jumbotron2">
+
+      <div class="container-fluid text-center">
+        <h2>Team</h2>
+
+        <br><br>
+        <div class="row">
+          <div class="col-sm-4">
+            <h4>Isak Nyberg</h4>
+            <p>Scrum Master</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/IsakNyberg">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          
+          <div class="col-sm-4">
+            <h4>Atheer Salim</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/Atheer2104">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+
+          <div class="col-sm-4">
+            <h4>Johannes Arrenander</h4>
+            <p>Product Owner</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/johnaren">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>        
+        </div>
+        
+        <br><br>
+        <div class="row">
+          <div class="col-sm-3">
+            <h4>Hasan Al-Zubeidi</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/HasanAlzubeidi">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Azer Hojlas</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/AzerHojlas">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Rasmus Danielsson</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Lukas Werelius</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/WereliusLucas">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
