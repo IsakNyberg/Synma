@@ -26,6 +26,7 @@ class Piano{
 			this.htmlDiv = htmlDiv;
 		}
 	}
+	#activeNotes = {}; // wat da heck are we pressing?
 	#noOfOctaves; // number of octaves to include in the piano
 	keys = []; // Colection of all the key objects in the piano
 	#synth; // reference to the synth
@@ -37,6 +38,7 @@ class Piano{
 		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
+		this.slideInPiano();
 		this.#addEventListeners();
 	}
 	// Keys *******************************************************************
@@ -158,22 +160,49 @@ class Piano{
 	}
 
 	/**
+	 * We play'n!
+	 * @param {Number} keyIndex
+	 */
+	#playNote(keyIndex) {
+		let note = new Note(noteFreq[keyIndex]);
+
+		console.log(note);
+		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
+		this.#synth.playNote(note);
+		this.#activeNotes[keyIndex] = note;
+	}
+
+	/**
+	 * We stop'n!
+	 * @param {Number} keyIndex 
+	 */
+	#stopNote(keyIndex) {
+		let note = this.#activeNotes[keyIndex];
+
+		if (note != undefined) {
+			this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR)
+			this.#synth.stopNote(note);
+			this.#activeNotes[note] = undefined;
+		}
+	}
+
+	/**
 	 * Onclick
 	 * @param {Number} id 
 	 */
 	#mouseDown(keyIndex){
 		this.#clickedKey = keyIndex;
-		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
-		this.#synth.startNote(keyIndex);
+		this.#playNote(keyIndex);
 	}
+
 	/**
 	 * Onclick release
 	 * @param {Number} keyIndex 
 	 */
 	#mouseUp(keyIndex){
-		this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR)
-		this.#synth.stopNote(this.#clickedKey);
+		this.#stopNote(keyIndex);
 	}
+
 	/**
 	 * Gets the corresponding html-divs to the specified keyIndex 
 	 * @param {Number} keyIndex 
@@ -192,23 +221,23 @@ class Piano{
 		} 
 		return res;
 	}
+
 	/**
 	 * Onkeypress
 	 * @param {KeyboardEvent} pressedKey 
 	 * @returns {void}
 	 */
 	#pressedKey(pressedKey){
-		if(!(document.activeElement.tagName === "BODY")) { //Requires that other events in the program blurs activeElement.
-			return;
-		}
-		if(pressedKey.keyCode == 90){
+		//Requires that other events in the program blurs activeElement.
+		if (!(document.activeElement.tagName === "BODY")) return;
+		if (pressedKey.keyCode == 90) {
 			this.#removeMarkers(this.#markersPosition);
 			this.#markersPosition = Math.max(--this.#markersPosition, 0);
 			this.#placeMarkers(this.#markersPosition);
 			this.#turnOffAndReset();
 			return;
 		}
-		if(pressedKey.keyCode == 88){
+		if (pressedKey.keyCode == 88) {
 			this.#removeMarkers(this.#markersPosition);
 			this.#markersPosition = Math.min(++this.#markersPosition, this.#noOfOctaves);
 			this.#placeMarkers(this.#markersPosition);
@@ -217,36 +246,29 @@ class Piano{
 		}
 
 		var keyIndex = this.#keyCodeToNote(pressedKey.keyCode);
-		if (keyIndex === undefined) {
-			return;
-		}
-		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
-		this.#synth.startNote(keyIndex);
+		if (keyIndex === undefined) return;
+		this.#playNote(keyIndex);
 	}
+
 	/**
 	 * Onkeyrelease
 	 * @param {KeyboardEvent} pressedKey 
 	 * @returns {void}
 	 */
 	#releasedKey(pressedKey){
-		if(!(document.activeElement.tagName === "BODY"))
-			return;
+		if (!(document.activeElement.tagName === "BODY")) return;
 		var keyIndex = this.#keyCodeToNote(pressedKey.keyCode);
-		if (keyIndex == undefined) {
-			return;
-		}
+		if (keyIndex == undefined) return;
 		this.#synth.stopNote(keyIndex);
-		this.resetKeyColor(keyIndex);
 	}
+
 	/**
 	 * Forces a mock-release on all pressed keys.
 	 */
-	#turnOffAndReset(){
-		for(var i = 0; i< this.keys.length; i++) {
-			this.resetKeyColor(i);
-			this.#synth.stopNote(i);
-		}
+	#turnOffAndReset() {
+		for(var i = 0; i< this.keys.length; i++) this.#stopNote(i);
 	}
+
 	/**
 	 * Sets the color of the key with the specied index
 	 * @param {Number} index 
@@ -258,6 +280,7 @@ class Piano{
 			divs[i].style.backgroundColor = color;
 		}
 	}
+
 	/**
 	 * Resets the keycolor (called when the key is released) to either white or black depending on index.
 	 * @param {Number} index - keyIndex
@@ -272,6 +295,7 @@ class Piano{
 			}
 		}
 	}
+
 	/**
 	 * returns the equivalent keyindex on the synt given a keycode for a computer key.
 	 * @param {Number} keyCode - The keycode for pressed key on the computer keyboard (ascii)
@@ -281,6 +305,7 @@ class Piano{
 		if(Piano.#keyCodes.includes(keyCode))
 			return this.#markersPosition*12 + Piano.#keyCodes.indexOf(keyCode);
 	}
+
 	/**
 	 * Marks and maps the keys in the octave to computer keys qwerty(white), 23567 (black).
 	 * @param {Number} x - - The octave to be marked and mapped to the computer keyboard 
@@ -294,6 +319,7 @@ class Piano{
 				document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
 		}
 	}
+	
 	/**
 	 * 
 	 * @param {Number} x - The octave to be unmarked and unmapped from the computer keyboard 
