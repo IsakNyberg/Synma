@@ -26,6 +26,10 @@ class Piano{
 			this.htmlDiv = htmlDiv;
 		}
 	}
+
+	#callPressedKey;
+	#callReleasedKey;
+
 	#noOfOctaves; // number of octaves to include in the piano
 	keys = []; // Colection of all the key objects in the piano
 	#synth; // reference to the synth
@@ -37,7 +41,7 @@ class Piano{
 		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
-		this.#addEventListeners();
+		this.addEventListeners();
 	}
 	// Keys *******************************************************************
 	/**
@@ -143,7 +147,7 @@ class Piano{
 	/**
 	 * Adds the event-listeners required by the piano.
 	 */
-	#addEventListeners(){
+	addEventListeners(){
 		for (let keyIndex = 0; keyIndex < this.keys.length; keyIndex++) {
 			let divs = this.#getKeyDivsFromKeyIndex(keyIndex);
 			for (let j = 0; j < divs.length; j++) {
@@ -153,8 +157,29 @@ class Piano{
 				divs[j].onmouseleave = () => this.resetKeyColor(keyIndex);
 			}
 		}
-		document.addEventListener('keydown', (keyCode) => this.#pressedKey(keyCode));
-		document.addEventListener('keyup', (keyCode) => this.#releasedKey(keyCode));
+		this.#callPressedKey = (keyCode) => this.#pressedKey(keyCode);
+		this.#callReleasedKey = (keyCode) => this.#releasedKey(keyCode);
+		document.addEventListener('keydown', this.#callPressedKey);
+		document.addEventListener('keyup', this.#callReleasedKey);
+	}
+	removeEventListeners() {
+		
+		var old_element = document.getElementById(Piano.#PIANO_DIV_ID);
+		var new_element = old_element.cloneNode(true);
+		old_element.parentNode.replaceChild(new_element, old_element);
+		document.removeEventListener('keydown', this.#callPressedKey);
+		document.removeEventListener('keyup', this.#callReleasedKey);
+		/*for (let keyIndex = 0; keyIndex < this.keys.length; keyIndex++) {
+			let divs = this.#getKeyDivsFromKeyIndex(keyIndex);
+			for (let j = 0; j < divs.length; j++) {
+				divs[j].removeEventListener("onmousedown",() => this.#mouseDown(keyIndex));
+				divs[j].removeEventListener("onmouseup", () => this.#mouseUp(keyIndex));
+				divs[j].removeEventListener("onmouseenter", () => this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR));
+				divs[j].removeEventListener("onmouseleave", () => this.resetKeyColor(keyIndex));
+			}
+		}
+		document.removeEventListener('keydown', (keyCode) => this.#pressedKey(keyCode));
+		document.removeEventListener('keyup', (keyCode) => this.#releasedKey(keyCode));*/
 	}
 
 	/**
