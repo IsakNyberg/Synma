@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <title>Mjukvarusynt</title>
+  <link href="synth.css" rel="stylesheet">
+</head>
+<body>
+  <div class="flex-container">
+    <div class="flex-container-row">
+      <div class="flex-container-column1">
+        <div class="headLine">Graph</div>
+      <div class="submit">
+        <form>
+          <input type="text" name="function" id="functionInput" placeholder="f(x)" class="inputDesign" value="sin(x)"/>
+          <input type="text" name="function" id="maxXInput" placeholder="maxX" class="inputDesign" value="2*pi"/>
+          <input class="function-btn" type="button" name="submit" value="Submit" id="functionButton"/>
+          <input class="normalize-chkbox" type="checkbox" id="normalizeCheckbox">
+          <label>Normalize</label>
+        </form>
+      </div>
+      <div>
+        <input id="saveSettings"  class="function-btn" type="button" value="Save settings">
+        <input class="function-btn" type="button" value="Record" id="recordButton"/>
+        <input class="function-btn" type="button" value="Play" id="playButton"/>
+        <a id="download"><input class="function-btn" type="button" value="Download" id="downloadButton"/></a>
+        <!-- VVV file upload button VVV -->
+        <input class="function-btn" type="button" value="Upload File" onclick="document.getElementById('midiUpload').click();" />
+        <input type="file" id="midiUpload" style="display:none;" name="file" accept=".mid,.synth"/>
+        <!-- ^^^ file upload button ^^^ -->
+        <input class="volume-slider" type="range" id="volume" name="volume" min="0" max="100">
+        <label for="volume"> Volume </label>
+      </div>
+      <div class="waveformGraphDiv">
+        <canvas id="waveformGraph" height="100%"></canvas>
+      </div>
+    </div>
+    <div class="flex-container-column2">
+      <div class="headLine"> Envelope </div>
+      <div class="env-inputs">
+          <div class="dropdown">
+            <button id="chosenEnvelope" class="dropbtn">Amplitude</button>
+            <div class="dropdown-content">
+              <a class="dropdownOption" id="amplitude" onclick="document.getElementById('chosenEnvelope').innerHTML='Amplitude'">Amplitude</a>
+              <a class="dropdownOption" id="pitch" onclick="document.getElementById('chosenEnvelope').innerHTML='Pitch'">Pitch</a>
+              <a class="dropdownOption" id="timbre" onclick="document.getElementById('chosenEnvelope').innerHTML='Filter'">Filter</a>              
+            </div>
+          </div>
+          <div class="dropdown">
+            <button id="chosenTimezone" class="dropbtn">Attack</button>
+            <div class="dropdown-content">
+              <a class="dropdownOption" id="attack" onclick="document.getElementById('chosenTimezone').innerHTML='Attack'">Attack</a>
+              <a class="dropdownOption" id="decay" onclick="document.getElementById('chosenTimezone').innerHTML='Decay'">Decay</a>
+              <a class="dropdownOption" id="release" onclick="document.getElementById('chosenTimezone').innerHTML='Release'">Release</a>
+            </div>
+          </div>
+          <input type="text" name="env-function" placeholder="f(t)" class="inputDesign" id="env-functionInput"/>
+          <input type="text" name="env-time" placeholder="s" class="inputDesign" id="env-timeInput"/>
+          <input class="function-btn" type="button" name="Submit" value="Submit" id="env-functionButton"/>
+        
+      </div>
+      <div id="envelopeGraphDiv">
+        <canvas id="envelopeGraph" height="100%"></canvas>
+      </div>
+      <div>
+        <label><input class="normalize-chkbox" type="checkbox" id="normalizeEnvelope" onclick="document.activeElement.blur()">Normalize</label>
+        <label><input class="normalize-chkbox" type="checkbox" id="continuousCheckbox" onclick="document.activeElement.blur()">Continuous</label>
+      </div>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyAmplitude" checked onclick="document.activeElement.blur()">Apply Amplitude</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyPitch" checked onclick="document.activeElement.blur()">Apply Pitch</label>
+      <label><input class="normalize-chkbox" type="checkbox" id="applyFilter" checked onclick="document.activeElement.blur()">Apply Filter</label>
+    </div>
+  </div>
+  </div>
+    <div id="piano-container">
+    <div class="header">
+      <div>Move keys</div>
+      <div><span class="arrow-btn"> Z </span>
+      <span class="move-p" > &#8592; To the left  To the right &#8594; </span>
+      <span class="arrow-btn"> X </span></div>
+    </div> 
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="frequencies.js"></script>
+  <script src="waveform.js"></script>
+  <script src="record.js"></script>
+  <script src="parse.js"></script>
+  <script src="graph.js"></script>
+  <script src="envelope.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src="envelopeGraph.js"></script>
+  <script src="midiKeyboard.js"></script>
+  <script src="piano.js"></script>
+  <script src="url.js"></script>
+  <script src="synth.js"></script>
+  <script src="init_synth.js"></script>
+</body>
+</html>
