@@ -1,18 +1,13 @@
 const canvas = document.getElementById('myCanvas');
 const c = canvas.getContext('2d');
-const play = document.getElementById("play");
+//const play = document.getElementById("play");
 let cancel = null;
-//  canvas.width= innerWidth;
-//  canvas.height=innerHeight;
 
 let isDrawing = false;
 let mouseX = 0;
 let mouseY = 0;
 let currentX = 0;
 let currentY = 0;
-
-//let testX=0;
-//let testY=0;
 
 class Rectangle{
 	constructor(x,y,color,x1,y1){
@@ -21,7 +16,6 @@ class Rectangle{
 		this.color = color;
 		this.x1 = x1;
 		this.y1 = y1;
-		//this.index;
 	}
 
 	getColor(){
@@ -92,8 +86,8 @@ let redRectangles = [];
 let x = 0;
 let y = 0;
 let y1=0;
-for(let a= 0; a<5;a++){
-	for(let i=0; i<5;i++){
+for(let a= 0; a<128;a++){
+	for(let i=0; i<40;i++){
 		Rectangles.push(new Rectangle(
 			x,
 			y,
@@ -150,68 +144,15 @@ function animate(){
 	})
 }
 	
+
 play.addEventListener("click", function() {
-	animate();
-	movePiano();
+	//animate();
+	//movePiano();
+	createPianoRollFile();
 });
+animate();
 
 function movePiano(){
-	document.getElementById("piano").style.transform = "rotate(-90deg)";
-	document.getElementById("piano").style.display = "block";
-	document.getElementById("piano").style.position = "absolute";
-	document.getElementById("piano").style.left = "-42.5%";
-	document.getElementById("piano").style.top = "0";
-	document.getElementById("piano").style.position = "absolute";
-	document.getElementById("piano").style.left = "-42.5%";
-	//document.getElementById("piano").style.top = "1000px";
-	//document.getElementById("myCanvas").style.position = "absolute";
-	//document.getElementById("myCanvas").style.left = "15%";
-	//document.getElementById("myCanvas").style.top = "69.6%";
-	//document.getElementById("myCanvas").style.position = "absolute";
-	//document.getElementById("myCanvas").style.left = "15%";
-	//document.getElementById("myCanvas").style.top = "69.6%";
-
-	var elements = document.getElementsByClassName("both");
-	var whites = document.getElementsByClassName("white");
-	var blacks = document.getElementsByClassName("black");
-	var covereds = document.getElementsByClassName("coveredWhite");
-	var rights = document.getElementsByClassName("borderRight");
-	var lefts = document.getElementsByClassName("borderLeft");
-
-	console.log(whites)
-	for(var i=0; i<elements.length; i++) { 
-		elements[i].style.width = "20px";
-	}
-	for(var i=0; i<blacks.length; i++) { 
-		blacks[i].style.width = "20px";
-	}
-	for(var i=0; i<covereds.length; i++) { 
-		covereds[i].style.width = "20px";
-	}
-	for(var i=0; i<whites.length; i++) { 
-		whites[i].style.width = "19px";
-	}
-	for(var i=0; i<lefts.length; i++) { 
-		lefts[i].style.width = "19px";
-	}
-	for(var i=0; i<rights.length; i++) { 
-		rights[i].style.width = "19px";
-	}
-	/*
-	elements.forEach(element => {
-		element.style.width = "20px";
-	});
-	whites.forEach(element => {
-		element.style.width = "19px";
-	});
-	covereds.forEach(element => {
-		element.style.width = "20px";
-	});*/
-
-	//document.getElementsByClassName("both").style.width = "20px";
-	//document.getElementsByClassName("white").style.width = "19px";
-	//document.getElementsByClassName("coveredWhite").style.width = "20px";
-
 	canvasen = document.getElementById("myCanvas").getBoundingClientRect();
 	yOffset = canvasen["y"];
 	xOffset = canvasen["x"];
@@ -220,11 +161,11 @@ function movePiano(){
 let lastchanse=0;
 let last=0;
 document.getElementById("myCanvas").addEventListener('mousedown', e => {
-	console.log(e.clientX, e.clientY);
-	console.log("söker:", ((e.clientX)-10 + window.scrollX), ((e.clientY)-18 + window.scrollY))
+	mouseX = Math.floor(((e.clientX- xOffset + window.scrollX))/20);
+	mouseY = Math.floor(((e.clientY - yOffset + window.scrollY) /*- 15*/)/20) * 40;
 
-	mouseX = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
-	mouseY = Math.floor(((event.clientY - yOffset + window.scrollY) - 15)/20) * 5;
+	console.log("", mouseX, mouseY)
+
 	currentX=e.clientX;
 	currentY=e.clientY;
 	isDrawing = true; 
@@ -236,8 +177,9 @@ document.getElementById("myCanvas").addEventListener('mousemove', event => {
 		let xT =Rectangles[mouseX+mouseY].getX();
 		let yT=Rectangles[mouseX+mouseY].getY();
 	
-		if(event.clientX>currentX) {value=1;}
-		else value=-1;
+		/*if(event.clientX>currentX) {value=5;}
+		else value=-5;*/
+		value = event.clientX - currentX;
 
 		let counter =0;
 		smallRectangles.forEach((Rectangle,index)=>{	
@@ -267,7 +209,8 @@ console.log(xOffset, yOffset);
 
 document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	let xT = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
-	let yT = Math.floor(((event.clientY - yOffset + window.scrollY) - 34)/20) * 5;
+	let yT = Math.floor(((event.clientY - yOffset + window.scrollY))/20) * 40;
+	console.log(xT, yT)
 	let xS = Rectangles[xT+yT].getX();
 	let yS = Rectangles[xT+yT].getY();
 	smallRectangles.push(new Rectangle(
@@ -303,9 +246,17 @@ function createPianoRollFile(){
 	smallRectangles.forEach((Rectangle)=>{
 		newFile.push([Rectangle.getY()/20, Rectangle.getX()/20, Rectangle.getX1()/20]);
 	});
+	
+	/* Works to create downloadable file!!
+
 	var filename = prompt("Choose file name", "Beautiful_song");
 	var a = document.getElementById("download");
 	var file = new Blob([JSON.stringify(newFile)], {type: 'application/json'});
 	a.href = URL.createObjectURL(file);
-	a.download = filename + ".synth";
+	a.download = filename + ".synth";*/
+	
+	newFile.forEach(note => {
+		console.log(note[0], note[1], note[2])
+		synth.playNoteTimeDuration(note[0], note[1], note[2]);
+	})
 }
