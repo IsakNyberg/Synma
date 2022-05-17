@@ -40,7 +40,7 @@ class Synth {
 		this.waveforms = [];
 		this.activeKeys = new Array(60);
 		for (var i = 0; i < this.activeKeys.length; ++i) { this.activeKeys[i] = false; }
-		this.createPiano();  
+		this.createPiano();
 		if(urlPresets[3] != undefined && urlPresets[3].length > 0){
 			var types = ["amplitude", "filter", "pitch"];
 			var adr = ["attack", "decay", "release"];
@@ -67,6 +67,7 @@ class Synth {
 		document.activeElement.blur();
 		this.audioContext = new AudioContext(); 
 		this.masterVolume = this.audioContext.createGain();
+		this.masterVolume.connect(this.audioContext.destination);
 		this.waveFunction = this.waveParser.parse(fnString);
 		this.graphIsNormalized = normalized;
 		let value = this.waveParser.parse(maxXInput);
@@ -90,8 +91,13 @@ class Synth {
 	 */
 	createWaveforms(){ 
 		this.waveforms = [];
+		let envelopes = {};
+		envelopes['filter'] = this.filterEnvelope;
+		envelopes['pitch'] = this.pitchEnvelope;
+		envelopes['volume'] = this.ampEnvelope;
 		for (let i = 0; i < 128; i++) {
-			this.waveforms.push(new WaveForm(this.audioContext,this.baseNote, this.masterVolume));
+			let note = new Note(noteFreq[i]);
+			this.waveforms.push(new Voice(this.baseNote, this.audioContext, envelopes, note));
 		}
 	}
 	/**
@@ -179,7 +185,7 @@ class Synth {
 	 * Applied all envelopes release on specified waveform.
 	 * @param {WaveForm} wf 
 	 */
-	applyEnvelopesR(wf){
+	applyEnvelopesR(wf) {
 		if(this.activeEnvelopes[0])
 			this.ampEnvelope.apply_release(wf.bufferGain.gain,this.audioContext.currentTime);
 		if(this.activeEnvelopes[1])
@@ -194,8 +200,9 @@ class Synth {
 	 * @returns {void}
 	 */
 	startNote(keyIndex,relativeTime,duration){
+		/*
 		let time = this.audioContext.currentTime;
-		if (this.activeKeys[keyIndex]) return;
+		//if (this.activeKeys[keyIndex]) return;
 		if (this.record != null) {
 			this.record.startedIndex(keyIndex, this.audioContext.currentTime);
 		}
@@ -205,18 +212,31 @@ class Synth {
 		if (this.graphIsNormalized) wf.normalizeBuffer(); // yuck, we could use a class for this
 		if (duration != Infinity){
 			time += relativeTime;
-			setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
-			setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
+			setTimeout(()=> this.piano.setKeyColor(keyIndex, "#cf1518"), relativeTime*1000);
+			setTimeout(()=> {
+				this.piano.resetKeyColor(keyIndex);
+				this.stopNote(keyIndex);
+			}, (relativeTime+duration)*1000);
 		}
-		if(this.activeEnvelopes[0])
-			this.ampEnvelope.applyEnvelope(wf.bufferGain.gain,time,duration);	
-		if(this.activeEnvelopes[1])
+		if(this.activeEnvelopes[0]) {
+			this.ampEnvelope.applyEnvelope(wf.bufferGain.gain,time,duration);
+		}
+		if(this.activeEnvelopes[1]) {
 			this.pitchEnvelope.applyEnvelope(wf.masterSource.detune,time,duration);
-		if(this.activeEnvelopes[2])
+		}
+		if(this.activeEnvelopes[2]) {
 			this.filterEnvelope.applyEnvelope(wf.bufferBiquadFilter.frequency,time,duration);
+		}
 		this.activeKeys[keyIndex] = true;
-		duration != Infinity ? wf.playBufferAt(time, duration):
-		wf.playBuffer();
+		wf.playBufferAt(time);
+		*/
+		let voice = this.waveforms[keyIndex];
+		let note = voice.note;
+
+		note.start = 0;
+		note.duration = duration;
+		console.log(note);
+		voice.start();
 	}
 	
 	playFile(file) {
@@ -242,7 +262,7 @@ class Synth {
 		midi.tracks.forEach(track => {
 			const notes = track.notes;
 			notes.forEach(note => {
-				this.playNoteTimeDuration(note.midi, note.time, note.duration);
+				this.startNote(note.midi, note.time, note.duration);
 			})
 		})
 	}
@@ -265,20 +285,19 @@ class Synth {
 	 * @returns {void}
 	 */
 	stopNote(keyIndex){
-		if (!this.activeKeys[keyIndex]) {
-			return;
-		}
+		/*
+		if (!this.activeKeys[keyIndex]) return;
 		if(this.record != null){
 			this.record.stoppedIndex(keyIndex, this.audioContext.currentTime)
 		}
 		this.activeKeys[keyIndex] = false;
 		this.applyEnvelopesR(this.waveforms[keyIndex]);
-		if (this.activeEnvelopes[0]) {
-			this.waveforms[keyIndex].stopBuffer(this.releaseLen);
-		}else {
-			this.waveforms[keyIndex].stopBuffer(0);
-		}
-		
+		let waveform = this.waveforms[keyIndex];
+		if (this.activeEnvelopes[0]) waveform.stopBuffer(this.releaseLen);
+		else waveform.stopBuffer(0);
+		*/
+		let voice = this.waveforms[keyIndex];
+		voice.stop();
 	}
 	/**
 	 * Sets the master volume (all audionodes leads to masterGain)

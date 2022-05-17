@@ -73,7 +73,7 @@ class Envelope {
 		let adr = [this.attackBuffer, this.decayBuffer, this.releaseBuffer];
 		let times = [startTime, startTime + this.attackLen, duration];
 		let durations = [this.attackLen, this.decayLen, this.releaseLen];
-		console.log(adr[0][0]);
+		//console.log(adr[0][0]);
 		for (let i = 0; i < adr.length; i++) {
 			this.#setValueCurveAtTime(adr[i], parameter, times[i], durations[i]);
 		}
