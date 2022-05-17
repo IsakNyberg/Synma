@@ -152,7 +152,64 @@ function animate(){
 	
 play.addEventListener("click", function() {
 	animate();
+	movePiano();
 });
+
+function movePiano(){
+	document.getElementById("piano").style.transform = "rotate(-90deg)";
+	document.getElementById("piano").style.display = "block";
+	document.getElementById("piano").style.position = "absolute";
+	document.getElementById("piano").style.left = "-42.5%";
+	document.getElementById("piano").style.top = "1000px";
+	document.getElementById("myCanvas").style.position = "absolute";
+	document.getElementById("myCanvas").style.left = "15%";
+	document.getElementById("myCanvas").style.top = "69.6%";
+
+	var elements = document.getElementsByClassName("both");
+	var whites = document.getElementsByClassName("white");
+	var blacks = document.getElementsByClassName("black");
+	var covereds = document.getElementsByClassName("coveredWhite");
+	var rights = document.getElementsByClassName("borderRight");
+	var lefts = document.getElementsByClassName("borderLeft");
+
+	console.log(whites)
+	for(var i=0; i<elements.length; i++) { 
+		elements[i].style.width = "20px";
+	}
+	for(var i=0; i<blacks.length; i++) { 
+		blacks[i].style.width = "20px";
+	}
+	for(var i=0; i<covereds.length; i++) { 
+		covereds[i].style.width = "20px";
+	}
+	for(var i=0; i<whites.length; i++) { 
+		whites[i].style.width = "19px";
+	}
+	for(var i=0; i<lefts.length; i++) { 
+		lefts[i].style.width = "20px";
+	}
+	for(var i=0; i<rights.length; i++) { 
+		rights[i].style.width = "20px";
+	}
+	/*
+	elements.forEach(element => {
+		element.style.width = "20px";
+	});
+	whites.forEach(element => {
+		element.style.width = "19px";
+	});
+	covereds.forEach(element => {
+		element.style.width = "20px";
+	});*/
+
+	//document.getElementsByClassName("both").style.width = "20px";
+	//document.getElementsByClassName("white").style.width = "19px";
+	//document.getElementsByClassName("coveredWhite").style.width = "20px";
+
+	canvasen = document.getElementById("myCanvas").getBoundingClientRect();
+	yOffset = canvasen["y"];
+	xOffset = canvasen["x"];
+}
 
 let lastchanse=0;
 let last=0;
@@ -215,7 +272,6 @@ document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 		20,
 		(xS*yS)
 	));
-	//smallRectangles[smallRectangles.length-1].setSquare();
 });
 
 function randomColor(){
