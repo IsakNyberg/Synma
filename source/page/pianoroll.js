@@ -186,10 +186,10 @@ function movePiano(){
 		whites[i].style.width = "19px";
 	}
 	for(var i=0; i<lefts.length; i++) { 
-		lefts[i].style.width = "20px";
+		lefts[i].style.width = "19px";
 	}
 	for(var i=0; i<rights.length; i++) { 
-		rights[i].style.width = "20px";
+		rights[i].style.width = "19px";
 	}
 	/*
 	elements.forEach(element => {
@@ -261,7 +261,7 @@ console.log(xOffset, yOffset);
 
 document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	let xT = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
-	let yT = Math.floor(((event.clientY - yOffset + window.scrollY) - 15)/20) * 5;
+	let yT = Math.floor(((event.clientY - yOffset + window.scrollY) - 34)/20) * 5;
 	let xS = Rectangles[xT+yT].getX();
 	let yS = Rectangles[xT+yT].getY();
 	smallRectangles.push(new Rectangle(
