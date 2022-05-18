@@ -69,11 +69,6 @@ label {
 	width: 900px;
 	height: 2560px;
 }
-/*#myCanvas {
-	float: left;
-	height: 2560px;
-	width: 400px;
-}*/
 #playButton, #downloadButton{
 		display: none;
 }
@@ -117,8 +112,8 @@ a {
 	text-align: bottom;
 }
 .leftWhite {
-	height: 8px;
-	width: 110px;
+	height: 10px;
+	width: 120px;
 	background-color: white;
 	border-bottom: solid 1px darkgray;
 	/*border-bottom-top-radius: 5px;*/
@@ -126,8 +121,8 @@ a {
 	/*clear: both;*/
 }
 .rightWhite {
-	height: 8px;
-	width: 110px;
+	height: 10px;
+	width: 120px;
 	background-color: white;
 	border-top: solid 1px darkgray;
 	/*border-bottom-bottom-radius: 5px;*/
@@ -136,11 +131,11 @@ a {
 
 /* Border between white keys */
 .borderRight {
-	border-bottom: solid 1px darkgray;
+	border-top: solid 1px darkgray;
 	/*border-bottom-right-radius: 3px;*/
 }
 .borderLeft {
-	border-top: solid 1px darkgrey;
+	border-bottom: solid 1px darkgrey;
 	/*border-bottom-left-radius: 3px;*/
 }
 

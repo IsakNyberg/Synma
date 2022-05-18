@@ -356,5 +356,4 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
-
 }

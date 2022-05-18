@@ -60,11 +60,11 @@ class Piano{
 			black.className = "black";
 			both.appendChild(black);
 			var lw = document.createElement("Div");
-			lw.id = (id-1).toString() + "R"; 
+			lw.id = (id+1).toString() + "L";
 			lw.className = "leftWhite";
 			both.appendChild(lw);
 			var rw = document.createElement("Div");
-			rw.id = (id+1).toString() + "L";
+			rw.id = (id-1).toString() + "R"; 	//Swap here to change order of piano when flipped on side
 			rw.className = "rightWhite";
 			both.appendChild(rw);
 			return both;
@@ -90,19 +90,19 @@ class Piano{
 	 * Creates an array of all the key-objects which the piano will contain. 
 	 * @returns {Array<Key>}
 	 */
-	#createKeys(){
+	#createKeys(){		//FLipped whole function and loops to create piano on the side
 		var res = [];
-		for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
-			for (let j = 0; j < 12; j++) {
-				let id = 12*octave + j;
-				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
-			}
-		}
-
-		for (let j = 0; j <= 7; j++) {
+		for (let j = 7; j >= 0; j--) {
 			let lastOctave = 10;
 			let id = 12 * lastOctave + j;
 			res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+		}
+
+		for (let octave = this.#noOfOctaves; octave >= 0; octave--) {
+			for (let j = 11; j >=0; j--) {
+				let id = 12*octave + j;
+				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+			}
 		}
 
 		return res;

@@ -18,6 +18,14 @@ class Rectangle{
 		this.y1 = y1;
 	}
 
+	resetX(){
+		this.x = 0;
+	}
+
+	iterateX(){
+		this.x++;
+	}
+
 	getColor(){
 		return this.color;
 	}
@@ -82,18 +90,27 @@ const Rectangles = [];
 const Rectangles1 = [];
 const Rectangles2 = [];
 const smallRectangles = [];
+const timeline = [new Rectangle(
+	0,
+	0,
+	'red',
+	1,
+	2560,
+	)
+];
 let redRectangles = [];
 let x = 0;
 let y = 0;
 let y1=0;
+var colors = ["lightgrey", "darkgrey", "lightgrey", "lightgrey", "darkgrey", "lightgrey", "darkgrey", "lightgrey", "lightgrey", "darkgrey", "lightgrey", "darkgrey"];
 for(let a= 0; a<128;a++){
 	for(let i=0; i<40;i++){
 		Rectangles.push(new Rectangle(
 			x,
 			y,
-		 'gray',
-		 20,
-		 20,
+			colors[a%12],
+			20,
+			20,
 		));
 
 		if(i!=0){
@@ -142,16 +159,18 @@ function animate(){
 	redRectangles.forEach((Rectangle)=>{
 		Rectangle.update();
 	})
+	timeline.forEach((Rectangle)=>{
+		Rectangle.update();
+	})
+	
 }
 	
 
 play.addEventListener("click", function() {
-	//animate();
-	//movePiano();
 	createPianoRollFile();
 });
-animate();
 
+animate(); //Must be done to create tiles/blocks
 function movePiano(){
 	canvasen = document.getElementById("myCanvas").getBoundingClientRect();
 	yOffset = canvasen["y"];
@@ -176,12 +195,8 @@ document.getElementById("myCanvas").addEventListener('mousemove', event => {
 	if (isDrawing === true) {
 		let xT =Rectangles[mouseX+mouseY].getX();
 		let yT=Rectangles[mouseX+mouseY].getY();
-	
-		/*if(event.clientX>currentX) {value=5;}
-		else value=-5;*/
 		value = event.clientX - currentX;
 
-		let counter =0;
 		smallRectangles.forEach((Rectangle,index)=>{	
 			if((Rectangle.getX()===xT) && Rectangle.getY()===yT && Rectangle.getX1()>=3){	
 				console.log(lastchanse);
@@ -205,7 +220,6 @@ document.getElementById("myCanvas").addEventListener('mouseup', e => {
 var canvasen = document.getElementById("myCanvas").getBoundingClientRect();
 var yOffset = canvasen["y"];
 var xOffset = canvasen["x"];
-console.log(xOffset, yOffset);
 
 document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	let xT = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
@@ -216,16 +230,17 @@ document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	smallRectangles.push(new Rectangle(
 		xS,
 		yS,
-		randomColor(),
+		randomColor(yS),
 		20,
 		20,
 		(xS*yS)
 	));
 });
 
-function randomColor(){
+function randomColor(y){
 	color = ["red", "blue", "yellow", "black", "orange", "purple"];
-	return color[Math.floor(Math.random() * 6)];
+	return color[(y/20)%6];
+	//return color[Math.floor(Math.random() * 6)];
 };
 
 function snap(){
@@ -236,15 +251,15 @@ function snap(){
 	 		console.log(height);
 	 		Rectangle.setX1(height);
 		}
-		//console.log(Rectangle);
 		Rectangle.update();
 	});
 }
 
+var timelineID;
 function createPianoRollFile(){
 	var newFile = [];
 	smallRectangles.forEach((Rectangle)=>{
-		newFile.push([Rectangle.getY()/20, Rectangle.getX()/20, Rectangle.getX1()/20]);
+		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/20, Rectangle.getX1()/20]);
 	});
 	
 	/* Works to create downloadable file!!
@@ -253,10 +268,20 @@ function createPianoRollFile(){
 	var a = document.getElementById("download");
 	var file = new Blob([JSON.stringify(newFile)], {type: 'application/json'});
 	a.href = URL.createObjectURL(file);
-	a.download = filename + ".synth";*/
+	a.download = filename + ".synth";
 	
+	*/
+	
+	clearInterval(timelineID);
+	timeline[0].resetX();
 	newFile.forEach(note => {
-		console.log(note[0], note[1], note[2])
 		synth.playNoteTimeDuration(note[0], note[1], note[2]);
 	})
+	timelineID = setInterval(moveTimeline, 10);
+	timelineID = setInterval(moveTimeline, 10);
+	timelineID = setInterval(moveTimeline, 276);
+}
+function moveTimeline(){
+	timeline[0].iterateX();
+	console.log("tick");
 }
