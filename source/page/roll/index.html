@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <title>Mjukvarusynt</title>
+  <link href="index.css" rel="stylesheet">
+</head>
+<body>
+  <button type="button" id="play">Play</button>
+  <a id="downloadRoll"><input class="function-btn" type="button" value="Download" id="downloadRollButton"/></a>
+  <div id="big-container">
+    <div id="piano-container">
+      </div>
+      <div id="canvas-container">
+      <canvas id="myCanvas"  width="900" 
+      height="2560" ></canvas>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="pianoroll.js"></script>
+  <script src="frequencies.js"></script>
+  <script src="waveform.js"></script>
+  <script src="record.js"></script>
+  <script src="parse.js"></script>
+  <script src="envelope.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+  <script src="midiKeyboard.js"></script>
+  <script src="piano.js"></script>
+  <script src="url.js"></script>
+  <script src="synth.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
