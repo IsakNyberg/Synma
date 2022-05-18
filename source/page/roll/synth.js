@@ -32,7 +32,6 @@ class Synth {
 	graphIsNormalized = false;
 	envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	activeEnvelopes = [true,true,true];
-	pianoIsActive = false;
   	constructor(urlPresets,waveGraphCanvas,envelopeGraphCanvas){
 		this.waveGraphCanvas = waveGraphCanvas;
 		this.envelopeGraphCanvas = envelopeGraphCanvas;
@@ -60,14 +59,6 @@ class Synth {
 		//this.dropdownClick();
 	}
 
-	togglePiano(){
-		if(this.pianoIsActive)
-			this.piano.removeEventListeners();
-		else
-			this.piano.addEventListeners();
-		this.pianoIsActive = !this.pianoIsActive;
-	}
-
 	/**
 	 * Set the base soundwave according to a math-expression
 	 * @param {String} expr 
@@ -83,7 +74,7 @@ class Synth {
 		this.createEnvelopes();
 		this.createBase();
 		this.createWaveforms();
-		this.graphWave();
+		//this.graphWave();
 		this.piano.slideInPiano();
 	}
 	//***********************************************************************************************************************
@@ -164,7 +155,6 @@ class Synth {
 	 */
 	createPiano(){
 		this.piano = new Piano(this);
-		this.pianoIsActive = true;
 	}
 	/**
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
@@ -365,5 +355,4 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
-
 }

@@ -1,0 +1,369 @@
+@charset "utf-8";
+
+:root { 
+	--page-bg: #FBF5E7;
+	--piano-border: #602;
+	--piano-bg: #FBF5E7;
+	--graph-bg: #fefefe;
+	--button: #cf1518;
+	--button-alt: #602;
+	--borders: #cf1518;
+}
+
+
+body {
+	height: calc(100vh-280px);
+	background-color: var(--page-bg);
+}
+
+.normalize-chkbox {
+	width: 20px;
+}
+
+label {
+	font-family: monospace;
+	font-size: 20px;
+}
+
+.flex-container {
+	display: flex;
+	height: 50%;
+}
+
+.flex-container-row {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+}
+
+.flex-container-column1 {
+	display: flex;
+	flex-direction: column;
+	width: 60%;
+
+}
+.flex-container-column2 {
+	display: flex;
+	flex-direction: column;
+	width: 40%;
+	min-height: 350px;
+}
+
+
+/* Containers for the piano */
+#big-container{
+	width: 1150px;
+	height: 2560px;
+}
+#piano-container{
+	float: left;
+	margin-bottom: 0px;
+	overflow: hidden;
+	display: inline;
+	width: 220px;
+	height: 2560px;
+}
+#canvas-container {
+	float: left;
+	width: 900px;
+	height: 2560px;
+}
+#playButton, #downloadButton{
+		display: none;
+}
+a {
+		text-decoration: none;
+}
+#piano {
+	border: solid 1px var(--borders);
+	background-color: var(--piano-bg);;
+	/*overflow: scroll;*/
+	justify-content: flex-end;
+	white-space: nowrap;
+	width: 230px;
+	height: 500px;
+	margin: 0 5px 0 0;
+	vertical-align: middle;
+}
+.both {
+	height: 20px;
+	width: 230px;
+	background-color: white;
+	float: left;
+}
+.header {
+	text-align: center;
+}
+
+/* WHITE key */
+.coveredWhite {
+	float: left;
+	height: 20px;
+	width: 230px;
+	background-color: white;
+}
+
+.white{
+	float: left;
+	height: 19px;
+	width: 230px;
+	background-color: white;
+	text-align: bottom;
+}
+.leftWhite {
+	height: 10px;
+	width: 120px;
+	background-color: white;
+	border-bottom: solid 1px darkgray;
+	/*border-bottom-top-radius: 5px;*/
+	float: left;
+	/*clear: both;*/
+}
+.rightWhite {
+	height: 10px;
+	width: 120px;
+	background-color: white;
+	border-top: solid 1px darkgray;
+	/*border-bottom-bottom-radius: 5px;*/
+	float: left;
+}
+
+/* Border between white keys */
+.borderRight {
+	border-top: solid 1px darkgray;
+	/*border-bottom-right-radius: 3px;*/
+}
+.borderLeft {
+	border-bottom: solid 1px darkgrey;
+	/*border-bottom-left-radius: 3px;*/
+}
+
+/* Black key */
+.black {
+	/*border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;*/
+	background-color: black;
+	margin: 0%;
+	padding: 0%;
+	height: 20px;
+	width: 110px;
+	float: left;
+	justify-content: center;
+}
+
+/* Text on keys */
+.blackText {
+	position: relative;
+	top: 150px;
+	font: 6.5px arial,sans-serif;
+}
+.whiteText {
+	position: relative;
+	top: 50px;
+	left: 2px;
+	color: white;
+	font: 14px arial,sans-serif;
+}
+
+input[type=range] {
+	height: 7px;
+	-webkit-appearance: none;
+	margin: 10px 0;
+	width: 300px;
+	outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 10	px;
+	cursor: pointer;
+	background: var(--button);
+	border-radius: 15px;
+}
+input[type=range]::-webkit-slider-thumb {
+	border: 1px solid var(--piano-border);
+	height: 17px;
+	width: 15px;
+	border-radius: 15px;
+	background: #FFFFFF;
+	cursor: pointer;
+	-webkit-appearance: none;
+}
+
+.function-btn{
+	background: var(--button);
+	border: 4px;
+	padding: 2px 10px;
+	border-color: var(--button);
+	color: white;
+	border-style: outset;
+	border: none;
+	font: bold 15px arial,sans-serif;
+	text-shadow: none;
+	margin: 5px 0;
+	border-radius: 25px;
+}
+
+.text-btn{
+	background: var(--button);
+	border: 4px;
+	border-color: var(--button);
+	color: white;
+	border-style: outset;
+	border: none;
+	font: bold 15px arial,sans-serif;
+	text-shadow: none;
+	margin-top: 10px;
+	border-radius: 25px;
+
+}
+
+
+.text-btn:hover{
+		cursor: pointer;
+		color: var(--button);
+		background-color: white;
+}
+
+.function-btn:hover{
+	cursor: pointer;
+	color: var(--button);
+	background-color: var(--button-alt);
+}
+
+
+.page-title{
+	text-align: center;
+	font-weight: bold;
+}
+
+.corner-btn{
+	position: relative;
+	top: 0;
+	right: 0;
+ }
+
+.arrow-btn{
+	background-color: white;
+	border-color: var(--button);
+	border-style: solid;  /* The color of the border is same*/
+	border-width: 1px;
+	color: var(--button);
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 6px;
+	padding-right: 6px;
+	border-radius: 6px;
+	cursor: pointer;
+	vertical-align: top;
+	display:inline-block;
+} 
+
+
+.move-p{
+	display :inline-block;
+	vertical-align: top;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 6px;
+	padding-right: 6px;
+ 
+}
+
+.waveformGraphDiv {
+	height: 100%;
+	width: 95%;
+	border: 2px solid var(--borders);
+	background-color: var(--graph-bg);
+	border-radius: 7px;
+	padding: 10px;
+}
+
+#envelopeGraphDiv{
+	margin-bottom: 10px;
+	padding: 10px;
+	border: 2px solid var(--borders);
+	background-color: var(--graph-bg);
+	border-radius: 10px;
+}
+
+#envelopeGraph {
+	width: 90%;
+	height: 100%;
+}
+
+#maxXInput {
+	width: 7%;
+}
+
+.headLine {
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.flex-envolope-container{
+	display: flex;
+}
+
+#env-timeInput{
+	width: 10%;
+}
+
+.inputDesign{
+	height: 30px;
+	width: 40%;
+	border: 2px var(--borders) solid;
+	border-radius: 7px;
+	font-family: monospace;
+	font-size: 20px;
+	margin: 0 0 10px;
+}
+
+/* Dropdown Button */
+#chosenEnvelope {
+	width: 82px;
+}
+#chosenTimezone {
+	width: 69px;
+}
+
+.dropbtn {
+	background-color: var(--button);
+	color: white;
+	padding: 5px;
+	font-size: 16px;
+	border: none;
+}
+	
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f1f1f1;
+	min-width: 60px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: var(--button)}
