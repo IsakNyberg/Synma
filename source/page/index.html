@@ -6,13 +6,10 @@
   <link href="index.css" rel="stylesheet">
 </head>
 <body>
-  <div class="dropdown">
-    <button id="chosenFrame" class="dropbtn">Synth #1</button>
-    <div class="dropdown-content">
-      <a class="dropdownOption" id="f1" onclick="document.getElementById('chosenFrame').innerHTML='Synth #1'">Synth #1</a>
-      <a class="dropdownOption" id="f2" onclick="document.getElementById('chosenFrame').innerHTML='Synth #2'">Synth #2</a>
-      <a class="dropdownOption" id="f3" onclick="document.getElementById('chosenFrame').innerHTML='Synth #3'">Synth #3</a>              
-    </div>
+  <div id="choices">
+    <div class="choice" id="synth0">Create New Synth</div>
+    <div class="choice" id="newSynth">Create New Synth</div>
+    <div class="choice" id="newRoll">Create Piano Roll</div>
   </div>
   <iframe id="main" src="synt.html">
   </iframe>
