@@ -2,7 +2,7 @@ class Restriction {
 	#func;
 	#max;
 	#min;
-	#subdivision = 2048;
+	#subdivision = 1024;
 	#values = [];
 
 	/**

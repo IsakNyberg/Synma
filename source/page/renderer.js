@@ -71,7 +71,7 @@ class Renderer {
 	set buffer(waveform) {
 		this.#buffer = this.#writeBuffer(waveform.values);
 	}
-
+	
 	/**
 	 * @param {Note} note
 	 */
@@ -83,7 +83,23 @@ class Renderer {
 			this.#voices[note] = undefined;
 		}
 
-		console.log("Releasin' ", voice);
+		//console.log("Releasin' ", voice);
+	}
+	
+	/**
+	 * @param {URL} url 
+	 */
+	async renderMIDI(url) {
+		const midi = await Midi.fromUrl(url);
+		midi.tracks.forEach(track => {
+			const notes = track.notes;
+			notes.forEach(note => {
+				this.render(new Note(
+					noteFreq[note.midi],
+					note.duration,
+					note.time));
+			})
+		})
 	}
 
 	/**
@@ -98,9 +114,9 @@ class Renderer {
 
 		voice.gain = 0.1;
 		voice.start();
-		this.#voices.set(note, voice);
+		if (note.duration === Infinity) this.#voices.set(note, voice);
 
-		console.log("Renderin' ", voice);
+		//console.log("Renderin' ", voice);
 	}
 
 	/**

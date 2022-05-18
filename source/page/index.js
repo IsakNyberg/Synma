@@ -5,7 +5,7 @@ window.onload = init_synt();
 function init_synt(){
 	var synth = new Synth(new AudioContext());
 	var synthGUI = null;
-	//addEventSynthListeners(synth);
+	addEventSynthListeners(synth);
 	//dropdownClick(synthGUI);
 	/*
 	let origin = window.location.search;
@@ -20,26 +20,26 @@ function init_synt(){
 	const midiKeybaord = new MidiKeyboard(synth, synth.piano);
 }
 
-/*
-function addEventSynthListeners(synth){
-	document.getElementById("saveSettings").onclick = () => synth.saveSettings();
-	document.getElementById("recordButton").onclick = () => {
-	let recordButtonElement = document.getElementById("recordButton");
-	let playButtonElement = document.getElementById("playButton");
-	let downloadButtonElement = document.getElementById("downloadButton");
-	synth.recorder(recordButtonElement,playButtonElement,downloadButtonElement);
-	};
-	document.getElementById("playButton").onclick = () => {
-	let playButtonElement = document.getElementById("playButton");
-	synth.player(playButtonElement);
-	};
-	document.getElementById("functionButton").onclick = () => {
+
+function addEventSynthListeners(synth) {
+	//document.getElementById("saveSettings").onclick = () => synth.saveSettings();
+	/*document.getElementById("recordButton").onclick = () => {
+		let recordButtonElement = document.getElementById("recordButton");
+		let playButtonElement = document.getElementById("playButton");
+		let downloadButtonElement = document.getElementById("downloadButton");
+		synth.recorder(recordButtonElement,playButtonElement,downloadButtonElement);
+	};*/
+	/*document.getElementById("playButton").onclick = () => {
+		let playButtonElement = document.getElementById("playButton");
+		synth.player(playButtonElement);
+	};*/
+	/*document.getElementById("functionButton").onclick = () => {
 		let fnString = document.getElementById("functionInput").value;
 		let normalized = document.getElementById("normalizeCheckbox").checked;
 		let maxXInput = document.getElementById("maxXInput").value;
 		synth.setWave(fnString,normalized,maxXInput);
-	};
-	document.getElementById("env-functionButton").onclick = () =>{ 
+	};*/
+	/*document.getElementById("env-functionButton").onclick = () =>{ 
 		let envelopString = document.getElementById("chosenEnvelope").innerHTML.toLowerCase();
 		let envelopMaxT = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
 		let fnString = document.getElementById("env-functionInput").value;
@@ -47,25 +47,27 @@ function addEventSynthListeners(synth){
 		let normalized = document.getElementById("normalizeEnvelope").checked;
 		let continuous = document.getElementById("continuousCheckbox").checked;
 		synth.setEnvelopes(envelopString,envelopMaxT,fnString,timeString, normalized, continuous);
-	};
-	document.getElementById("applyAmplitude").onclick = (clicked) => {
+	};*/
+	/*document.getElementById("applyAmplitude").onclick = (clicked) => {
 		synth.activeEnvelopes[0]=document.getElementById("applyAmplitude").checked;
-	} 
-	document.getElementById("applyPitch").onclick = (clicked) => {
+	}*/
+	/*document.getElementById("applyPitch").onclick = (clicked) => {
 		synth.activeEnvelopes[1]=document.getElementById("applyPitch").checked;
-	} 
-	document.getElementById("applyFilter").onclick = (clicked) => {
+	}*/
+	/*document.getElementById("applyFilter").onclick = (clicked) => {
 		synth.activeEnvelopes[2]=document.getElementById("applyFilter").checked;
-	} 
-	document.getElementById("volume").oninput = () => synth.setMasterVolume(document.getElementById("volume").value);
-	document.querySelectorAll(".dropdownOption").forEach(
+	}*/
+	//document.getElementById("volume").oninput = () => synth.setMasterVolume(document.getElementById("volume").value);
+	/*document.querySelectorAll(".dropdownOption").forEach(
 		(element)=> {element.addEventListener("click", ()=> dropdownClick(synth))}
+	);*/
+	document.getElementById("midiUpload").addEventListener(
+		"change",
+		() => synth.playFile(document.getElementById("midiUpload").files[0]),
+		false
 	);
-	document.getElementById("midiUpload").addEventListener("change", ()=>{
-		synth.playFile(document.getElementById("midiUpload").files[0]);
-	}, false);
 }
-function dropdownClick(synth){
+/*function dropdownClick(synth){
 	var currentType = document.getElementById("chosenEnvelope").innerHTML.toLowerCase();
 	var currentTime = document.getElementById("chosenTimezone").innerHTML.toLowerCase();
 	document.getElementById("env-functionInput").value = synth.envFunctions[currentType][currentTime][1];
@@ -73,5 +75,4 @@ function dropdownClick(synth){
 	document.getElementById("normalizeEnvelope").checked = synth.envIsNormalized[currentType][0];
 	document.getElementById("continuousCheckbox").checked = synth.envIsNormalized[currentType][1];
 	synth.graphEnvelope(currentType);
-}
-*/
+}*/

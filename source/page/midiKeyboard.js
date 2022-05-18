@@ -82,7 +82,7 @@ class MidiKeyboard {
 		if ((message.data[0] === 144 || message.data[0] === 153) && message.data[2] > 0) {
 			let index = message.data[1];
 			let note = new Note(noteFreq[index]);
-			console.log("Playin' ", note);
+			//console.log("Playin' ", note);
 
 			piano.setKeyColor(index, "darkgrey"); // WAT? NOT FROM HERE!
 			this.#activeNotes.set(index, note);
@@ -94,7 +94,7 @@ class MidiKeyboard {
 			let index = message.data[1];
 			let note = this.#activeNotes.get(index);
 			this.#activeNotes.delete(index);
-			console.log("Stopin' ", note);
+			//console.log("Stopin' ", note);
 
 			piano.resetKeyColor(index); // WAT? NOT FROM HERE!
 			this.#synth.stopNote(note);

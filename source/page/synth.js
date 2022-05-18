@@ -3,9 +3,9 @@ class Synth {
 	#envelopeParser = null;
 	#envelopes = {
 		'filter': new Envelope(
-			new Restriction((t) => 10_000 * t, 1, 0),
+			new Restriction((t) => 10_000 * 10 * t, 0.1, 0),
 			new Restriction((t) => 10_000, 0.001, 0),
-			new Restriction((t) => 10_000 * (1 - t), 1, 0)
+			new Restriction((t) => 10_000 * (1 - 10 * t), 0.1, 0)
 		),
 		'pitch': new Envelope(
 			new Restriction((t) => 0, 0.001, 0),
@@ -13,9 +13,9 @@ class Synth {
 			new Restriction((t) => 0, 0.001, 0)
 		),
 		'volume': new Envelope(
-			new Restriction((t) => t, 1, 0),
+			new Restriction((t) => 10 * t, 0.1, 0),
 			new Restriction((t) => 1, 0.001, 0),
-			new Restriction((t) => 1 - t, 1, 0)
+			new Restriction((t) => 1 - 10 * t, 0.1, 0)
 		)
 	};
 	#parser = null;
@@ -92,6 +92,27 @@ class Synth {
 	 */
 	set waveform(waveform) {
 		this.#waveform = waveform;
+	}
+
+	/**
+	 * @param {File} file 
+	 */
+	playFile(file) {
+		let renderer = this.#renderer;
+		let fileSplit = file.name.split(".")
+		let fileExtension = fileSplit[fileSplit.length-1];
+		if (fileExtension === "mid") {
+			renderer.renderMIDI(URL.createObjectURL(file));
+		} /*else if (fileExtension === "synth") {
+				const reader = new FileReader();
+				reader.addEventListener("load", () => {
+					let parsed = JSON.parse(reader.result);
+					this.recordResult = parsed;
+					let playButtonElement = document.getElementById("playButton");
+					this.player(playButtonElement);
+				}, false);
+				reader.readAsText(file);
+		}*/ else alert("Invalid file extention: " + fileExtension);
 	}
 
 	/**

@@ -164,7 +164,7 @@ class Piano{
 	 * @param {Number} keyIndex
 	 */
 	#playNote(keyIndex) {
-		console.log("Playin: ", keyIndex);
+		//console.log("Playin: ", keyIndex);
 		let note = this.#activeNotes[keyIndex];
 
 		if (note === undefined) {
@@ -182,7 +182,7 @@ class Piano{
 	 */
 	#stopNote(keyIndex) {
 		let note = this.#activeNotes[keyIndex];
-		console.log("Stopin", keyIndex, note);
+		//console.log("Stopin", keyIndex, note);
 
 		if (note != undefined) {
 			this.#synth.stopNote(note);

@@ -225,37 +225,6 @@ class SynthGUI {
 		this.applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
-	
-	// I DONT CARE, OUTSIDE!
-	playFile(file) {
-		let fileSplit = file.name.split(".")
-		let fileExtentaiton = fileSplit[fileSplit.length-1];
-		if (fileExtentaiton === "mid") {
-			this.playMidi(URL.createObjectURL(file))
-		} else if (fileExtentaiton === "synth") {
-				const reader = new FileReader();
-				reader.addEventListener("load", () => {
-					let parsed = JSON.parse(reader.result);
-					this.recordResult = parsed;
-					let playButtonElement = document.getElementById("playButton");
-					this.player(playButtonElement);
-				}, false);
-				reader.readAsText(file);
-		} else {
-			alert("Invalid file extention: " + fileExtentaiton);
-		}
-	}
-
-	// FUG NO, OUTSIDE!
-	async playMidi(url) {
-		const midi = await Midi.fromUrl(url);
-		midi.tracks.forEach(track => {
-			const notes = track.notes;
-			notes.forEach(note => {
-				this.playNoteTimeDuration(note.midi, note.time, note.duration);
-			})
-		})
-	}
 
 	// REWRITE TO STOP NOTES WHICH ARE IDENTIFIED BY ID
 	/**

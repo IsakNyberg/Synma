@@ -205,11 +205,11 @@ class Voice {
 		let context = source.context;
 		let duration = note.duration;
 		let release = this.#envelopes['volume'].release.length;
-		let time = context.currentTime;
-
-		let when = time + note.start;
-
+		
 		source.loop = true;
+
+		let time = context.currentTime;
+		let when = time + note.start;
 
 		if (duration === (Infinity || undefined)) source.start(when);
 		else source.start(when, 0, duration + release);
