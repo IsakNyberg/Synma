@@ -70,20 +70,11 @@ class Rectangle{
 	 this.x1 += move;
 	}
 
-	setX1(length){   //xxxxxxxx to x1
+	setX1(length){   
 		this.x1 = length;
 	}
 
-	// check(x1000,y1000){
-	// 	if(x1000 >= this.x && x1000 <= (this.x + 19) && y1000 >= this.y && y1000 <= (this.y+19))
-	// 		return true;
-	// }
-
-	// increaseIndex()
-	// {
-	// 	let bbb = this.getX1()/20;
-	// 	return bbb;
-	// }
+	
 }
 
 const Rectangles = [];
@@ -98,7 +89,7 @@ const timeline = [new Rectangle(
 	2560,
 	)
 ];
-//let redRectangles = [];
+
 let x = 0;
 let y = 0;
 let y1=0;
@@ -152,13 +143,13 @@ function animate(){
 	Rectangles1.forEach((Rectangle)=>{
 		Rectangle.update();
 	});
-	//redRectangles=[];
+
+	
 	smallRectangles.forEach((Rectangleq)=>{
 		Rectangleq.update();
 	});
-	// redRectangles.forEach((Rectangle)=>{  
-	// 	Rectangle.update();
-	// })
+
+
 	timeline.forEach((Rectangle)=>{
 		Rectangle.update();
 	})
