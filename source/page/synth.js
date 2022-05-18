@@ -54,6 +54,13 @@ class Synth {
 	}
 
 	/**
+	 * @returns {Piano}
+	 */
+	get piano() {
+		return this.#piano;
+	}
+
+	/**
 	 * @returns {Waveform}
 	 */
 	get waveform() {

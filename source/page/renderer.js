@@ -77,12 +77,13 @@ class Renderer {
 	 */
 	release(note) {
 		let voice = this.#voices.get(note);
-		console.log(voice);
-
+		
 		if (voice != undefined) {
 			voice.stop();
 			this.#voices[note] = undefined;
 		}
+
+		console.log("Releasin' ", voice);
 	}
 
 	/**
@@ -98,6 +99,8 @@ class Renderer {
 		voice.gain = 0.1;
 		voice.start();
 		this.#voices.set(note, voice);
+
+		console.log("Renderin' ", voice);
 	}
 
 	/**

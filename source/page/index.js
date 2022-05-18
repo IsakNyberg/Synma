@@ -17,7 +17,7 @@ function init_synt(){
 		synthGUI = new SynthGUI([],document.getElementById('waveformGraph'),document.getElementById('envelopeGraph'));
 	}
 	*/
-	//const midiKeybaord = new MidiKeybaord(synth, synth.piano);
+	const midiKeybaord = new MidiKeyboard(synth, synth.piano);
 }
 
 /*
