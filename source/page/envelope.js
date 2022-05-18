@@ -14,7 +14,6 @@
 	}
 	return arr;
 }
-	
 class Envelope {
 	constructor(attack,decay,release,noOfSamples,attackLen,decayLen,releaseLen,audioCtx,normalized,continuos){
 		this.attackLen = attackLen;
