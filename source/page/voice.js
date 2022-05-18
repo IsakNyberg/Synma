@@ -33,9 +33,9 @@ class Voice {
 		this.pitch = pitch;
 
 		//console.log("Don't forget to reconnect the audio nodes in the voice constructor!");
-		this.#connect([source, gain, filter, volume, destination]);
+		this.#connect([source, gain,/* filter, volume, */destination]);
 
-		this.applyEnvelopes(envelopes);
+		//this.applyEnvelopes(envelopes);
 	}
 
 	/**
@@ -232,6 +232,6 @@ class Voice {
 
 		let release = envelopes['volume'].release.length;
 
-		source.stop(time + release);
+		source.stop(time/* + release*/);
 	}
 }

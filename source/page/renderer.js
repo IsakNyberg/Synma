@@ -3,6 +3,8 @@ class Renderer {
 	#context;
 	#envelopes;
 	#voices = new Map();
+	#record;
+	#recordResult;
 
 	/**
 	 * @param {AudioContext} context
@@ -77,6 +79,10 @@ class Renderer {
 	 */
 	release(note) {
 		let voice = this.#voices.get(note);
+
+		if(this.#record != null){
+			this.#record.stop(note, this.#context.currentTime)
+		}
 		
 		if (voice != undefined) {
 			voice.stop();
@@ -102,7 +108,47 @@ class Renderer {
 		})
 	}
 
-	/**
+	recorder(recordButtonElement, playButtonElement, downloadButtonElement){
+		if(recordButtonElement.value == "Record" && playButtonElement.value != "Playing"){
+			this.#record = new record();
+			this.#record.startRec(this.#context.currentTime);
+			recordButtonElement.value = "Stop";
+			playButtonElement.style.display	= "none";
+			downloadButtonElement.style.display	= "none";
+		}
+		else if(recordButtonElement.value == "Stop"){
+			this.#recordResult = this.#record.stopRec();
+			recordButtonElement.value = "Record";
+			playButtonElement.value = "Play";
+			playButtonElement.style.display	= "inline";
+			this.#record.createDownloadFile(this.#recordResult, "Beatiful_song.synth");
+			this.#record = null;
+			downloadButtonElement.style.display	= "inline";
+		}
+		document.activeElement.blur();
+	}
+
+	player(playButtonElement){
+		if(playButtonElement.value == "Play again" || playButtonElement.value == "Play"){
+			var playTime = 0;
+			this.#recordResult.forEach(element => {
+				console.log(element[0], element[2], element[1])
+				let note = new Note(element[0], element[1], 0, element[2])
+				//note.start += this.context.currentTime;
+				//console.log(note.recordTime);
+				
+				note.start = note.recordTime;
+				console.log("Rendering: ", note);
+				this.render(note);
+				playTime = Math.max(playTime, element[1] + element[2])
+			});
+			playButtonElement.value = "Playing";
+			document.activeElement.blur();
+			setTimeout(() => {playButtonElement.value = "Play again";}, playTime*1000);
+		}
+	}
+
+	/**x
 	 * @param {Note} note
 	 */
 	render(note) {
@@ -110,13 +156,16 @@ class Renderer {
 		let context = this.#context;
 		let envelopes = this.#envelopes;
 
-		let voice = new Voice(buffer, context, envelopes, note);
+		let currentTime = context.currentTime;
 
+		if (this.#record != null) this.#record.start(note, currentTime);
+		
+		//note.time += currentTime;
+		let voice = new Voice(buffer, context, envelopes, note);
+		
 		voice.gain = 0.1;
 		voice.start();
 		if (note.duration === Infinity) this.#voices.set(note, voice);
-
-		//console.log("Renderin' ", voice);
 	}
 
 	/**

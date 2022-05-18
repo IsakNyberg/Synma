@@ -1,12 +1,10 @@
 class record{
-	#startedIndexs = [];
-	#stoppedIndexs = [];
+	#notes = []
 	#startTime = 0;
 	#result = [];
 	
 	constructor(){
-		this.#startedIndexs = [];
-		this.#stoppedIndexs = [];
+		this.#notes = [];
 		this.#result = [];
 		this.#startTime = 0;
 	}
@@ -14,14 +12,30 @@ class record{
 		this.#startTime = startTime;
 	}
 	stopRec(){
-		return this.#convert();
+		return this.#notes;
 	}
+	/*
 	startedIndex(index, time){
 		this.#startedIndexs.push([index, time]);
+	}*/
+
+	/**
+	 * @param {Note} note
+	 * @param {Number} currentTime
+	 */
+	start(note, currentTime) {
+		 note.recordTime = currentTime - this.#startTime;
 	}
-	stoppedIndex(index, time){
-		this.#stoppedIndexs.push([index, time]);
+
+	/**
+	 * @param {Note} note
+	 * @param {Number} currentTime
+	 */
+	stop(note, currentTime) {
+		let duration = currentTime - note.recordTime;
+		this.#notes.push([note.frequency, note.recordTime, duration]);
 	}
+	/*
 	#convert(){
 		var recording = [];
 		var i = 0;
@@ -39,7 +53,7 @@ class record{
 				i = 0;
 		}
 		return recording;
-	}
+	}*/
 
 	createDownloadFile(array, name) {
 			var a = document.getElementById("download");

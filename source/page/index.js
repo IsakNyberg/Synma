@@ -23,16 +23,16 @@ function init_synt(){
 
 function addEventSynthListeners(synth) {
 	//document.getElementById("saveSettings").onclick = () => synth.saveSettings();
-	/*document.getElementById("recordButton").onclick = () => {
+	document.getElementById("recordButton").onclick = () => {
 		let recordButtonElement = document.getElementById("recordButton");
 		let playButtonElement = document.getElementById("playButton");
 		let downloadButtonElement = document.getElementById("downloadButton");
 		synth.recorder(recordButtonElement,playButtonElement,downloadButtonElement);
-	};*/
-	/*document.getElementById("playButton").onclick = () => {
+	};
+	document.getElementById("playButton").onclick = () => {
 		let playButtonElement = document.getElementById("playButton");
 		synth.player(playButtonElement);
-	};*/
+	};
 	/*document.getElementById("functionButton").onclick = () => {
 		let fnString = document.getElementById("functionInput").value;
 		let normalized = document.getElementById("normalizeCheckbox").checked;
