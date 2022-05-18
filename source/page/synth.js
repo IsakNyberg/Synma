@@ -76,8 +76,8 @@ class Synth {
 		this.createWaveforms();
 		if(indexPage){
 			this.graphWave();
+			this.piano.slideInPiano();
 		}
-		this.piano.slideInPiano();
 	}
 	//***********************************************************************************************************************
 	/**

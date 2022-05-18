@@ -139,7 +139,12 @@ class Piano{
 	 * Creates a html piano-div and inserts all the keys' html.
 	 */
 	#spawnPiano(){
-		document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
+		if(indexPage){
+			document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
+		}
+		else {
+			document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", '<div id="'+ Piano.#PIANO_DIV_ID +'"></div>');
+		}
 		let pianoDiv = document.getElementById(Piano.#PIANO_DIV_ID);
 		for (let i = 0; i < this.keys.length; i++) {
 			pianoDiv.appendChild(this.keys[i].htmlDiv);
