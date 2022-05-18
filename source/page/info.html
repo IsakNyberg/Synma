@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="parse.js"></script>
+    <script src="graph.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="stylesheet" href="info.css" type="text/css"></link>
   </head>
   <body>
@@ -19,7 +23,7 @@
           <script>
             function getURL() {
               const first = "http://127.0.0.1:5500/index.html?func1="; 
-              const second = "&max=2*pi&!normalise&afuncAtt=1&tfuncAtt=1/2&pfuncAtt=0&alengthAtt=0.1&tlengthAtt=0.1&plengthAtt=0.1&afuncDec=1&tfuncDec=1/2&pfuncDec=0&alengthDec=0.1&tlengthDec=0.1&plengthDec=0.1&afuncRel=1/2&tfuncRel=1/2&pfuncRel=0&alengthRel=0.1&tlengthRel=0.1&plengthRel=0.1&!anorm&!pnorm&!tnorm&!acont&!pcont&!tcont&appA&appF&appP";
+              const second = "&max=2*pi&normalise&afuncAtt=1&tfuncAtt=1/2&pfuncAtt=0&alengthAtt=0.1&tlengthAtt=0.1&plengthAtt=0.1&afuncDec=1&tfuncDec=1/2&pfuncDec=0&alengthDec=0.1&tlengthDec=0.1&plengthDec=0.1&afuncRel=1/2&tfuncRel=1/2&pfuncRel=0&alengthRel=0.1&tlengthRel=0.1&plengthRel=0.1&!anorm&!pnorm&!tnorm&!acont&!pcont&!tcont&appA&appF&appP";
               const funct = document.getElementById('test').value.replace("+", "plus");
               
               window.location.href = first+funct+second;
@@ -45,9 +49,6 @@
             as a web-based application! The user provides a mathematical function, and an interval, 
             which creates a periodic waveform. The user can then play the waveform on the keyboard.
           </p>
-          <button 
-            class="btn btn-primary" onclick="location.href='/index.html'">Access Synth
-          </button>
         </div>
         <div class="col-sm-4">
           <span class="glyphicon glyphicon-music logo"></span>
@@ -59,15 +60,86 @@
     </div>
     <div class="container-fluid bg-grey">
       <h2>Method</h2>
-        Our synthesizer creates sound by repeatedly playing a periodic waveform from a constrained mathematical function.
-        The detailed steps are as follows: Initially, a user defined mathematical function g is parsed from input. 
-        We will not dive into this since it's not part of the audio synthesis technique (and also quite boring). 
-        The following step is to buffer the audio signal when a musical note is played 
-        (which is what happens when a key on the synth is pushed). 
-        This part is quite simple, and only requires computing the samples for the waveform for a given frequency (note), 
-        and then repeatedly looping through those samples. That's it, that is how the synth makes sound!
+      Our synthesizer creates sound by repeatedly playing a periodic waveform from a constrained mathematical function.
+      The detailed steps are as follows: Initially, a user defined mathematical function g is parsed from input. 
+      We will not dive into this since it's not part of the audio synthesis technique (and also quite boring). 
+      The following step is to buffer the audio signal when a musical note is played 
+      (which is what happens when a key on the synth is pushed). 
+      This part is quite simple, and only requires computing the samples for the waveform for a given frequency (note), 
+      and then repeatedly looping through those samples. That's it, that is how the synth makes sound!
+      The synthesizer also has so called evenloped which dictate how the sound changes with repsct to time. These will
+      either change the amplitude (volume) of the sound, the pitch (frequency) of the sound, or appply a lowpass filter
+      with a cutoff frequency depending on time. All of this combined can make very interesting sounds, only using math. 
+      <h3>Contact</h3>
+      Get in contact with the team through zoom between 13:00-14:00 on Monday 23rd of May 2022 and 15:00-16:00 on Tuesday
+      24th of May 2022. With the following <a href="https://www.example.com/">link</a>. 
+      <br>
+      You can also contact us through the email:  <a href="mailto:example.example@example.com">example.example@example.com</a>.
     </div>
+    <div class="jumbotron2">
+      <div class="container-fluid text-center">
+        <h2>Team</h2>
 
+        <br><br>
+        <div class="row">
+          <div class="col-sm-4">
+            <h4>Isak Nyberg</h4>
+            <p>Scrum Master</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/IsakNyberg">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          
+          <div class="col-sm-4">
+            <h4>Atheer Salim</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/Atheer2104">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+
+          <div class="col-sm-4">
+            <h4>Johannes Arrenander</h4>
+            <p>Product Owner</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/johnaren">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>        
+        </div>
+        
+        <br><br>
+        <div class="row">
+          <div class="col-sm-3">
+            <h4>Hasan Al-Zubeidi</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/HasanAlzubeidi">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Azer Hojlas</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/AzerHojlas">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Rasmus Danielsson</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Lukas Werelius</h4>
+            <p>Developer</p>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/WereliusLucas">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container-fluid text-center">
       <h2>Modules</h2>
       <h4>and their functionality</h4>
@@ -80,7 +152,9 @@
       </div>
       <div class="col-sm-4">
         <h4>Parser</h4>
-        <p>Converts the given mathematical function into javascript readable code</p>
+        <p>Converts the given mathematical function into javascript readable code. It provides protection
+          against malicious code injection as well
+        </p>
       </div>
       <div class="col-sm-4">
         <h4>Waveform</h4>
@@ -136,6 +210,9 @@
           </p>
         </div>
         <div class="col-sm-4">
+          
+        </div>
+        <div class="col-sm-4">
           <h4>MidiKeyboard</h4>
           <p>
           Enables the use of a connected physical midi keyboard
@@ -166,6 +243,22 @@
       <ul class="list-group">
         <li class="list-group-item">Output: Graph that displays a function within a constrained domain and range</li>
       </ul>
+      <!--
+        <input type="text" id="parse" class="form-control" size="50" placeholder="Enter Function with Respect to X" required>
+      <canvas id="graph"></canvas>
+      <script>
+        function CreateNewDom() {
+          const DOMHeadingOne = document.createElement("canvas");
+          
+          
+          const graph = drawGraph(document.getElementById("graph"), (x)=> Math.sin(x), 100, 50, true, '#aa1129');
+          document.getElementById("editor").appendChild(graph);
+          }
+      </script>
+      <button type="button" onclick="parseit(document.getElementById('parse'))" class="btn btn-danger">Parse Function</button>
+      <button type="submit" name="e-h1" onclick="CreateNewDom();">H1 Überschrift</button>
+      <form id="editor" method="post" />
+      -->
     </div>
 
     <div class="container-fluid">
@@ -179,6 +272,21 @@
       <ul class="list-group">
         <li class="list-group-item">Output: The expression in javascript-readable code</li>
       </ul>
+      <!--
+      <input type="text" id="parse" class="form-control" size="50" placeholder="Enter Function with Respect to X" required>
+      <script>
+        function parseit(target) {
+          const parser = new MathParser("x");
+          const result = parser.parse(target.value);
+          console.log(target.value[1]);
+          //console.log(target.value)
+          document.getElementById("txtresult").value = result;
+        }
+      </script>
+      <button type="button" onclick="parseit(document.getElementById('parse'))" class="btn btn-danger">Parse Function</button>
+      
+      <input type="text" id="txtresult" class="form-control" size="50">
+      -->
     </div>
 
     <div class="container-fluid bg-grey">
@@ -259,7 +367,7 @@
 
     <div class="container-fluid bg-grey">
       <h3>Synth</h3>
-      Receives a readily available buffer and produces sound from the data points itt contains.
+      Receives a readily available buffer and produces sound from the data points it contains.
       <ul class="list-group">
         <li class="list-group-item">Output: Sound </li>
       </ul>
@@ -291,70 +399,6 @@
       </ul>
     </div>
 
-    <div class="jumbotron2">
-
-      <div class="container-fluid text-center">
-        <h2>Team</h2>
-
-        <br><br>
-        <div class="row">
-          <div class="col-sm-4">
-            <h4>Isak Nyberg</h4>
-            <p>Scrum Master</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/IsakNyberg">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-          
-          <div class="col-sm-4">
-            <h4>Atheer Salim</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/Atheer2104">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-
-          <div class="col-sm-4">
-            <h4>Johannes Arrenander</h4>
-            <p>Product Owner</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/johnaren">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>        
-        </div>
-        
-        <br><br>
-        <div class="row">
-          <div class="col-sm-3">
-            <h4>Hasan Al-Zubeidi</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/HasanAlzubeidi">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-          <div class="col-sm-3">
-            <h4>Azer Hojlas</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/AzerHojlas">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-          <div class="col-sm-3">
-            <h4>Rasmus Danielsson</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-          <div class="col-sm-3">
-            <h4>Lukas Werelius</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/WereliusLucas">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    
   </body>
 </html>
