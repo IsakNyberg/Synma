@@ -2,7 +2,7 @@ class Renderer {
 	#buffer;
 	#context;
 	#envelopes;
-	#voices = {};
+	#voices = new Map();
 
 	/**
 	 * @param {AudioContext} context
@@ -76,7 +76,8 @@ class Renderer {
 	 * @param {Note} note
 	 */
 	release(note) {
-		let voice = this.#voices[note];
+		let voice = this.#voices.get(note);
+		console.log(voice);
 
 		if (voice != undefined) {
 			voice.stop();
@@ -96,7 +97,7 @@ class Renderer {
 
 		voice.gain = 0.1;
 		voice.start();
-		this.#voices[note] = voice;
+		this.#voices.set(note, voice);
 	}
 
 	/**

@@ -2,7 +2,7 @@ class Restriction {
 	#func;
 	#max;
 	#min;
-	#subdivision = 1024;
+	#subdivision = 2048;
 	#values = [];
 
 	/**
@@ -90,6 +90,7 @@ class Restriction {
 	}
 
 	/**
+	 * Issue: Does not update cached values when changing properties.
 	 * @param {Number} subdivision
 	 * @returns {Array<Number>}
 	 */

@@ -164,12 +164,16 @@ class Piano{
 	 * @param {Number} keyIndex
 	 */
 	#playNote(keyIndex) {
-		let note = new Note(noteFreq[keyIndex]);
+		console.log("Playin: ", keyIndex);
+		let note = this.#activeNotes[keyIndex];
 
-		console.log(note);
-		this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
-		this.#synth.playNote(note);
-		this.#activeNotes[keyIndex] = note;
+		if (note === undefined) {
+			let note = new Note(noteFreq[keyIndex]);
+
+			this.setKeyColor(keyIndex, Piano.#PRESS_COLOR);
+			this.#synth.playNote(note);
+			this.#activeNotes[keyIndex] = note;
+		}
 	}
 
 	/**
@@ -178,14 +182,15 @@ class Piano{
 	 */
 	#stopNote(keyIndex) {
 		let note = this.#activeNotes[keyIndex];
+		console.log("Stopin", keyIndex, note);
 
 		if (note != undefined) {
-			this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR)
 			this.#synth.stopNote(note);
-			this.#activeNotes[note] = undefined;
+			this.resetKeyColor(keyIndex);
+			this.#activeNotes[keyIndex] = undefined;
 		}
 	}
-
+	
 	/**
 	 * Onclick
 	 * @param {Number} id 
@@ -200,7 +205,8 @@ class Piano{
 	 * @param {Number} keyIndex 
 	 */
 	#mouseUp(keyIndex){
-		this.#stopNote(keyIndex);
+		this.#stopNote(this.#clickedKey);
+		this.setKeyColor(this.#clickedKey, Piano.#HOOVER_COLOR);
 	}
 
 	/**
@@ -228,6 +234,7 @@ class Piano{
 	 * @returns {void}
 	 */
 	#pressedKey(pressedKey){
+		if (pressedKey.repeat) return;
 		//Requires that other events in the program blurs activeElement.
 		if (!(document.activeElement.tagName === "BODY")) return;
 		if (pressedKey.keyCode == 90) {
@@ -259,7 +266,7 @@ class Piano{
 		if (!(document.activeElement.tagName === "BODY")) return;
 		var keyIndex = this.#keyCodeToNote(pressedKey.keyCode);
 		if (keyIndex == undefined) return;
-		this.#synth.stopNote(keyIndex);
+		this.#stopNote(keyIndex);
 	}
 
 	/**
