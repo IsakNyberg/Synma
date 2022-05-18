@@ -257,7 +257,6 @@ class Synth {
 	 */
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.waveforms[keyIndex];
-		console.log(wf)
 		wf.createMasterSource(noteFreq[keyIndex]);
 		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
 		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);

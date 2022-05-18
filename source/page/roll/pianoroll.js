@@ -183,8 +183,6 @@ document.getElementById("myCanvas").addEventListener('mousedown', e => {
 	mouseX = Math.floor(((e.clientX- xOffset + window.scrollX))/20);
 	mouseY = Math.floor(((e.clientY - yOffset + window.scrollY) /*- 15*/)/20) * 40;
 
-	console.log("", mouseX, mouseY)
-
 	currentX=e.clientX;
 	currentY=e.clientY;
 	isDrawing = true; 
@@ -199,7 +197,6 @@ document.getElementById("myCanvas").addEventListener('mousemove', event => {
 
 		smallRectangles.forEach((Rectangle,index)=>{	
 			if((Rectangle.getX()===xT) && Rectangle.getY()===yT && Rectangle.getX1()>=3){	
-				console.log(lastchanse);
 				Rectangle.update1(value);
 			};
 			currentX=event.clientX;
@@ -224,7 +221,6 @@ var xOffset = canvasen["x"];
 document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	let xT = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
 	let yT = Math.floor(((event.clientY - yOffset + window.scrollY))/20) * 40;
-	console.log(xT, yT)
 	let xS = Rectangles[xT+yT].getX();
 	let yS = Rectangles[xT+yT].getY();
 	smallRectangles.push(new Rectangle(
@@ -248,7 +244,6 @@ function snap(){
 	smallRectangles.forEach((Rectangle)=>{
 		if(Rectangle.getX1()%20!=0){
 			height=(Rectangle.getX1()%20) + (Math.floor((Rectangle.getX1()/20)))*20 +20-(Rectangle.getX1()%20);
-	 		console.log(height);
 	 		Rectangle.setX1(height);
 		}
 		Rectangle.update();
@@ -256,6 +251,8 @@ function snap(){
 }
 
 var timelineID;
+var timelineID2;
+var timelineID3;
 function createPianoRollFile(){
 	var newFile = [];
 	smallRectangles.forEach((Rectangle)=>{
@@ -273,15 +270,16 @@ function createPianoRollFile(){
 	*/
 	
 	clearInterval(timelineID);
+	clearInterval(timelineID2);
+	clearInterval(timelineID3);
 	timeline[0].resetX();
 	newFile.forEach(note => {
 		synth.playNoteTimeDuration(note[0], note[1], note[2]);
 	})
-	timelineID = setInterval(moveTimeline, 10);
-	timelineID = setInterval(moveTimeline, 10);
-	timelineID = setInterval(moveTimeline, 276);
+	timelineID = setInterval(moveTimeline, 50);
+	timelineID2 = setInterval(moveTimeline, 10);
+	timelineID3 = setInterval(moveTimeline, 276);
 }
 function moveTimeline(){
 	timeline[0].iterateX();
-	console.log("tick");
 }
