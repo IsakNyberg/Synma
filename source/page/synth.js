@@ -74,7 +74,9 @@ class Synth {
 		this.createEnvelopes();
 		this.createBase();
 		this.createWaveforms();
-		this.graphWave();
+		if(indexPage){
+			this.graphWave();
+		}
 		this.piano.slideInPiano();
 	}
 	//***********************************************************************************************************************
@@ -355,5 +357,4 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
-
 }

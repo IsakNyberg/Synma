@@ -1,18 +1,13 @@
 const canvas = document.getElementById('myCanvas');
 const c = canvas.getContext('2d');
-const play = document.getElementById("play");
+//const play = document.getElementById("play");
 let cancel = null;
-//  canvas.width= innerWidth;
-//  canvas.height=innerHeight;
 
 let isDrawing = false;
 let mouseX = 0;
 let mouseY = 0;
 let currentX = 0;
 let currentY = 0;
-
-//let testX=0;
-//let testY=0;
 
 class Rectangle{
 	constructor(x,y,color,x1,y1){
@@ -21,7 +16,14 @@ class Rectangle{
 		this.color = color;
 		this.x1 = x1;
 		this.y1 = y1;
-		//this.index;
+	}
+
+	resetX(){
+		this.x = 0;
+	}
+
+	iterateX(){
+		this.x++;
 	}
 
 	getColor(){
@@ -68,38 +70,38 @@ class Rectangle{
 	 this.x1 += move;
 	}
 
-	setX1(xxxxxxxx){
-		this.x1 = xxxxxxxx;
+	setX1(length){   
+		this.x1 = length;
 	}
 
-	check(x1000,y1000){
-		if(x1000 >= this.x && x1000 <= (this.x + 19) && y1000 >= this.y && y1000 <= (this.y+19))
-			return true;
-	}
-
-	increaseIndex()
-	{
-		let bbb = this.getX1()/20;
-		return bbb;
-	}
+	
 }
 
 const Rectangles = [];
 const Rectangles1 = [];
-const Rectangles2 = [];
+//const Rectangles2 = [];
 const smallRectangles = [];
-let redRectangles = [];
+const timeline = [new Rectangle(
+	0,
+	0,
+	'red',
+	1,
+	2560,
+	)
+];
+
 let x = 0;
 let y = 0;
 let y1=0;
-for(let a= 0; a<5;a++){
-	for(let i=0; i<5;i++){
+var colors = ["lightgrey", "darkgrey", "lightgrey", "lightgrey", "darkgrey", "lightgrey", "darkgrey", "lightgrey", "lightgrey", "darkgrey", "lightgrey", "darkgrey"];
+for(let a= 0; a<128;a++){
+	for(let i=0; i<40;i++){
 		Rectangles.push(new Rectangle(
 			x,
 			y,
-		 'gray',
-		 20,
-		 20,
+			colors[a%12],
+			20,
+			20,
 		));
 
 		if(i!=0){
@@ -141,77 +143,26 @@ function animate(){
 	Rectangles1.forEach((Rectangle)=>{
 		Rectangle.update();
 	});
-	redRectangles=[];
+
+	
 	smallRectangles.forEach((Rectangleq)=>{
 		Rectangleq.update();
 	});
-	redRectangles.forEach((Rectangle)=>{
+
+
+	timeline.forEach((Rectangle)=>{
 		Rectangle.update();
 	})
+	
 }
 	
+
 play.addEventListener("click", function() {
-	animate();
-	movePiano();
+	createPianoRollFile();
 });
 
+animate(); //Must be done to create tiles/blocks
 function movePiano(){
-	document.getElementById("piano").style.transform = "rotate(-90deg)";
-	document.getElementById("piano").style.display = "block";
-	document.getElementById("piano").style.position = "absolute";
-	document.getElementById("piano").style.left = "-42.5%";
-	document.getElementById("piano").style.top = "0";
-	document.getElementById("piano").style.position = "absolute";
-	document.getElementById("piano").style.left = "-42.5%";
-	//document.getElementById("piano").style.top = "1000px";
-	//document.getElementById("myCanvas").style.position = "absolute";
-	//document.getElementById("myCanvas").style.left = "15%";
-	//document.getElementById("myCanvas").style.top = "69.6%";
-	//document.getElementById("myCanvas").style.position = "absolute";
-	//document.getElementById("myCanvas").style.left = "15%";
-	//document.getElementById("myCanvas").style.top = "69.6%";
-
-	var elements = document.getElementsByClassName("both");
-	var whites = document.getElementsByClassName("white");
-	var blacks = document.getElementsByClassName("black");
-	var covereds = document.getElementsByClassName("coveredWhite");
-	var rights = document.getElementsByClassName("borderRight");
-	var lefts = document.getElementsByClassName("borderLeft");
-
-	console.log(whites)
-	for(var i=0; i<elements.length; i++) { 
-		elements[i].style.width = "20px";
-	}
-	for(var i=0; i<blacks.length; i++) { 
-		blacks[i].style.width = "20px";
-	}
-	for(var i=0; i<covereds.length; i++) { 
-		covereds[i].style.width = "20px";
-	}
-	for(var i=0; i<whites.length; i++) { 
-		whites[i].style.width = "19px";
-	}
-	for(var i=0; i<lefts.length; i++) { 
-		lefts[i].style.width = "19px";
-	}
-	for(var i=0; i<rights.length; i++) { 
-		rights[i].style.width = "19px";
-	}
-	/*
-	elements.forEach(element => {
-		element.style.width = "20px";
-	});
-	whites.forEach(element => {
-		element.style.width = "19px";
-	});
-	covereds.forEach(element => {
-		element.style.width = "20px";
-	});*/
-
-	//document.getElementsByClassName("both").style.width = "20px";
-	//document.getElementsByClassName("white").style.width = "19px";
-	//document.getElementsByClassName("coveredWhite").style.width = "20px";
-
 	canvasen = document.getElementById("myCanvas").getBoundingClientRect();
 	yOffset = canvasen["y"];
 	xOffset = canvasen["x"];
@@ -220,11 +171,9 @@ function movePiano(){
 let lastchanse=0;
 let last=0;
 document.getElementById("myCanvas").addEventListener('mousedown', e => {
-	console.log(e.clientX, e.clientY);
-	console.log("söker:", ((e.clientX)-10 + window.scrollX), ((e.clientY)-18 + window.scrollY))
+	mouseX = Math.floor(((e.clientX- xOffset + window.scrollX))/20);
+	mouseY = Math.floor(((e.clientY - yOffset + window.scrollY) /*- 15*/)/20) * 40;
 
-	mouseX = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
-	mouseY = Math.floor(((event.clientY - yOffset + window.scrollY) - 15)/20) * 5;
 	currentX=e.clientX;
 	currentY=e.clientY;
 	isDrawing = true; 
@@ -235,14 +184,10 @@ document.getElementById("myCanvas").addEventListener('mousemove', event => {
 	if (isDrawing === true) {
 		let xT =Rectangles[mouseX+mouseY].getX();
 		let yT=Rectangles[mouseX+mouseY].getY();
-	
-		if(event.clientX>currentX) {value=1;}
-		else value=-1;
+		value = event.clientX - currentX;
 
-		let counter =0;
 		smallRectangles.forEach((Rectangle,index)=>{	
 			if((Rectangle.getX()===xT) && Rectangle.getY()===yT && Rectangle.getX1()>=3){	
-				console.log(lastchanse);
 				Rectangle.update1(value);
 			};
 			currentX=event.clientX;
@@ -263,26 +208,26 @@ document.getElementById("myCanvas").addEventListener('mouseup', e => {
 var canvasen = document.getElementById("myCanvas").getBoundingClientRect();
 var yOffset = canvasen["y"];
 var xOffset = canvasen["x"];
-console.log(xOffset, yOffset);
 
 document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	let xT = Math.floor(((event.clientX- xOffset + window.scrollX))/20);
-	let yT = Math.floor(((event.clientY - yOffset + window.scrollY) - 34)/20) * 5;
+	let yT = Math.floor(((event.clientY - yOffset + window.scrollY))/20) * 40;
 	let xS = Rectangles[xT+yT].getX();
 	let yS = Rectangles[xT+yT].getY();
 	smallRectangles.push(new Rectangle(
 		xS,
 		yS,
-		randomColor(),
+		randomColor(yS),
 		20,
 		20,
 		(xS*yS)
 	));
 });
 
-function randomColor(){
+function randomColor(y){
 	color = ["red", "blue", "yellow", "black", "orange", "purple"];
-	return color[Math.floor(Math.random() * 6)];
+	return color[(y/20)%6];
+	//return color[Math.floor(Math.random() * 6)];
 };
 
 function snap(){
@@ -290,22 +235,42 @@ function snap(){
 	smallRectangles.forEach((Rectangle)=>{
 		if(Rectangle.getX1()%20!=0){
 			height=(Rectangle.getX1()%20) + (Math.floor((Rectangle.getX1()/20)))*20 +20-(Rectangle.getX1()%20);
-	 		console.log(height);
 	 		Rectangle.setX1(height);
 		}
-		//console.log(Rectangle);
 		Rectangle.update();
 	});
 }
 
+var timelineID;
+var timelineID2;
+var timelineID3;
 function createPianoRollFile(){
 	var newFile = [];
 	smallRectangles.forEach((Rectangle)=>{
-		newFile.push([Rectangle.getY()/20, Rectangle.getX()/20, Rectangle.getX1()/20]);
+		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/80, Rectangle.getX1()/80]);
 	});
+	
+	/* Works to create downloadable file!!
+
 	var filename = prompt("Choose file name", "Beautiful_song");
 	var a = document.getElementById("download");
 	var file = new Blob([JSON.stringify(newFile)], {type: 'application/json'});
 	a.href = URL.createObjectURL(file);
 	a.download = filename + ".synth";
+	
+	*/
+	
+	clearInterval(timelineID);
+	clearInterval(timelineID2);
+	clearInterval(timelineID3);
+	timeline[0].resetX();
+	newFile.forEach(note => {
+		synth.playNoteTimeDuration(note[0], note[1], note[2]);
+	})
+	timelineID = setInterval(moveTimeline, 50);
+	timelineID2 = setInterval(moveTimeline, 10);
+	timelineID3 = setInterval(moveTimeline, 276);
+}
+function moveTimeline(){
+	timeline[0].iterateX();
 }

@@ -2,8 +2,10 @@ window.onload = init_synt();
 /**
  * Program start. Init. the synth.
  */
+var synth;
+var indexPage = true;
 function init_synt(){
-  var synth;
+	indexPage = window.location.pathname.includes("index");console.log(indexPage);	// check if index or roll file.
 	let origin = window.location.search;
 	const urlParams = new URLSearchParams(origin);
 	if(urlParams.has('func1')){
@@ -12,8 +14,10 @@ function init_synt(){
 	else{
 		synth = new Synth([],document.getElementById('waveformGraph'),document.getElementById('envelopeGraph'));
 	}
+	if(indexPage){
     dropdownClick(synth);
     addEventSynthListeners(synth);
+	}
 	const midiKeybaord = new MidiKeybaord(synth, synth.piano);
 }
 

@@ -46,7 +46,7 @@ class Piano{
 	 * @param {Number} id 
 	 * @returns HTMLElement
 	 */
-	#createKeyDiv(type, id) {
+	 #createKeyDiv(type, id) {
 		let bothIndex = [1, 3, 6, 8, 10];
 		let wbrIndex = [4, 11];
 		let wblIndex = [0, 5];
@@ -60,11 +60,21 @@ class Piano{
 			black.className = "black";
 			both.appendChild(black);
 			var lw = document.createElement("Div");
-			lw.id = (id-1).toString() + "R"; 
+			if(indexPage){
+			  lw.id = (id-1).toString() + "R";
+			}
+			else{
+				lw.id = (id+1).toString() + "L"; 
+			}
 			lw.className = "leftWhite";
 			both.appendChild(lw);
 			var rw = document.createElement("Div");
-			rw.id = (id+1).toString() + "L";
+			if(indexPage){
+				rw.id = (id+1).toString() + "L";
+			}
+			else{
+			rw.id = (id-1).toString() + "R";		
+			}
 			rw.className = "rightWhite";
 			both.appendChild(rw);
 			return both;
@@ -90,21 +100,37 @@ class Piano{
 	 * Creates an array of all the key-objects which the piano will contain. 
 	 * @returns {Array<Key>}
 	 */
-	#createKeys(){
+	 #createKeys(){
 		var res = [];
-		for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
-			for (let j = 0; j < 12; j++) {
-				let id = 12*octave + j;
-				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+		if(indexPage){
+			for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
+				for (let j = 0; j < 12; j++) {
+					let id = 12*octave + j;
+					res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+				}
+			}
+
+			for (let j = 0; j <= 7; j++) {
+				let lastOctave = 10;
+				let id = 12 * lastOctave + j;
+				res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
 			}
 		}
-
-		for (let j = 0; j <= 7; j++) {
-			let lastOctave = 10;
-			let id = 12 * lastOctave + j;
-			res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+		else{
+			for (let j = 7; j >= 0; j--) {
+				let lastOctave = 10;
+				let id = 12 * lastOctave + j;
+				res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+			}
+	
+			for (let octave = this.#noOfOctaves; octave >= 0; octave--) {
+				for (let j = 11; j >=0; j--) {
+					let id = 12*octave + j;
+					res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+				}
+			}
 		}
-
+		
 		return res;
 	}
 	// ************************************************************************

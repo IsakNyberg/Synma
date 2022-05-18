@@ -76,8 +76,10 @@ function fromURLSafe(url){
  * @returns Three arrays containg each envelopes' settings in an array
  */
 function loadURL(urlParams) {
-	document.getElementById("functionInput").value = fromURLSafe(urlParams.get('func1'));
-	document.getElementById("maxXInput").value= urlParams.get("max");
+	if(indexPage){
+		document.getElementById("functionInput").value = fromURLSafe(urlParams.get('func1'));
+		document.getElementById("maxXInput").value= urlParams.get("max");
+	}
 	var normalizeCheckbox;
 	var amplitude = new Array(8);
 	var pitch = new Array(8);
@@ -87,7 +89,9 @@ function loadURL(urlParams) {
 	//	normalizeCheckbox = true;
 	//else 
 	//	normalizeCheckbox = false;
-	document.getElementById("normalizeCheckbox").checked = normalizeCheckbox;
+	if(indexPage){
+		document.getElementById("normalizeCheckbox").checked = normalizeCheckbox;
+	}
 
 	var labels = ['funcAtt', 'funcDec', 'funcRel', 'lengthAtt', 'lengthDec', 'lengthRel', 'norm', 'cont'];
 	for(let i = 0; i<pitch.length - 2; i++){
@@ -125,11 +129,13 @@ function loadURL(urlParams) {
 	var divs = ["applyAmplitude", "applyFilter", "applyPitch"];
 	var apply = ["appA", "appF", "appP"];
 	for(let i = 0; i<apply.length; i++){
-		if(urlParams.get(apply[i]) == '') {
-			document.getElementById(divs[i]).checked = true;
-		}
-		else {
-			document.getElementById(divs[i]).checked = false;
+		if(indexPage){
+			if(urlParams.get(apply[i]) == '') {
+				document.getElementById(divs[i]).checked = true;
+			}
+			else {
+				document.getElementById(divs[i]).checked = false;
+			}
 		}
 	}
 	return [fromURLSafe(urlParams.get('func1')),urlParams.get("max"),normalizeCheckbox,[amplitude, filter, pitch]];
