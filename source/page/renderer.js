@@ -82,24 +82,6 @@ class Renderer {
 			voice.stop();
 			this.#voices[note] = undefined;
 		}
-
-		//console.log("Releasin' ", voice);
-	}
-	
-	/**
-	 * @param {URL} url 
-	 */
-	async renderMIDI(url) {
-		const midi = await Midi.fromUrl(url);
-		midi.tracks.forEach(track => {
-			const notes = track.notes;
-			notes.forEach(note => {
-				this.render(new Note(
-					noteFreq[note.midi],
-					note.duration,
-					note.time));
-			})
-		})
 	}
 
 	/**
@@ -112,11 +94,10 @@ class Renderer {
 
 		let voice = new Voice(buffer, context, envelopes, note);
 
-		voice.gain = 0.1;
+		voice.volume = 0.1;
 		voice.start();
-		if (note.duration === Infinity) this.#voices.set(note, voice);
 
-		//console.log("Renderin' ", voice);
+		if (note.duration === Infinity) this.#voices.set(note, voice);
 	}
 
 	/**

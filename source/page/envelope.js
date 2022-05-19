@@ -57,4 +57,21 @@ class Envelope {
 	set release(restriction) {
 		this.#parameters['release'] = restriction;
 	}
+
+	/**
+	 * @param {Number} point - The point of release on the envelope curve.
+	 */
+	computeRelease(point) {
+		let decay = this.decay.values;
+		let sustain = decay[decay.length - 1];
+		let release = this.release.values;
+		let start = release[0];
+		let end = release[release.length - 1];
+		let rise = end - start;
+		let run = this.release.length;
+		let slope = 
+		
+		let ratio = ;
+		let offset = end - ratio;
+	}
 }

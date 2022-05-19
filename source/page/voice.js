@@ -8,10 +8,10 @@ class Voice {
 	#volume; // volume after processing
 
 	/**
-	 * @param {AudioContext} context
-	 * @param {Map<Envelope>} envelopes
-	 * @param {Note} note
 	 * @param {AudioBuffer} buffer
+	 * @param {AudioContext} context
+	 * @param {Map<String, Envelope>} envelopes
+	 * @param {Note} note
 	 */
 	constructor(buffer, context, envelopes, note) {
 		let destination = context.destination;
@@ -32,10 +32,8 @@ class Voice {
 		this.buffer = buffer;
 		this.pitch = pitch;
 
-		//console.log("Don't forget to reconnect the audio nodes in the voice constructor!");
+		this.#applyEnvelopes(envelopes);
 		this.#connect([source, gain, filter, volume, destination]);
-
-		this.applyEnvelopes(envelopes);
 	}
 
 	/**
@@ -129,7 +127,7 @@ class Voice {
 	 * @param {Number} time - to start, in seconds, in the same time coordinate
 	 * system as its audio context.
 	*/
-	applyEnvelope(type, restriction, time) {
+	#applyEnvelope(type, restriction, time) {
 		if (time != Infinity && time != undefined) {
 			let values = restriction.values;
 			let parameter = this.getParameter(type);
@@ -143,9 +141,9 @@ class Voice {
 	}
 
 	/**
-	 * @param {Map<Envelope>} envelopes
+	 * @param {Map<String, Envelope>} envelopes
 	 */
-	applyEnvelopes(envelopes) {
+	#applyEnvelopes(envelopes) {
 		let time = this.#source.context.currentTime;
 
 		let note = this.#note;
@@ -161,7 +159,7 @@ class Voice {
 			let time = [start, start + attack.length, start + duration];
 
 			for (let i = 0; i < restriction.length; i++) {
-				this.applyEnvelope(type, restriction[i], time[i]);
+				this.#applyEnvelope(type, restriction[i], time[i]);
 			}
 		}
 	}
@@ -193,7 +191,7 @@ class Voice {
 		switch (type) {
 			case 'filter': return this.filterFrequency;
 			case 'pitch': return this.detune;
-			case 'volume': return this.#volume.gain;
+			case 'volume': return this.gain;
 			default: return undefined;
 		}
 	}
@@ -206,11 +204,11 @@ class Voice {
 		let duration = note.duration;
 		let release = this.#envelopes['volume'].release.length;
 		
-		source.loop = true;
-
 		let time = context.currentTime;
 		let when = time + note.start;
 
+		source.loop = true;
+		
 		if (duration === (Infinity || undefined)) source.start(when);
 		else source.start(when, 0, duration + release);
 	}
@@ -227,7 +225,7 @@ class Voice {
 			let parameter = this.getParameter(type);
 
 			parameter.cancelScheduledValues(time);
-			this.applyEnvelope(type, envelope.release, time);
+			this.#applyEnvelope(type, envelope.release, time);
 		}
 
 		let release = envelopes['volume'].release.length;
