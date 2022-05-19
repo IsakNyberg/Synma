@@ -171,6 +171,16 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, int
 		return 'rgba(0, 0, 0, 1)';
 	}
 
+	var log = undefined;
+	var interval1 = interval[0];
+	var interval2 = interval[1];
+	
+	if(document.getElementById('chosenEnvelope').textContent == "Filter") {
+		log = 'logarithmic';
+		interval1 = undefined;
+		interval2 = undefined;
+	}
+
 	const data = {
 		labels: domain, 
 		datasets: [{	
@@ -202,9 +212,10 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, int
 					display: false 
 				},
 				y: {
-					min: interval[0],
-					max: interval[1],
-					beginAtZero:false
+					min: interval1,
+					max: interval2,
+					beginAtZero:false,
+					type: log
 				}, 
 			}
 		}
@@ -222,6 +233,12 @@ function drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, int
  * @returns The graph.  
  */
 function drawEnvelope(ctx, functions, numPoints, maxValues, options, colorValues, interval) {
+
+	//if(document.getElementById('chosenEnvelope').textContent == "Filter") { 
+	//	interval[0] = 0;
+	//	interval[1] = 10000;
+	//}
+	
 	var [domain, range] = makeEnvelopeDatapoints(functions, numPoints, maxValues, options[0], options[1], interval);
 	return drawEnvelopeDomainRange(ctx, domain, range, colorValues, maxValues, interval);
 }
