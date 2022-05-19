@@ -5,7 +5,7 @@ window.onload = init_synt();
 var synth;
 var indexPage = true;
 function init_synt(){
-	indexPage = window.location.pathname.includes("index");	// check if index or roll file.
+	indexPage = !window.location.pathname.includes("roll");	// check if index or roll file.
 	let origin = window.location.search;
 	const urlParams = new URLSearchParams(origin);
 	if(urlParams.has('func1')){
