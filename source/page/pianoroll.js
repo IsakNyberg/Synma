@@ -23,7 +23,7 @@ class Rectangle{
 	}
 
 	iterateX(){
-		this.x++;
+		this.x += 20;
 	}
 
 	getColor(){
@@ -267,9 +267,7 @@ function createPianoRollFile(){
 	newFile.forEach(note => {
 		synth.playNoteTimeDuration(note[0], note[1], note[2]);
 	})
-	timelineID = setInterval(moveTimeline, 50);
-	timelineID2 = setInterval(moveTimeline, 10);
-	timelineID3 = setInterval(moveTimeline, 276);
+	timelineID = setInterval(moveTimeline, 250);
 }
 function moveTimeline(){
 	timeline[0].iterateX();
