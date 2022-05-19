@@ -26,18 +26,26 @@ class Piano{
 			this.htmlDiv = htmlDiv;
 		}
 	}
+
+	#callPressedKey;
+	#callReleasedKey;
+
 	#noOfOctaves; // number of octaves to include in the piano
 	keys = []; // Colection of all the key objects in the piano
 	#synth; // reference to the synth
 	#clickedKey = null; // currently clicked key.
 	#markersPosition = 1; // the octave to map to the computer keyboard
-	
-	constructor(synth){
+	#indexPage;
+	constructor(synth, indexPage){
+		this.#indexPage = indexPage;
 		this.#synth = synth;
 		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
-		this.#addEventListeners();
+		this.addEventListeners();
+	}
+	setSynth(synth){
+		this.#synth = synth;
 	}
 	// Keys *******************************************************************
 	/**
@@ -60,7 +68,7 @@ class Piano{
 			black.className = "black";
 			both.appendChild(black);
 			var lw = document.createElement("Div");
-			if(indexPage){
+			if(this.#indexPage){
 			  lw.id = (id-1).toString() + "R";
 			}
 			else{
@@ -69,7 +77,7 @@ class Piano{
 			lw.className = "leftWhite";
 			both.appendChild(lw);
 			var rw = document.createElement("Div");
-			if(indexPage){
+			if(this.#indexPage){
 				rw.id = (id+1).toString() + "L";
 			}
 			else{
@@ -102,7 +110,7 @@ class Piano{
 	 */
 	 #createKeys(){
 		var res = [];
-		if(indexPage){
+		if(this.#indexPage){
 			for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
 				for (let j = 0; j < 12; j++) {
 					let id = 12*octave + j;
@@ -139,7 +147,7 @@ class Piano{
 	 * Creates a html piano-div and inserts all the keys' html.
 	 */
 	#spawnPiano(){
-		if(indexPage){
+		if(this.#indexPage){
 			document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
 		}
 		else {
@@ -149,7 +157,9 @@ class Piano{
 		for (let i = 0; i < this.keys.length; i++) {
 			pianoDiv.appendChild(this.keys[i].htmlDiv);
 		}
-		this.#placeMarkers(this.#markersPosition);
+		if(this.#indexPage){
+			this.#placeMarkers(this.#markersPosition);
+		}
 	}
 	/**
 	 * Animation for sliding in the piano-div.
@@ -174,7 +184,7 @@ class Piano{
 	/**
 	 * Adds the event-listeners required by the piano.
 	 */
-	#addEventListeners(){
+	addEventListeners(){
 		for (let keyIndex = 0; keyIndex < this.keys.length; keyIndex++) {
 			let divs = this.#getKeyDivsFromKeyIndex(keyIndex);
 			for (let j = 0; j < divs.length; j++) {
@@ -184,8 +194,17 @@ class Piano{
 				divs[j].onmouseleave = () => this.resetKeyColor(keyIndex);
 			}
 		}
-		document.addEventListener('keydown', (keyCode) => this.#pressedKey(keyCode));
-		document.addEventListener('keyup', (keyCode) => this.#releasedKey(keyCode));
+		this.#callPressedKey = (keyCode) => this.#pressedKey(keyCode);
+		this.#callReleasedKey = (keyCode) => this.#releasedKey(keyCode);
+		document.addEventListener('keydown', this.#callPressedKey);
+		document.addEventListener('keyup', this.#callReleasedKey);
+	}
+	removeEventListeners() {
+		var old_element = document.getElementById(Piano.#PIANO_DIV_ID);
+		var new_element = old_element.cloneNode(true);
+		old_element.parentNode.replaceChild(new_element, old_element);
+		document.removeEventListener('keydown', this.#callPressedKey);
+		document.removeEventListener('keyup', this.#callReleasedKey);
 	}
 
 	/**
@@ -317,12 +336,14 @@ class Piano{
 	 * @param {Number} x - - The octave to be marked and mapped to the computer keyboard 
 	 */
 	#placeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++){
-			let keyIndex = 12*x+i;
-			if(!(Piano.#blackIndecies.includes(keyIndex)))
-				document.getElementById(keyIndex).innerHTML = "<div class=\"blackText\">" + Piano.#keyMarkers[i] + "</div>";
-			else
-				document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
+		if(this.#indexPage){
+			for(var i = 0; i < Piano.#keyMarkers.length; i++){
+				let keyIndex = 12*x+i;
+				if(!(Piano.#blackIndecies.includes(keyIndex)))
+					document.getElementById(keyIndex).innerHTML = "<div class=\"blackText\">" + Piano.#keyMarkers[i] + "</div>";
+				else
+					document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
+			}
 		}
 	}
 	/**
@@ -330,8 +351,10 @@ class Piano{
 	 * @param {Number} x - The octave to be unmarked and unmapped from the computer keyboard 
 	 */
 	#removeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++) 
-			document.getElementById(12*x+i).innerHTML = "";
+		if(this.#indexPage){
+			for(var i = 0; i < Piano.#keyMarkers.length; i++) 
+				document.getElementById(12*x+i).innerHTML = "";
+		}
 	}
 	// ***************************************************************************************************************************
 }

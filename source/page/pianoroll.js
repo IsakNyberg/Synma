@@ -10,12 +10,17 @@ let currentX = 0;
 let currentY = 0;
 
 class Rectangle{
-	constructor(x,y,color,x1,y1){
+	constructor(x,y,color,x1,y1, synthId){
 		this.x = x;
 		this.y = y;
 		this.color = color;
 		this.x1 = x1;
 		this.y1 = y1;
+		this.synthId = synthId;
+	}
+
+	getSynthId(){
+		return this.synthId;
 	}
 
 	resetX(){
@@ -76,6 +81,17 @@ class Rectangle{
 
 	
 }
+/**
+ * Takes a rgba color string and returns a rgba color string with changed alpha value.
+ * @param {String} color 
+ * @param {Number} alpha 
+ * @returns {String}
+ */
+function setAlpha(color,alpha){
+	let rgb = color.match(/^rgba\(([0-9]*), ([0-9]*), ([0-9]*), [0-9.]*\)$/);
+	return "rgba("+rgb[1]+", "+rgb[2]+", "+rgb[3]+", "+alpha+")";
+}
+
 
 const Rectangles = [];
 const Rectangles1 = [];
@@ -89,7 +105,6 @@ const timeline = [new Rectangle(
 	2560,
 	)
 ];
-
 let x = 0;
 let y = 0;
 let y1=0;
@@ -102,6 +117,7 @@ for(let a= 0; a<128;a++){
 			colors[a%12],
 			20,
 			20,
+			null
 		));
 
 		if(i!=0){
@@ -111,6 +127,7 @@ for(let a= 0; a<128;a++){
 			'black',
 			1,
 			20,
+			null
 			));
 		}
 
@@ -120,6 +137,7 @@ for(let a= 0; a<128;a++){
 			'black',
 			20,
 			1,
+			null
 		));
 			x+=20;
 	}
@@ -145,8 +163,14 @@ function animate(){
 	});
 
 	
-	smallRectangles.forEach((Rectangleq)=>{
-		Rectangleq.update();
+	smallRectangles.forEach((Rectangle)=>{
+		if(Rectangle.getSynthId() == synths.indexOf(activeSynth)){
+			Rectangle.setColor(setAlpha(Rectangle.getColor(), 1));
+		}
+		else{
+			Rectangle.setColor(setAlpha(Rectangle.getColor(), 0.5));
+		}
+		Rectangle.update();
 	});
 
 
@@ -180,18 +204,20 @@ document.getElementById("myCanvas").addEventListener('mousedown', e => {
 });
 
 document.getElementById("myCanvas").addEventListener('mousemove', event => {
+	console.log("i mousemove")
 	let value = 0;
 	if (isDrawing === true) {
-		let xT =Rectangles[mouseX+mouseY].getX();
-		let yT=Rectangles[mouseX+mouseY].getY();
+		let xT = Rectangles[mouseX+mouseY].getX();
+		let yT = Rectangles[mouseX+mouseY].getY();
 		value = event.clientX - currentX;
-
 		smallRectangles.forEach((Rectangle,index)=>{	
-			if((Rectangle.getX()===xT) && Rectangle.getY()===yT && Rectangle.getX1()>=3){	
-				Rectangle.update1(value);
+			if((Rectangle.getX()===xT) && Rectangle.getY()===yT && Rectangle.getX1()>=3){
+				if(Rectangle.getSynthId() == synths.indexOf(activeSynth)){	
+					Rectangle.update1(value);
+				}
 			};
-			currentX=event.clientX;
-			currentY=event.clientY;
+			currentX = event.clientX;
+			currentY = event.clientY;
 		});
 	}
 });
@@ -217,17 +243,15 @@ document.getElementById("myCanvas").addEventListener('dblclick', (event)=>{
 	smallRectangles.push(new Rectangle(
 		xS,
 		yS,
-		randomColor(yS),
+		randomColor(synths.indexOf(activeSynth)),
 		20,
 		20,
-		(xS*yS)
+		synths.indexOf(activeSynth)
 	));
 });
-
-function randomColor(y){
-	color = ["red", "blue", "yellow", "black", "orange", "purple"];
-	return color[(y/20)%6];
-	//return color[Math.floor(Math.random() * 6)];
+function randomColor(synthId){
+	color = ["rgba(255, 0, 0, 1)", "rgba(0, 0, 255, 1)", "rgba(255, 255, 0, 1)", "rgba(0, 0, 0, 1)", "rgba(255, 128, 0, 1)", "rgba(255, 0, 255, 1)"];
+	return color[synthId];
 };
 
 function snap(){
@@ -242,12 +266,10 @@ function snap(){
 }
 
 var timelineID;
-var timelineID2;
-var timelineID3;
 function createPianoRollFile(){
 	var newFile = [];
 	smallRectangles.forEach((Rectangle)=>{
-		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/80, Rectangle.getX1()/80]);
+		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/80, Rectangle.getX1()/80, Rectangle.getSynthId()]);
 	});
 	
 	/* Works to create downloadable file!!
@@ -261,11 +283,9 @@ function createPianoRollFile(){
 	*/
 	
 	clearInterval(timelineID);
-	clearInterval(timelineID2);
-	clearInterval(timelineID3);
 	timeline[0].resetX();
 	newFile.forEach(note => {
-		synth.playNoteTimeDuration(note[0], note[1], note[2]);
+		synths[note[3]].playNoteTimeDuration(note[0], note[1], note[2]);
 	})
 	timelineID = setInterval(moveTimeline, 250);
 }

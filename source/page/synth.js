@@ -1,5 +1,7 @@
 let noteFreq = initFreqs();
 class Synth {
+	static serial = 0;
+	serial;
 	audioContext = null;
 	masterVolume;
 	maxVolume = 1;
@@ -32,7 +34,9 @@ class Synth {
 	graphIsNormalized = false;
 	envIsNormalized = {"amplitude" : [false,false], "pitch" : [false,false], "filter" : [false,false]};
 	activeEnvelopes = [true,true,true];
+	pianoIsActive = false;
   	constructor(urlPresets,waveGraphCanvas,envelopeGraphCanvas){
+		this.serial = ++Synth.serial;
 		this.waveGraphCanvas = waveGraphCanvas;
 		this.envelopeGraphCanvas = envelopeGraphCanvas;
 		this.waveParser = new MathParser("x");
@@ -59,6 +63,14 @@ class Synth {
 		//this.dropdownClick();
 	}
 
+	togglePiano(){
+		if(this.pianoIsActive)
+			this.piano.removeEventListeners();
+		else
+			this.piano.addEventListeners();
+		this.pianoIsActive = !this.pianoIsActive;
+	}
+
 	/**
 	 * Set the base soundwave according to a math-expression
 	 * @param {String} expr 
@@ -74,10 +86,9 @@ class Synth {
 		this.createEnvelopes();
 		this.createBase();
 		this.createWaveforms();
-		if(indexPage){
-			this.graphWave();
-			this.piano.slideInPiano();
-		}
+		this.graphWave();
+		this.piano.slideInPiano();
+		
 	}
 	//***********************************************************************************************************************
 	/**
@@ -156,13 +167,14 @@ class Synth {
 	 * Creates an instance of the Piano class
 	 */
 	createPiano(){
-		this.piano = new Piano(this);
+		this.piano = new Piano(this,true);
+		this.pianoIsActive = true;
 	}
 	/**
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
 	 * @param {WaveForm} wf 
 	 */
-	applyEnvelopesAD(wf){
+	applyEnvelopesAD(wf){		
 		if(this.activeEnvelopes[0]){
 			this.ampEnvelope.apply_attack(wf.bufferGain);
 			this.ampEnvelope.apply_decay(wf.bufferGain);
@@ -363,4 +375,5 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
+
 }
