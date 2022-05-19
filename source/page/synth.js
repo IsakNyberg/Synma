@@ -3,19 +3,19 @@ class Synth {
 	#envelopeParser = null;
 	#envelopes = {
 		'filter': new Envelope(
-			new Restriction((t) => 10_000 * 10 * t, 0.1, 0),
-			new Restriction((t) => 10_000, 0.001, 0),
-			new Restriction((t) => 10_000 * (1 - 10 * t), 0.1, 0)
+			new Restriction((t) => 10_000, 1, 0),
+			new Restriction((t) => 10_000, 1, 0),
+			new Restriction((t) => 10_000, 1, 0)
 		),
 		'pitch': new Envelope(
-			new Restriction((t) => 0, 0.001, 0),
-			new Restriction((t) => 0, 0.001, 0),
-			new Restriction((t) => 0, 0.001, 0)
+			new Restriction((t) => 0, 1, 0),
+			new Restriction((t) => 0, 1, 0),
+			new Restriction((t) => 0, 1, 0)
 		),
 		'volume': new Envelope(
-			new Restriction((t) => 10 * t, 0.1, 0),
-			new Restriction((t) => 1, 0.001, 0),
-			new Restriction((t) => 1 - 10 * t, 0.1, 0)
+			new Restriction((t) => t, 1, 0),
+			new Restriction((t) => 0.5 * (2 - t), 1, 0),
+			new Restriction((t) => 0.5 * (1 - t), 1, 0)
 		)
 	};
 	#parser = null;

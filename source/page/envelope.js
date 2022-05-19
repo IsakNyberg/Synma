@@ -59,19 +59,58 @@ class Envelope {
 	}
 
 	/**
+	 * @param {Number} time
+	 */	
+	findPoint(time) {
+		console.log("time: ", time);
+		let attack = this.attack;
+		let decay = this.decay;
+		let sustain = decay.func(decay.length);
+		console.log("sustain: ", sustain);
+
+		let f = (t) => {
+			if (t < 0) attack.func(0);
+			else if (t < attack.length) attack.func(t);
+			else if (t < decay.length) decay.func(t);
+			else sustain;
+		};
+
+
+		console.log("f(time): ", f(time));
+		return f(time);
+	}
+
+	/**
 	 * @param {Number} point - The point of release on the envelope curve.
+	 * @returns {Array<Number>} - The release curve with respect to the
+	 * release point.
 	 */
 	computeRelease(point) {
+		/* Load necessary variables. */
 		let decay = this.decay.values;
+		let release = this.release;
+		let releasePoints = release.values;
+		console.log("release:", release, "points:", releasePoints);
+
+		/* Set sustain to decay endpoint. */
 		let sustain = decay[decay.length - 1];
-		let release = this.release.values;
-		let start = release[0];
-		let end = release[release.length - 1];
-		let rise = end - start;
-		let run = this.release.length;
-		let slope = 
+
+		/* Set point of origin to release endpoint. */
+		let origo = releasePoints[releasePoints.length - 1];
 		
-		let ratio = ;
-		let offset = end - ratio;
+		/* Compute values in terms of the origin. */
+		point -= origo;
+		sustain -= origo;
+		let rise = releasePoints[0] - origo;
+		let offset = sustain - point;
+		let scaling = (rise != 0) ? (1 + offset / rise) : 1;
+
+		/* Scale the release function. */
+		let points = [];
+		for (let i = 0; i < releasePoints.length; i++) {
+			points[i] = scaling * (releasePoints[i] - origo);
+		}
+
+		return points;
 	}
 }

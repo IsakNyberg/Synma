@@ -101,6 +101,22 @@ class Renderer {
 	}
 
 	/**
+	 * @param {URL} url 
+	 */
+	async renderMIDI(url) {
+		const midi = await Midi.fromUrl(url);
+		midi.tracks.forEach(track => {
+			const notes = track.notes;
+			notes.forEach(note => {
+				this.render(new Note(
+					noteFreq[note.midi],
+					note.duration,
+					note.time));
+			})
+		})
+	}
+
+	/**
 	 * @param {Array<Number>} waveform
 	 * @returns {AudioBuffer}
 	 */

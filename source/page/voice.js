@@ -122,6 +122,17 @@ class Voice {
 	}
 
 	/**
+	 * @param {Array<Number>} curve
+	 * @param {AudioParam} parameter
+	 */
+	#applyCurve(curve, parameter) {
+		for (const point of curve) {
+			parameter.setValueAtTime(point, time);
+			time += step;
+		}
+	}
+
+	/**
 	 * @param {String} type
 	 * @param {Restriction} restriction
 	 * @param {Number} time - to start, in seconds, in the same time coordinate
@@ -224,8 +235,9 @@ class Voice {
 			let envelope = envelopes[type];
 			let parameter = this.getParameter(type);
 
+			let release = envelope.computeRelease(parameter.value);
 			parameter.cancelScheduledValues(time);
-			this.#applyEnvelope(type, envelope.release, time);
+			this.#applyEnvelope(type, release, time);
 		}
 
 		let release = envelopes['volume'].release.length;
