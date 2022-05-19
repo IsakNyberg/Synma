@@ -215,7 +215,6 @@ class Synth {
 		if (wf === undefined) return;
 		if(this.graphIsNormalized) wf.normalizeBuffer();
 		wf.createMasterSource(noteFreq[keyIndex]);
-		this.updateActiveEnvelopes();
 		this.applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
@@ -374,14 +373,4 @@ class Synth {
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
 
-	updateActiveEnvelopes() {
-		let applyAmplitudeChkbox = document.getElementById("applyAmplitude");
-		let applyPitchChkbox = document.getElementById("applyPitch");
-		let applyFilterChkbox = document.getElementById("applyFilter");
-
-		let amp = applyAmplitudeChkbox != null || undefined ? applyAmplitudeChkbox.checked : false;
-		let pitch = applyPitchChkbox != null || undefined ? applyPitchChkbox.checked : false;
-		let filter = applyFilterChkbox != null || undefined ? applyFilterChkbox.checked : false;
-		this.activeEnvelopes = [amp, pitch, filter];
-	}
 }
