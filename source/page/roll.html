@@ -3,32 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <title>Mjukvarusynt</title>
-  <link href="index.css" rel="stylesheet">
+  <link href="roll.css" rel="stylesheet">
 </head>
 <body>
-  <div id="choices">
-    <div class="choice" id="displayRoll">Piano Roll</div>
-    <div class="choice" id="newSynth">Create New Synth</div>
-    <div class="choice" id="destroySynth">Destroy current Synth</div>
-    <div class="choice" id="synth0">Synth #0</div>
+  <button type="button" id="play">Play</button>
+  <a id="downloadRoll"><input class="function-btn" type="button" value="Download" id="downloadRollButton"/></a>
+  <div class="dropdown">
+    <button class="dropbtn" id="drop">Dropdown</button>
+    <div class="dropdown-content" id="dropcnt">
+      
+    </div>
+  </div> 
+  <div id="big-container">
+    <div id="piano-container">
+      </div>
+      <div id="canvas-container">
+      <canvas id="myCanvas"  width="900" 
+      height="2560" ></canvas>
+    </div>
   </div>
-  <iframe style="visibility: hidden;" id="roll" src="roll.html"></iframe>
-  <iframe id="main" src="synt.html">
-  </iframe>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="pianoroll.js"></script>
   <script src="frequencies.js"></script>
   <script src="waveform.js"></script>
   <script src="record.js"></script>
   <script src="parse.js"></script>
-  <script src="graph.js"></script>
   <script src="envelope.js"></script>
   <script src="https://unpkg.com/@tonejs/midi"></script>
-  <script src="envelopeGraph.js"></script>
   <script src="midiKeyboard.js"></script>
   <script src="piano.js"></script>
   <script src="url.js"></script>
   <script src="synth.js"></script>
-  <script src="index.js"></script>
+  <script src="init_roll.js"></script>
 </body>
 </html>

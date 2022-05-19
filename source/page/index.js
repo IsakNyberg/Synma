@@ -1,3 +1,5 @@
+//const rollFrame = document.getElementById('roll').contentWindow;
+//var roll = rollFrame.documentElement;
 /**
  * Window object for the iframe "main"
  * @type {Window}
@@ -29,6 +31,8 @@ var activeSynth = null; // currently active synth
  */
 var noOfSynths = 0;
 
+var rollActive = false;
+
 
 /**
  * Switch active synth.
@@ -36,6 +40,10 @@ var noOfSynths = 0;
  * @returns {void}
  */
 function switchSynth(index) {
+	if(rollActive){
+		document.getElementById("roll").style.visibility = "hidden";
+		document.getElementById("main").style.visibility = "visible";
+	}
 	if(synths[index] == undefined || activeSynth == synths[index]) return;
 	iframe.document.body.focus();
 	iframe.document.replaceChild(documents[index], iframe.document.documentElement); // change the whole DOM tree of the iframe document
@@ -44,6 +52,15 @@ function switchSynth(index) {
 	activeSynth.togglePiano();
 	activeSynth.graphWave();
 	activeSynth.graphEnvelope(iframe.document.getElementById("chosenEnvelope").innerHTML.toLowerCase());
+}
+
+function switchToRoll() {
+	if(activeSynth!=null) activeSynth.togglePiano();
+	rollActive = true;
+	activeSynth.togglePiano();
+	document.getElementById("main").style.visibility = "hidden";
+	document.getElementById("roll").style.visibility = "visible";
+	document.getElementById("roll").contentWindow.initRoll(synths);
 }
 
 /**
@@ -98,9 +115,7 @@ window.onload = () => {
 }
 document.getElementById("destroySynth").onclick = destroySynth;
 document.getElementById("newSynth").onclick = createSynth;
-document.getElementById("newRoll").onclick = () =>{
-	alert("Not yet implemented");
-}
+document.getElementById("displayRoll").onclick = switchToRoll;
 
 
 
