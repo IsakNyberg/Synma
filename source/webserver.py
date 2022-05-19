@@ -5,34 +5,53 @@ import sys
 
 path_lookup = {
     "/": "page/index.html",
-    "/favicon.ico": "page/resources/favicon.ico",
+    "/description.css": "page/description.css",
+    "/envelope.js": "page/envelope.js",
+    "/envelopeGraph.js": "page/envelopeGraph.js",
+    "/favicon.ico": "page/favicon.ico",
+    "/frequencies.js": "page/frequencies.js",
+    "/graph.js": "page/graph.js",
     "/index.css": "page/index.css",
     "/index.js": "page/index.js",
-    "/graph.html": "page/graph.js",
-    "/waveform.js": "page/waveform.js",
+    "/info.html": "page/info.html",
+    "/midiKeyboard.js": "page/midiKeyboard.js",
     "/parse.js": "page/parse.js",
-    "/design.js": "page/design.js",
-    "/graph.js": "page/graph.js",
+    "/piano.js": "page/piano.js",
+    "/pianoroll.js": "page/pianoroll.js",
+    "/record.js": "page/record.js",
+    "/synth.js": "page/synth.js",
+    "/url.js": "page/url.js",
+    "/waveform.js": "page/waveform.js",
 }
 
 
 type_lookup = {
     "/" : "text/html",
+    "/description.css": "text/css",
+    "/envelope.js": "text/jscript",
+    "/envelopeGraph.js": "text/jscript",
     "/favicon.ico" : "image/x-icon",
-    "/index.css": "text/css",
-    "/graph.html": "text/html",
-    "/index.js": "text/jscript",
-    "/waveform.js": "text/jscript",
-    "/parse.js": "text/jscript",
-    "/design.js": "text/jscript",
+    "/frequencies.js": "text/jscript",
     "/graph.js": "text/jscript",
+    "/index.css": "text/css",
+    "/index.js": "text/jscript",
+    "/index.html": "text/html",
+    "/info.html": "text/html",
+    "/midiKeyboard.js": "text/jscript",
+    "/parse.js": "text/jscript",
+    "/piano.js": "text/jscript",
+    "/pianoroll.js": "text/jscript",
+    "/record.js": "text/jscript",
+    "/synth.js": "text/jscript",
+    "/url.js": "text/jscript",
+    "/waveform.js": "text/jscript",
 }
 
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        local_file = (path_lookup[self.path], type_lookup[self.path])
-        
+        path = self.path.split("?")[0]
+        local_file = (path_lookup[path], type_lookup[path])
         try:
             content_bytes = open(local_file[0], "rb")
             content_type = local_file[1]

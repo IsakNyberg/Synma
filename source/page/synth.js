@@ -85,6 +85,7 @@ class Synth {
 		this.createWaveforms();
 		this.graphWave();
 		this.piano.slideInPiano();
+		
 	}
 	//***********************************************************************************************************************
 	/**
@@ -163,7 +164,7 @@ class Synth {
 	 * Creates an instance of the Piano class
 	 */
 	createPiano(){
-		this.piano = new Piano(this);
+		this.piano = new Piano(this,true);
 		this.pianoIsActive = true;
 	}
 	/**
@@ -268,9 +269,15 @@ class Synth {
 	playNoteTimeDuration(keyIndex, time, duration) {
 		let wf = this.waveforms[keyIndex];
 		wf.createMasterSource(noteFreq[keyIndex]);
-		setTimeout(()=>this.piano.setKeyColor(keyIndex, "#cf1518"), time*1000);
-		setTimeout(()=>this.piano.resetKeyColor(keyIndex), (time+duration)*1000);
-		wf.playBufferAt(time, duration);
+		setTimeout(()=> {
+			this.startNote(keyIndex);
+			this.piano.setKeyColor(keyIndex, "#cf1518")
+		}, time*1000);
+		setTimeout(()=> {
+			this.stopNote(keyIndex);
+			this.piano.resetKeyColor(keyIndex)
+		}, (time+duration)*1000);
+		//wf.playBufferAt(time, duration);
 	}
 	/**
 	 * Stop playing the specified note (midi key-index).
@@ -365,5 +372,4 @@ class Synth {
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
 	}
-
 }

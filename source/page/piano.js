@@ -35,13 +35,17 @@ class Piano{
 	#synth; // reference to the synth
 	#clickedKey = null; // currently clicked key.
 	#markersPosition = 1; // the octave to map to the computer keyboard
-	
-	constructor(synth){
+	#indexPage;
+	constructor(synth, indexPage){
+		this.#indexPage = indexPage;
 		this.#synth = synth;
 		this.#noOfOctaves = 9;
 		this.keys = this.#createKeys();
 		this.#spawnPiano();
 		this.addEventListeners();
+	}
+	setSynth(synth){
+		this.#synth = synth;
 	}
 	// Keys *******************************************************************
 	/**
@@ -50,7 +54,7 @@ class Piano{
 	 * @param {Number} id 
 	 * @returns HTMLElement
 	 */
-	#createKeyDiv(type, id) {
+	 #createKeyDiv(type, id) {
 		let bothIndex = [1, 3, 6, 8, 10];
 		let wbrIndex = [4, 11];
 		let wblIndex = [0, 5];
@@ -64,11 +68,21 @@ class Piano{
 			black.className = "black";
 			both.appendChild(black);
 			var lw = document.createElement("Div");
-			lw.id = (id-1).toString() + "R"; 
+			if(this.#indexPage){
+			  lw.id = (id-1).toString() + "R";
+			}
+			else{
+				lw.id = (id+1).toString() + "L"; 
+			}
 			lw.className = "leftWhite";
 			both.appendChild(lw);
 			var rw = document.createElement("Div");
-			rw.id = (id+1).toString() + "L";
+			if(this.#indexPage){
+				rw.id = (id+1).toString() + "L";
+			}
+			else{
+			rw.id = (id-1).toString() + "R";		
+			}
 			rw.className = "rightWhite";
 			both.appendChild(rw);
 			return both;
@@ -94,21 +108,37 @@ class Piano{
 	 * Creates an array of all the key-objects which the piano will contain. 
 	 * @returns {Array<Key>}
 	 */
-	#createKeys(){
+	 #createKeys(){
 		var res = [];
-		for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
-			for (let j = 0; j < 12; j++) {
-				let id = 12*octave + j;
-				res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+		if(this.#indexPage){
+			for (let octave = 0; octave <= this.#noOfOctaves; octave++) {
+				for (let j = 0; j < 12; j++) {
+					let id = 12*octave + j;
+					res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+				}
+			}
+
+			for (let j = 0; j <= 7; j++) {
+				let lastOctave = 10;
+				let id = 12 * lastOctave + j;
+				res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
 			}
 		}
-
-		for (let j = 0; j <= 7; j++) {
-			let lastOctave = 10;
-			let id = 12 * lastOctave + j;
-			res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+		else{
+			for (let j = 7; j >= 0; j--) {
+				let lastOctave = 10;
+				let id = 12 * lastOctave + j;
+				res.push(new Piano.#key(id , this.#createKeyDiv(j, id)));
+			}
+	
+			for (let octave = this.#noOfOctaves; octave >= 0; octave--) {
+				for (let j = 11; j >=0; j--) {
+					let id = 12*octave + j;
+					res.push(new Piano.#key(id, this.#createKeyDiv(j, id)));
+				}
+			}
 		}
-
+		
 		return res;
 	}
 	// ************************************************************************
@@ -117,7 +147,12 @@ class Piano{
 	 * Creates a html piano-div and inserts all the keys' html.
 	 */
 	#spawnPiano(){
-		document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
+		if(this.#indexPage){
+			document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", Piano.#PIANO_DIV);
+		}
+		else {
+			document.getElementById(Piano.#PIANO_PARENT_DIV_ID).insertAdjacentHTML("beforeend", '<div id="'+ Piano.#PIANO_DIV_ID +'"></div>');
+		}
 		let pianoDiv = document.getElementById(Piano.#PIANO_DIV_ID);
 		for (let i = 0; i < this.keys.length; i++) {
 			pianoDiv.appendChild(this.keys[i].htmlDiv);
@@ -163,23 +198,11 @@ class Piano{
 		document.addEventListener('keyup', this.#callReleasedKey);
 	}
 	removeEventListeners() {
-		
 		var old_element = document.getElementById(Piano.#PIANO_DIV_ID);
 		var new_element = old_element.cloneNode(true);
 		old_element.parentNode.replaceChild(new_element, old_element);
 		document.removeEventListener('keydown', this.#callPressedKey);
 		document.removeEventListener('keyup', this.#callReleasedKey);
-		/*for (let keyIndex = 0; keyIndex < this.keys.length; keyIndex++) {
-			let divs = this.#getKeyDivsFromKeyIndex(keyIndex);
-			for (let j = 0; j < divs.length; j++) {
-				divs[j].removeEventListener("onmousedown",() => this.#mouseDown(keyIndex));
-				divs[j].removeEventListener("onmouseup", () => this.#mouseUp(keyIndex));
-				divs[j].removeEventListener("onmouseenter", () => this.setKeyColor(keyIndex, Piano.#HOOVER_COLOR));
-				divs[j].removeEventListener("onmouseleave", () => this.resetKeyColor(keyIndex));
-			}
-		}
-		document.removeEventListener('keydown', (keyCode) => this.#pressedKey(keyCode));
-		document.removeEventListener('keyup', (keyCode) => this.#releasedKey(keyCode));*/
 	}
 
 	/**

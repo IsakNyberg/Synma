@@ -70,25 +70,16 @@ class Rectangle{
 	 this.x1 += move;
 	}
 
-	setX1(xxxxxxxx){
-		this.x1 = xxxxxxxx;
+	setX1(length){   
+		this.x1 = length;
 	}
 
-	check(x1000,y1000){
-		if(x1000 >= this.x && x1000 <= (this.x + 19) && y1000 >= this.y && y1000 <= (this.y+19))
-			return true;
-	}
-
-	increaseIndex()
-	{
-		let bbb = this.getX1()/20;
-		return bbb;
-	}
+	
 }
 
 const Rectangles = [];
 const Rectangles1 = [];
-const Rectangles2 = [];
+//const Rectangles2 = [];
 const smallRectangles = [];
 const timeline = [new Rectangle(
 	0,
@@ -98,7 +89,6 @@ const timeline = [new Rectangle(
 	2560,
 	)
 ];
-let redRectangles = [];
 let x = 0;
 let y = 0;
 let y1=0;
@@ -152,13 +142,13 @@ function animate(){
 	Rectangles1.forEach((Rectangle)=>{
 		Rectangle.update();
 	});
-	redRectangles=[];
+
+	
 	smallRectangles.forEach((Rectangleq)=>{
 		Rectangleq.update();
 	});
-	redRectangles.forEach((Rectangle)=>{
-		Rectangle.update();
-	})
+
+
 	timeline.forEach((Rectangle)=>{
 		Rectangle.update();
 	})
@@ -256,7 +246,7 @@ var timelineID3;
 function createPianoRollFile(){
 	var newFile = [];
 	smallRectangles.forEach((Rectangle)=>{
-		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/20, Rectangle.getX1()/20]);
+		newFile.push([((Rectangle.getY()/20)-127)*(-1), Rectangle.getX()/80, Rectangle.getX1()/80]);
 	});
 	
 	/* Works to create downloadable file!!
@@ -274,7 +264,7 @@ function createPianoRollFile(){
 	clearInterval(timelineID3);
 	timeline[0].resetX();
 	newFile.forEach(note => {
-		synths[0].playNoteTimeDuration(note[0], note[1], note[2]);
+		activeSynth.playNoteTimeDuration(note[0], note[1], note[2]);
 	})
 	timelineID = setInterval(moveTimeline, 50);
 	timelineID2 = setInterval(moveTimeline, 10);

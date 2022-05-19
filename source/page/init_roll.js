@@ -2,19 +2,33 @@
  * @type {Array<Synth>}
  */
 var synths;
+var rollIsInitialized = false; 
 var activeSynth;
+var piano;
 function initRoll(snts) {
     synths = snts;
+    if(synths.length < 1) {
+        alert("No synths to roll.");
+        return;
+    }
+    activeSynth = synths[0];
+    document.getElementById("drop").innerHTML="Synth #"+0;
+    onclickFuns = []
+    document.getElementById("dropcnt").innerHTML=""; // Säkert inte bästa sätt att ta bort noder med listeners.
     for (let i = 0; i < synths.length; i++) {
         let name = "Synth #"+i;
         let a = document.createElement("a");
         a.innerHTML=name;
-        a.onclick = () => {
+        onclickFuns[i] = () => {
             document.getElementById("drop").innerHTML=name;
             activeSynth = synths[i];
+            piano.setSynth(activeSynth);
         };
+        a.onclick = onclickFuns[i];
         document.getElementById("dropcnt").appendChild(a);
     }
+    var piano = new Piano(synths[0],false);
+    rollIsInitialized = true;
 }
 
 

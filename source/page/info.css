@@ -1,0 +1,55 @@
+.jumbotron {
+	background-color: #cf1518;
+	color: #fff;
+	padding: 100px 25px;
+}
+
+.jumbotron2 {
+	background-color: #1bb7b9;
+	color: #fff;
+	padding: 15px 15px;
+	margin: 40px;
+	border-radius: 50px;
+}
+
+.bg-grey {
+	background-color: #f6f6f6;
+}
+
+.logo {
+	font-size: 200px;
+}
+
+
+@media screen and (max-width: 768px) {
+	.col-sm-4 {
+		text-align: center;
+		margin: 25px 0;
+	}
+}
+
+.container-fluid {
+	padding: 60px 50px;
+}
+
+.container-fluid text-center {
+	padding: 60px 50px;
+}
+
+.preview-div {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.preview-image{
+	width: 80%;
+	height: 80%;
+	border-radius: 40px;
+	border: 1px solid #333;
+	box-shadow: 5px 5px 5px #333, inset 5px 5px 5px #333;
+}
+
+.team{
+  text-align: center;
+}

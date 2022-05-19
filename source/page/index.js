@@ -111,6 +111,7 @@ function updateEventListeners(index) {
 window.onload = () => {
 	synths[0] = iframe.init_synt();
 	activeSynth = synths[0];
+	
 	updateEventListeners(0);
 }
 document.getElementById("destroySynth").onclick = destroySynth;
