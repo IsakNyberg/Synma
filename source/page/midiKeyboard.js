@@ -65,6 +65,14 @@ class MidiKeybaord {
 		} 
 	}
 
+	set #synth(synth) {
+		this.#synth = synth;
+	}
+
+	set #piano(piano) {
+		this.#piano = piano;
+	}
+
 }
 
 /**
