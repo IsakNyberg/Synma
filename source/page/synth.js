@@ -1,5 +1,7 @@
 let noteFreq = initFreqs();
 class Synth {
+	static serial = 0;
+	serial;
 	audioContext = null;
 	masterVolume;
 	maxVolume = 1;
@@ -34,6 +36,7 @@ class Synth {
 	activeEnvelopes = [true,true,true];
 	pianoIsActive = false;
   	constructor(urlPresets,waveGraphCanvas,envelopeGraphCanvas){
+		this.serial = ++Synth.serial;
 		this.waveGraphCanvas = waveGraphCanvas;
 		this.envelopeGraphCanvas = envelopeGraphCanvas;
 		this.waveParser = new MathParser("x");

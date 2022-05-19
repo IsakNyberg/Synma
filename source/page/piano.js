@@ -157,7 +157,9 @@ class Piano{
 		for (let i = 0; i < this.keys.length; i++) {
 			pianoDiv.appendChild(this.keys[i].htmlDiv);
 		}
-		this.#placeMarkers(this.#markersPosition);
+		if(this.#indexPage){
+			this.#placeMarkers(this.#markersPosition);
+		}
 	}
 	/**
 	 * Animation for sliding in the piano-div.
@@ -334,12 +336,14 @@ class Piano{
 	 * @param {Number} x - - The octave to be marked and mapped to the computer keyboard 
 	 */
 	#placeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++){
-			let keyIndex = 12*x+i;
-			if(!(Piano.#blackIndecies.includes(keyIndex)))
-				document.getElementById(keyIndex).innerHTML = "<div class=\"blackText\">" + Piano.#keyMarkers[i] + "</div>";
-			else
-				document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
+		if(this.#indexPage){
+			for(var i = 0; i < Piano.#keyMarkers.length; i++){
+				let keyIndex = 12*x+i;
+				if(!(Piano.#blackIndecies.includes(keyIndex)))
+					document.getElementById(keyIndex).innerHTML = "<div class=\"blackText\">" + Piano.#keyMarkers[i] + "</div>";
+				else
+					document.getElementById(keyIndex).innerHTML = "<div class=\"whiteText\">" + Piano.#keyMarkers[i] + "</div>";
+			}
 		}
 	}
 	/**
@@ -347,8 +351,10 @@ class Piano{
 	 * @param {Number} x - The octave to be unmarked and unmapped from the computer keyboard 
 	 */
 	#removeMarkers(x){
-		for(var i = 0; i < Piano.#keyMarkers.length; i++) 
-			document.getElementById(12*x+i).innerHTML = "";
+		if(this.#indexPage){
+			for(var i = 0; i < Piano.#keyMarkers.length; i++) 
+				document.getElementById(12*x+i).innerHTML = "";
+		}
 	}
 	// ***************************************************************************************************************************
 }

@@ -27,12 +27,30 @@ var synths = []; // to contain references to the different synths
  */
 var activeSynth = null; // currently active synth
 /**
+ * Ref to the midi live input handler.
+ * @type {MidiKeybaord}
+ */
+var midiKeyboard = null;
+/**
  * Number of synths currently active. If this is zero, only the initial synth is active.
  */
 var noOfSynths = 0;
 
 var rollActive = false;
 
+
+function setStyleClicked(index) {
+	document.getElementById("synth"+index).style.backgroundColor  = "initial";
+	document.getElementById("synth"+index).style.backgroundPositionX = 0;
+	document.getElementById("synth"+index).style.backgroundPositionY = 0;
+	document.getElementById("synth"+index).style.color = "#cf1518";
+}
+function setStyleUnClicked(index) {
+	document.getElementById("synth"+index).style.background  = "#cf1518";
+	document.getElementById("synth"+index).style.backgroundPositionX = undefined;
+	document.getElementById("synth"+index).style.backgroundPositionY = undefined;
+	document.getElementById("synth"+index).style.color = "#FFFFFF";
+}
 
 /**
  * Switch active synth.
@@ -44,23 +62,31 @@ function switchSynth(index) {
 		document.getElementById("roll").style.visibility = "hidden";
 		document.getElementById("main").style.visibility = "visible";
 	}
+	setStyleClicked(index);
+	setStyleUnClicked(synths.indexOf(activeSynth));
 	if(synths[index] == undefined || activeSynth == synths[index]) return;
 	iframe.document.body.focus();
 	iframe.document.replaceChild(documents[index], iframe.document.documentElement); // change the whole DOM tree of the iframe document
 	if(activeSynth!=null) activeSynth.togglePiano();
-	activeSynth = synths[index];
+	activeSynth = synths[index];	
 	activeSynth.togglePiano();
+	midiKeyboard.setSynth(activeSynth);
+	midiKeyboard.setPiano(activeSynth.piano);
+	console.log("Set synth no " + activeSynth.serial + " as the midisynth.");
 	activeSynth.graphWave();
 	activeSynth.graphEnvelope(iframe.document.getElementById("chosenEnvelope").innerHTML.toLowerCase());
 }
 
 function switchToRoll() {
-	if(activeSynth!=null) activeSynth.togglePiano();
+	if(activeSynth!=null) {
+		activeSynth.togglePiano();
+		setStyleUnClicked(synths.indexOf(activeSynth));
+	}
 	rollActive = true;
 	activeSynth.togglePiano();
 	document.getElementById("main").style.visibility = "hidden";
 	document.getElementById("roll").style.visibility = "visible";
-	document.getElementById("roll").contentWindow.initRoll(synths);
+	document.getElementById("roll").contentWindow.initRoll(synths,midiKeyboard);
 }
 
 /**
@@ -72,7 +98,11 @@ function createSynth() {
 	iframe.document.body.focus();
 	iframe.document.replaceChild(documents[noOfSynths], iframe.document.documentElement); // change the whole DOM tree of the iframe document
 	synths[noOfSynths] = iframe.init_synt();
+	if(activeSynth != null) setStyleUnClicked(synths.indexOf(activeSynth));
 	activeSynth = synths[noOfSynths];
+	midiKeyboard.setSynth(activeSynth);
+	midiKeyboard.setPiano(activeSynth.piano);
+	console.log("Set synth no " + activeSynth.serial + " as the midisynth.");
 	//activeSynth.graphWave();
 	//activeSynth.graphEnvelope(iframe.document.getElementById("chosenEnvelope").innerHTML.toLowerCase());
 	let s = document.createElement("div");
@@ -81,6 +111,8 @@ function createSynth() {
 	s.innerHTML = "Synth #" + noOfSynths;
 	document.getElementById("choices").appendChild(s);
 	updateEventListeners(noOfSynths);
+	
+	setStyleClicked(noOfSynths);
 }
 function resetIDs(remIndex){
 	for (let i = remIndex+1; i < noOfSynths; i++) {
@@ -111,7 +143,7 @@ function updateEventListeners(index) {
 window.onload = () => {
 	synths[0] = iframe.init_synt();
 	activeSynth = synths[0];
-	
+	midiKeyboard = new MidiKeybaord(activeSynth, activeSynth.piano);
 	updateEventListeners(0);
 }
 document.getElementById("destroySynth").onclick = destroySynth;

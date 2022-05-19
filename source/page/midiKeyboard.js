@@ -64,12 +64,15 @@ class MidiKeybaord {
 			navigator.requestMIDIAccess().then(fn1, fn2);
 		} 
 	}
-
-	set #synth(synth) {
-		this.#synth = synth;
+	
+	setSynth(synth){
+		console.log(synth);
+		this.#synth = synth;		
 	}
+	
 
-	set #piano(piano) {
+	setPiano(piano) {
+		console.log(piano);
 		this.#piano = piano;
 	}
 

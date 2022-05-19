@@ -11,7 +11,6 @@
 		  new Synth([],document.getElementById('waveformGraph'),document.getElementById('envelopeGraph'));
 	  dropdownClick(synth);
 	  addEventSynthListeners(synth);
-	  const midiKeybaord = new MidiKeybaord(synth, synth.piano);
 	  return synth;
   }
   function addMainEventListeners() {

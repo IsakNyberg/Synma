@@ -5,8 +5,13 @@ var synths;
 var rollIsInitialized = false; 
 var activeSynth;
 var piano;
-function initRoll(snts) {
+/**
+ * @type {MidiKeybaord}
+ */
+var midiKeyboard;
+function initRoll(snts, midi) {
     synths = snts;
+    midiKeyboard = midi;
     if(synths.length < 1) {
         alert("No synths to roll.");
         return;
@@ -23,11 +28,15 @@ function initRoll(snts) {
             document.getElementById("drop").innerHTML=name;
             activeSynth = synths[i];
             piano.setSynth(activeSynth);
+            midiKeyboard.setSynth(activeSynth);
+            midiKeyboard.setPiano(piano);
         };
         a.onclick = onclickFuns[i];
         document.getElementById("dropcnt").appendChild(a);
     }
-    var piano = new Piano(synths[0],false);
+    var piano = new Piano(activeSynth,false);
+    midiKeyboard.setSynth(activeSynth);
+    midiKeyboard.setPiano(piano);
     rollIsInitialized = true;
 }
 
