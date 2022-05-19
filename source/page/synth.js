@@ -171,7 +171,7 @@ class Synth {
 	 * Applies all the envelopes (attack and decay) on the specified waveform.
 	 * @param {WaveForm} wf 
 	 */
-	applyEnvelopesAD(wf){
+	applyEnvelopesAD(wf){		
 		if(this.activeEnvelopes[0]){
 			this.ampEnvelope.apply_attack(wf.bufferGain);
 			this.ampEnvelope.apply_decay(wf.bufferGain);
@@ -215,6 +215,7 @@ class Synth {
 		if (wf === undefined) return;
 		if(this.graphIsNormalized) wf.normalizeBuffer();
 		wf.createMasterSource(noteFreq[keyIndex]);
+		this.updateActiveEnvelopes();
 		this.applyEnvelopesAD(wf);
 		wf.playBuffer();
 	}
@@ -371,5 +372,16 @@ class Synth {
 	 */
 	saveSettings(){
 		saveSettings(this.envFunctions, this.envIsNormalized);
+	}
+
+	updateActiveEnvelopes() {
+		let applyAmplitudeChkbox = document.getElementById("applyAmplitude");
+		let applyPitchChkbox = document.getElementById("applyPitch");
+		let applyFilterChkbox = document.getElementById("applyFilter");
+
+		let amp = applyAmplitudeChkbox != null || undefined ? applyAmplitudeChkbox.checked : false;
+		let pitch = applyPitchChkbox != null || undefined ? applyPitchChkbox.checked : false;
+		let filter = applyFilterChkbox != null || undefined ? applyFilterChkbox.checked : false;
+		this.activeEnvelopes = [amp, pitch, filter];
 	}
 }
