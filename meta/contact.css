@@ -1,0 +1,52 @@
+:root { 
+	--page-bg: #FBF5E7;
+	--button: #cf1518;
+	--button-alt: #602;
+	--graph-bg: #fefefe;
+	--borders: #cf1518;
+}
+
+.title-div {
+	background-color: var(--graph-bg);
+	border: 3px solid var(--borders);
+	border-radius: 15px;
+	padding: 5px;
+	margin: 5px;
+}
+
+.jumbotron2 {
+	background-color: #1bb7b9;
+	color: #fff;
+	padding: 10px 10px;
+	margin: 0px;
+	border-radius: 50px;
+}
+
+
+.aa-div{
+	min-height: 400px;
+	max-height: 400px;
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-bottom: 50px;
+	height: 80%;
+	border-radius: 40px;
+	background-color: var(--page-bg);
+	border: 3px solid var(--borders);
+}
+
+.image {
+	width: 69%;
+	min-height: 400px;
+	max-height: 400px;
+	padding: 10px;
+	margin-bottom: 50px;
+	height: 80%;
+	border-radius: 40px;
+	background-color: var(--page-bg);
+	border: 3px solid var(--borders);
+}
+
+.team{
+  text-align: center;
+}
