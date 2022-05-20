@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="parse.js"></script>
-    <script src="graph.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="stylesheet" href="info.css" type="text/css"></link>
   </head>
@@ -22,7 +19,7 @@
           <input type="text" id="test" class="form-control" size="50" placeholder="Enter Function with Respect to X" required>
           <script>
             function getURL() {
-              const first = "http://127.0.0.1:5500/index.html?func1="; 
+              const first = "index.html?func1="; 
               const second = "&max=2*pi&normalise&afuncAtt=1&tfuncAtt=1/2&pfuncAtt=0&alengthAtt=0.1&tlengthAtt=0.1&plengthAtt=0.1&afuncDec=1&tfuncDec=1/2&pfuncDec=0&alengthDec=0.1&tlengthDec=0.1&plengthDec=0.1&afuncRel=1/2&tfuncRel=1/2&pfuncRel=0&alengthRel=0.1&tlengthRel=0.1&plengthRel=0.1&!anorm&!pnorm&!tnorm&!acont&!pcont&!tcont&appA&appF&appP";
               const funct = document.getElementById('test').value.replace("+", "plus");
               
@@ -56,7 +53,7 @@
       </div>
     </div>
     <div class="preview-div">
-      <img  class="preview-image" alt="missing image" src="preview.png">
+      <a href="index.html"><img  class="preview-image" alt="missing image" src="preview.png"></a>
     </div>
     <div class="container-fluid bg-grey">
       <h2>Method</h2>
@@ -71,10 +68,12 @@
       either change the amplitude (volume) of the sound, the pitch (frequency) of the sound, or appply a lowpass filter
       with a cutoff frequency depending on time. All of this combined can make very interesting sounds, only using math. 
       <h3>Contact</h3>
-      Get in contact with the team through zoom between 13:00-14:00 on Monday 23rd of May 2022 and 15:00-16:00 on Tuesday
-      24th of May 2022. With the following <a href="https://www.example.com/">link</a>. 
+      Get in contact with the team through zoom between 13:00-15:00 on Monday 23rd of May 2022 and  on Tuesday 24th of May 2022. With the following <a href="https://kth-se.zoom.us/j/66891204409">link</a>.
       <br>
-      You can also contact us through the email:  <a href="mailto:example.example@example.com">example.example@example.com</a>.
+      <a href="https://kth-se.zoom.us/j/66891204409"><img style="width: 400px;"src="https://cdn.bfldr.com/AMC8F81D/at/cp3r4csh3txs4nqt89kf5zc/Zoom_Logo_Blue.png" alt="zoom"></a>
+      <br>
+      <br>
+      You can also contact us through the emails below:
     </div>
     <div class="jumbotron2">
       <div class="container-fluid text-center">
@@ -83,25 +82,28 @@
         <br><br>
         <div class="row">
           <div class="col-sm-4">
-            <h4>Isak Nyberg</h4>
-            <p>Scrum Master</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/IsakNyberg">
+            <h4>Atheer Salim</h4>
+            <p>Developer</p>
+            <a href="mailto:atheer@synma.me">atheer@synma.me</a>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/Atheer2104">
               <span class="fab fa-github"></span> Github
             </a>
           </div>
           
           <div class="col-sm-4">
-            <h4>Atheer Salim</h4>
+            <h4>Azer Hojlas</h4>
             <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/Atheer2104">
+            <a href="mailto:azer@synma.me">azer@synma.me</a>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/AzerHojlas">
               <span class="fab fa-github"></span> Github
             </a>
           </div>
 
           <div class="col-sm-4">
-            <h4>Johannes Arrenander</h4>
-            <p>Product Owner</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/johnaren">
+            <h4>Hasan Al-Zubeidi</h4>
+            <p>Developer</p>
+            <a href="mailto:hasan@synma.me">hasan@synma.me</a>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/HasanAlzubeidi">
               <span class="fab fa-github"></span> Github
             </a>
           </div>        
@@ -110,30 +112,34 @@
         <br><br>
         <div class="row">
           <div class="col-sm-3">
-            <h4>Hasan Al-Zubeidi</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/HasanAlzubeidi">
+            <h4>Isak Nyberg</h4>
+            <p>Developer - Scrum Leader</p>
+            <a href="mailto:isak@synma.me">isak@synma.me</a>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/IsakNyberg">
               <span class="fab fa-github"></span> Github
             </a>
           </div>
           <div class="col-sm-3">
-            <h4>Azer Hojlas</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github" href="https://github.com/AzerHojlas">
-              <span class="fab fa-github"></span> Github
-            </a>
-          </div>
-          <div class="col-sm-3">
-            <h4>Rasmus Danielsson</h4>
-            <p>Developer</p>
-            <a class="btn btn-block btn-social btn-github">
+            <h4>Johannes Arrenander</h4>
+            <p>Developer - Product Owner</p>
+            <a href="mailto:johannes@synma.me">johannes@synma.me</a>
+            <a class="btn btn-block btn-social btn-github" href="https://github.com/johnaren">
               <span class="fab fa-github"></span> Github
             </a>
           </div>
           <div class="col-sm-3">
             <h4>Lucas Werelius</h4>
             <p>Developer</p>
+            <a href="mailto:lucas@synma.me">lucas@synma.me</a>
             <a class="btn btn-block btn-social btn-github" href="https://github.com/WereliusLucas">
+              <span class="fab fa-github"></span> Github
+            </a>
+          </div>
+          <div class="col-sm-3">
+            <h4>Rasmus Danielsson</h4>
+            <p>Developer</p>
+            <a href="mailto:rasmus@synma.me">rasmus@synma.me</a>
+            <a class="btn btn-block btn-social btn-github">
               <span class="fab fa-github"></span> Github
             </a>
           </div>
