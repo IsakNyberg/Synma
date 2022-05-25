@@ -1,14 +1,15 @@
 # ONLINE GRAPHING SYNTHESIZER #
+Website: [synma.me](https://www.synma.me/)
 
 Created by Team Falcons
 
-Hasan Al-Zubeidi\
-Johannes Arenander\
-Rasmus Danielsson\
-Azer Hojlas\
-Isak Nyberg\
-Atheer Salim\
-Lucas Werelius
+[Hasan Al-Zubeidi](https://github.com/HasanAlzubeidi)\
+[Johannes Arenander](https://github.com/johnaren)\
+[Rasmus Danielsson](https://github.com/rasmus-d)\
+[Azer Hojlas](https://github.com/AzerHojlas)\
+[Isak Nyberg](https://github.com/IsakNyberg)\
+[Atheer Salim](https://github.com/Atheer2104)\
+[Lucas Werelius](https://github.com/WereliusLucas)
 
 ---
 
