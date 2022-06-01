@@ -108,6 +108,7 @@ a {
 .leftWhite {
 	width: 7px;
 	height: 90px;
+	margin: 0px;
 	background-color: white;
 	border-right: solid 1px darkgray;
 	border-bottom-right-radius: 5px;
@@ -117,6 +118,7 @@ a {
 .rightWhite {
 	width: 7px;
 	height: 90px;
+	margin: 0px;
 	background-color: white;
 	border-left: solid 1px darkgray;
 	border-bottom-left-radius: 5px;

@@ -95,5 +95,14 @@
   <script src="url.js"></script>
   <script src="synth.js"></script>
   <script src="init_synth.js"></script>
+  <script type="text/javascript">
+    if ( window !== window.parent ) {
+      // The page is in an iframe
+      
+    } else {     
+      // The page is not in an iframe  
+      window.onload = init_synt; 
+    }
+  </script>
 </body>
 </html>
