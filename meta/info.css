@@ -43,8 +43,6 @@
 }
 
 .preview-image{
-	width: 80%;
-	height: 80%;
 	border-radius: 40px;
 	border: 1px solid #333;
 	box-shadow: 5px 5px 5px #333, inset 5px 5px 5px #333;
