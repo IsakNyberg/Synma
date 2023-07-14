@@ -1,5 +1,5 @@
 # ONLINE GRAPHING SYNTHESIZER #
-Website: [synma.me](https://www.synma.me/)
+Website: [nyberg.dev/Synma](https://nyberg.dev/Synma/)
 
 Created by Team Falcons
 
