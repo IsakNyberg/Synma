@@ -8,7 +8,7 @@ class Synth {
 	waveFunction;
 	envFunctions = {
 		"amplitude" : {
-			"attack" : [()=>1,"1",0.1], "decay" : [()=>1,"1",0.1], "release" : [()=>1/2,"1/2",0.1]
+			"attack" : [(t)=>10*t,"10t",0.1], "decay" : [()=>1,"1",0.1], "release" : [(t)=>1-10*t,"1-10t",0.1]
 		}, "pitch" : {
 			"attack" : [()=>0,"0",0.1], "decay" : [()=>0,"0",0.1], "release" : [()=>0,"0",0.1]
 		}, "filter" : {
